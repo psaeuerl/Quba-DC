@@ -24,7 +24,6 @@ namespace Quba_DC.Tests
             return new MySQLDataConnection()
             {
                 Credentials = new System.Net.NetworkCredential("root", "rootpw"),
-                Database = "qubadc_test",
                 Server = "localhost"
             };
         }
@@ -42,7 +41,6 @@ namespace Quba_DC.Tests
         public void WrongDatabaseAtCheckConnectionWorks()
         {
             MySQLDataConnection c = GetConnection();
-            c.Database = "not_existing";
             //Why does this work? MySQL Driver allows to set a database
             //Database == Schema in MySQL
             //And it seems i can connect without specifying an existing database

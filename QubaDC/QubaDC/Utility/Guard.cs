@@ -13,6 +13,12 @@ namespace QubaDC.Utility
             ThrowArgumentException<String>(String.IsNullOrWhiteSpace, value, name, "Argument: {0} was null or whitespace");
         }
 
+        public static void ArgumentNotNull(Object arg,String name)
+        {
+            ThrowArgumentException<Object>((t)=>t==null, arg, name, "Argument: {0} was null");
+
+        }
+
         private static void ThrowArgumentException<T>(Func<T,Boolean> pre,T value, String Name, String Messge)
         {
             if(pre(value))
