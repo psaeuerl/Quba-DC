@@ -7,8 +7,8 @@
     <ProjectGuid>{3E0FF567-8F33-44C9-9002-24616D5BFBCF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Quba_DC</RootNamespace>
-    <AssemblyName>Quba-DC</AssemblyName>
+    <RootNamespace>QubaDC</RootNamespace>
+    <AssemblyName>QubaDC</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,8 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SMOVisitor.cs" />
+    <Compile Include="SMO\AddColumn.cs" />
+    <Compile Include="SMO\CopyTable.cs" />
+    <Compile Include="SMO\CreateTable.cs" />
+    <Compile Include="SMO\DecomposeTable.cs" />
+    <Compile Include="SMO\DropColumn.cs" />
+    <Compile Include="SMO\DropTable.cs" />
+    <Compile Include="SMO\JoinTable.cs" />
+    <Compile Include="SMO\MergeTable.cs" />
+    <Compile Include="SMO\PartitionTable.cs" />
+    <Compile Include="SMO\RenameColumn.cs" />
+    <Compile Include="SMO\RenameTable.cs" />
+    <Compile Include="SMO\SchemaModificationOperator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
