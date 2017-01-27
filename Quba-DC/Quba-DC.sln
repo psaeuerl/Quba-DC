@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quba-DC", "Quba-DC\Quba-DC.csproj", "{3E0FF567-8F33-44C9-9002-24616D5BFBCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quba-DC.Tests", "Quba-DC.Tests\Quba-DC.Tests.csproj", "{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E0FF567-8F33-44C9-9002-24616D5BFBCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0FF567-8F33-44C9-9002-24616D5BFBCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0FF567-8F33-44C9-9002-24616D5BFBCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0FF567-8F33-44C9-9002-24616D5BFBCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
