@@ -7,27 +7,18 @@ using QubaDC.CRUD;
 
 namespace QubaDC
 {
-    public class CRUDVisitor
+    public abstract class CRUDVisitor
     {
-        internal void Visit(DeleteOperation deleteOperation)
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract void Visit(DeleteOperation deleteOperation);
 
-        internal void Visit(UpdateOperation updateOperation)
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract void Visit(UpdateOperation updateOperation);
 
-        internal void Visit(SelectOperation selectOperation)
-        {
-            throw new NotImplementedException();
-        }
 
-        internal void Visit(InsertOperation insertOperation)
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract void Visit(SelectOperation selectOperation);
+
+
+        internal abstract void Visit(InsertOperation insertOperation);
+
 
         public void Visit(CRUDOperation crudOP)
         {
