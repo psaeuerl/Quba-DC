@@ -24,8 +24,17 @@ namespace Quba_DC.Tests
             return new MySQLDataConnection()
             {
                 Credentials = new System.Net.NetworkCredential("root", "rootpw"),
-                Server = "localhost"
+                Server = "localhost",
+                DataBase = "mysql"
             };
+        }
+
+        [Fact]
+        public void NonExistingDatabaseThrowsException()
+        {
+            var con = GetConnection();
+            con.DataBase = "Non_Existing";
+            Assert.ThrowsAny<InvalidOperationException>(() => con.CheckConnection());
         }
 
         [Fact]       
@@ -34,7 +43,7 @@ namespace Quba_DC.Tests
             MySQLDataConnection c = GetConnection();
             c.Server = "Localhost2";
             //Why SystemException? MySQL Driver is bad implemented and does not inherit from DBException
-            Assert.ThrowsAny<SystemException>(() => c.CheckConnection());
+            Assert.ThrowsAny<InvalidOperationException>(() => c.CheckConnection());
         }
 
         [Fact]
