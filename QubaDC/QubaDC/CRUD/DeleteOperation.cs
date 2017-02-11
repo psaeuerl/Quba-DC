@@ -9,5 +9,9 @@ namespace QubaDC.CRUD
     public class DeleteOperation : CRUDOperation
     {
         //TODO
+        public override void Accept(CRUDVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

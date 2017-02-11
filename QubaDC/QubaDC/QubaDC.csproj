@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CRUDVisitor.cs" />
     <Compile Include="CRUD\CRUDOperation.cs" />
     <Compile Include="CRUD\DeleteOperation.cs" />
     <Compile Include="CRUD\InsertOperation.cs" />
