@@ -15,7 +15,8 @@ namespace QubaDC.Tests
                  new MySQLDataConnection()
                  {
                      Credentials = new System.Net.NetworkCredential("root", "rootpw"),
-                     Server = "localhost"
+                     Server = "localhost",
+                      DataBase = "mysql"
                  },
                   new SeparatedSMOHandler(),
                   new SeparatedCRUDHandler()
@@ -28,7 +29,17 @@ namespace QubaDC.Tests
 
         internal void DropDatabaseIfExists(string Database)
         {
-            this.QBDCSystem.DataConnection.ExecuteNonQuerySQL("DROP DATABASE" + Database);
+            try
+            {
+                this.QBDCSystem.DataConnection.ExecuteNonQuerySQL("DROP DATABASE " + Database);
+            } catch(InvalidOperationException ex)
+            {
+                var e = ex.InnerException.Message;
+                if(e != "Can't drop database '"+Database+"'; database doesn't exist")
+                {
+                    throw ex;
+                };
+            }
         }
 
         public QubaDCSystem QBDCSystem { get; private set; }

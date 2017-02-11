@@ -13,7 +13,7 @@ namespace QubaDC.Tests
         public void DropDataBaseWorks()
         {
             SeparatedQBDCFixture f = new SeparatedQBDCFixture();
-            f.DropDatabaseIfExists("XYZ");            
+            f.DropDatabaseIfExists("non_existing");            
         }
     }
 }
