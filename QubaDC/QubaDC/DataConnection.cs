@@ -12,5 +12,7 @@ namespace QubaDC
         /// Checks if a Connection can be opened
         /// </summary>
         public abstract void CheckConnection();
+
+        public abstract void ExecuteNonQuerySQL(string SQL);
     }
 }
