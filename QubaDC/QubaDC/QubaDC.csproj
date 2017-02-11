@@ -45,10 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CRUD\CRUDOperation.cs" />
+    <Compile Include="CRUD\DeleteOperation.cs" />
+    <Compile Include="CRUD\InsertOperation.cs" />
+    <Compile Include="CRUD\SelectOperation.cs" />
+    <Compile Include="CRUD\UpdateOperation.cs" />
     <Compile Include="DataConnection.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QubaDCSystem.cs" />
+    <Compile Include="Separated\SeparatedCreateTableHandler.cs" />
+    <Compile Include="Separated\SeparatedSMOHandler.cs" />
     <Compile Include="SMOVisitor.cs" />
     <Compile Include="SMO\AddColumn.cs" />
     <Compile Include="SMO\CopyTable.cs" />
@@ -67,6 +74,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Hybrid\" />
+    <Folder Include="Integrated\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
