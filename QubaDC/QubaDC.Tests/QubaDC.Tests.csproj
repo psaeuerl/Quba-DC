@@ -8,8 +8,8 @@
     <ProjectGuid>{CC07EFB3-612F-4ABB-BAC7-EDF04AA76665}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Quba_DC.Tests</RootNamespace>
-    <AssemblyName>Quba-DC.Tests</AssemblyName>
+    <RootNamespace>QubaDC.Tests</RootNamespace>
+    <AssemblyName>QubaDC.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
