@@ -9,9 +9,6 @@ namespace QubaDC
 {
     public class QubaDCSystem
     {
-        private MySQLDataConnection mySQLDataConnection;
-        private SeparatedSMOHandler separatedSMOHandler;
-        private SeparatedCRUDHandler separatedCRUDHandler;
 
         public QubaDCSystem(DataConnection connection, SMOVisitor SMOHandler)
         {
@@ -19,15 +16,16 @@ namespace QubaDC
             this.SMOHandler = SMOHandler;
         }
 
-        public QubaDCSystem(MySQLDataConnection mySQLDataConnection, SeparatedSMOHandler separatedSMOHandler, SeparatedCRUDHandler separatedCRUDHandler)
+        public QubaDCSystem(DataConnection mySQLDataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
         {
-            this.mySQLDataConnection = mySQLDataConnection;
-            this.separatedSMOHandler = separatedSMOHandler;
-            this.separatedCRUDHandler = separatedCRUDHandler;
+            this.DataConnection = mySQLDataConnection;
+            this.SMOHandler = separatedSMOHandler;
+            this.CRUDHandler = separatedCRUDHandler;
         }
     
 
         public SMOVisitor SMOHandler { get; private set; }
         public DataConnection DataConnection { get; private set; }
+        public CRUDVisitor CRUDHandler { get; private set; }
     }
 }
