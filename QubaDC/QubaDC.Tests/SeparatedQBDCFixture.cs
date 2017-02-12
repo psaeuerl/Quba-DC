@@ -7,53 +7,30 @@ using System.Threading.Tasks;
 
 namespace QubaDC.Tests
 {
-    public class SeparatedQBDCFixture : IDisposable
+    public class SeparatedQBDCFixture : MysqlDBFixture
     {
-        public SeparatedQBDCFixture()
+        public SeparatedQBDCFixture() : base()
         {
             QubaDCSystem c = new QubaDCSystem(
-                 new MySQLDataConnection()
-                 {
-                     Credentials = new System.Net.NetworkCredential("root", "rootpw"),
-                     Server = "localhost",
-                      DataBase = "mysql"
-                 },
+                this.DataConnection,
                   new SeparatedSMOHandler(),
                   new SeparatedCRUDHandler()
                 );
             this.QBDCSystem = c;
-            //What to do?
-            //Delete Everything from the database
+            //Create Empty Schema
+            this.CreateEmptyDatabase("SeperatedTests");
+            this.DataConnection.UseDatabase("SeperatedTests");
             //Init the System
+            c.Init();
         }
 
-        internal void CreateEmptyDatabase(string Database)
-        {
-            DropDatabaseIfExists(Database);
-            this.QBDCSystem.DataConnection.ExecuteNonQuerySQL("CREATE DATABASE " + Database);
-            ((MySQLDataConnection)this.QBDCSystem.DataConnection).UseDatabase(Database);
-        }
-
-        internal void DropDatabaseIfExists(string Database)
-        {
-            try
-            {
-                this.QBDCSystem.DataConnection.ExecuteNonQuerySQL("DROP DATABASE " + Database);
-            } catch(InvalidOperationException ex)
-            {
-                var e = ex.InnerException.Message;
-                if(!(e.Contains("Can't drop database '") &&e.Contains( "'; database doesn't exist")))
-                {
-                    throw ex;
-                };
-            }
-        }
 
         public QubaDCSystem QBDCSystem { get; private set; }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            throw new NotImplementedException();
+            base.Dispose();
         }
+
     }
 }

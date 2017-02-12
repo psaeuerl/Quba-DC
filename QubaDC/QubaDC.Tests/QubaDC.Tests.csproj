@@ -61,9 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataConnectionTests.cs" />
+    <Compile Include="MysqlDBFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeparatedQBDCFixture.cs" />
-    <Compile Include="SeparatedQBDCFixtureTests.cs" />
+    <Compile Include="MySQLFixtureTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />
     <Compile Include="xUnitExtension\CustomTestCollectionOrderer.cs" />

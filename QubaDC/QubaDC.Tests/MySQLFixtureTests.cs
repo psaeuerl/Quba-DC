@@ -7,7 +7,7 @@ using Xunit;
 
 namespace QubaDC.Tests
 {
-    public class SeparatedQBDCFixtureTests 
+    public class MySQLFixtureTests 
     {
         [Fact]
         public void DropDataBaseWorks()

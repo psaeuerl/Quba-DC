@@ -22,7 +22,11 @@ namespace QubaDC
             this.SMOHandler = separatedSMOHandler;
             this.CRUDHandler = separatedCRUDHandler;
         }
-    
+
+        public void Init()
+        {
+            throw new NotImplementedException();
+        }
 
         public SMOVisitor SMOHandler { get; private set; }
         public DataConnection DataConnection { get; private set; }
