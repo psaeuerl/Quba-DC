@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
 using QubaDC.Utility;
+using QubaDC.DatabaseObjects;
+using System.Data;
 
 namespace QubaDC
 {
@@ -73,6 +75,35 @@ namespace QubaDC
                 com.CommandText = SQL;
                 com.ExecuteNonQuery();
             });
+        }
+
+        public override Table[] GetAllTables()
+        {
+            String query = String.Format("select TABLE_SCHEMA, TABLE_NAME from information_schema.tables WHERE TABLE_SCHEMA = '{0}'", this.DataBase);
+            var result = this.ExecuteQuery(query)
+                .Select()
+                .Select(x => 
+                new Table
+                    {
+                    Name = x["TABLE_NAME"].ToString(),
+                    Schema = x["TABLE_SCHEMA"].ToString() }
+                ).ToArray();
+            return result;
+        }
+
+        public override DataTable ExecuteQuery(string SQL)
+        {
+            DataTable result = new DataTable();
+            this.AquireOpenConnection(con => {
+                MySqlCommand com = con.CreateCommand();
+                com.CommandType = System.Data.CommandType.Text;
+                com.CommandText = SQL;
+                using (MySqlDataReader reader = com.ExecuteReader())
+                {
+                    result.Load(reader);
+                }
+            });
+            return result;
         }
     }
 }

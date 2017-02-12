@@ -51,6 +51,7 @@
     <Compile Include="CRUD\InsertOperation.cs" />
     <Compile Include="CRUD\SelectOperation.cs" />
     <Compile Include="CRUD\UpdateOperation.cs" />
+    <Compile Include="DatabaseObjects\Table.cs" />
     <Compile Include="DataConnection.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />

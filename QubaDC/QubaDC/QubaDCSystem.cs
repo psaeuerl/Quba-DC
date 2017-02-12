@@ -9,10 +9,11 @@ namespace QubaDC
 {
     public abstract class QubaDCSystem
     {
+        public const String QubaDCSMOTable = "QubaDCSMOTable";
 
-        public QubaDCSystem(DataConnection mySQLDataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
+        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
         {
-            this.DataConnection = mySQLDataConnection;
+            this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
             this.CRUDHandler = separatedCRUDHandler;
         }
@@ -20,8 +21,24 @@ namespace QubaDC
         public void Init()
         {
             //Which tables do we need?
-            //
-            throw new NotImplementedException();
+            //a.) Create SMO Tracking Table
+            //b.) Create 
+            CreateSMOTrackingTableIfNeeded();
+            SetupQueryStore();
+        }
+
+        private void SetupQueryStore()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void CreateSMOTrackingTableIfNeeded()
+        {
+
+            if(!DataConnection.GetAllTables().Any(x=>x.Name== QubaDCSMOTable))
+            {
+                ;
+            }
         }
 
         public SMOVisitor SMOHandler { get; private set; }

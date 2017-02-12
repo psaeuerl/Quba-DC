@@ -12,7 +12,7 @@ namespace QubaDC.Tests
         [Fact]
         public void DropDataBaseWorks()
         {
-            SeparatedQBDCFixture f = new SeparatedQBDCFixture();
+            MySqlDBFixture f = new MySqlDBFixture();
             f.DropDatabaseIfExists("non_existing");
             Assert.True(true);        
         }
@@ -20,9 +20,18 @@ namespace QubaDC.Tests
         [Fact]
         public void CreateDataBaseWorks()
         {
-            SeparatedQBDCFixture f = new SeparatedQBDCFixture();
+            MySqlDBFixture f = new MySqlDBFixture();
             f.CreateEmptyDatabase("empty_DB");
             Assert.True(true);
+        }
+
+        [Fact]
+        public void GetAllTablesSakilaWorks()
+        {
+            MySqlDBFixture f = new MySqlDBFixture();
+            f.DataConnection.UseDatabase("sakila");
+            var tables = f.DataConnection.GetAllTables();
+            Assert.Equal(23,tables.Count());
         }
 
 
