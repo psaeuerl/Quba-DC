@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,5 +21,8 @@ namespace QubaDC
         public abstract Table[] GetAllTables();
 
         public abstract DataTable ExecuteQuery(String SQL);
+
+        public abstract void DoTransaction(Action<DbTransaction> p);
+        
     }
 }

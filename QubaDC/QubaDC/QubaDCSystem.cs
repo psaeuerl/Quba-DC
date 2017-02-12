@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QubaDC.Separated;
 using QubaDC.Utility;
+using QubaDC.SMO;
 
 namespace QubaDC
 {
@@ -20,12 +21,18 @@ namespace QubaDC
             "Timestamp"
         };
 
-        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler, QueryStore qs)
+        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler, QueryStore qs, SchemaManager manager, SMORenderer renderer)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
             this.CRUDHandler = separatedCRUDHandler;
             this.QueryStore = qs;
+            this.SchemaManager = manager;
+            this.SMORenderer = renderer;
+
+            SMOHandler.DataConnection = this.DataConnection;
+            SMOHandler.SchemaManager = this.SchemaManager;
+            SMOHandler.SMORenderer = this.SMORenderer;
         }
 
         public void Init()
@@ -46,18 +53,18 @@ namespace QubaDC
         { 
             if(!DataConnection.GetAllTables().Any(x=>x.Name== QubaDCSMOTable))
             {
-                String sql = GetCreateSMOTrackingTableStatement();
+                String sql = this.SchemaManager.GetCreateSchemaStatement();
                 Guard.ArgumentTrueForAll<String>(QubaDCSMOColumns, (x) => { return sql.Contains(x); }, "SMO Table Columns");
                 this.DataConnection.ExecuteNonQuerySQL(sql);
             }
         }
-
-        protected abstract string GetCreateSMOTrackingTableStatement();
-      
+    
 
         public SMOVisitor SMOHandler { get; private set; }
         public DataConnection DataConnection { get; private set; }
         public CRUDVisitor CRUDHandler { get; private set; }
         public QueryStore QueryStore { get; private set; }
+        public SchemaManager SchemaManager { get; private set; }
+        public SMORenderer SMORenderer { get; private set; }
     }
 }

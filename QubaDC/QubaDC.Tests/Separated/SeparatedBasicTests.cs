@@ -1,4 +1,5 @@
 ﻿using QubaDC.Separated;
+using QubaDC.SMO;
 using QubaDC.Tests.xUnitExtension;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,26 @@ namespace QubaDC.Tests.Separated
             QBDC.Init();
             var allTablesAfterInit = Fixture.DataConnection.GetAllTables();
             Assert.Equal(2, allTablesAfterInit.Count());
+        }
 
-        }      
+        [Fact]
+        public void CreateTableWorks()
+        {
+            QBDC.Init();
+            CreateTable t = new CreateTable()
+            {
+                TableName = "baisctable",
+                Schema = currentDatabase,
+                Columns = new string[] { "ID", "STRVAL" },
+                ColumnDefinitions = new string[] {
+                 "`ID` INT NOT NULL AUTO_INCREMENT",
+                 "`Schema` MEDIUMTEXT NOT NULL"
+                }
+            };
+            QBDC.SMOHandler.HandleSMO(t);
+            var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables(); 
+            Assert.Contains("baisctable", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("baisctable_hist", allTablesAfterCreateTable.Select(x => x.Name));
+        }
     }
 }

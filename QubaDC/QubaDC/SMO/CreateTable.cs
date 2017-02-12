@@ -8,9 +8,17 @@ namespace QubaDC.SMO
 {
     public class CreateTable : SchemaModificationOperator
     {
+        public String TableName { get; set; }
+
+        public String Schema { get; set; }
+
+        public String[] Columns { get; set; }
+
+        public string[] ColumnDefinitions { get; set; }
+
         public override void Accept(SMOVisitor visitor)
         {
             visitor.Visit(this);
-        }
+        }    
     }
 }

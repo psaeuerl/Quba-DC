@@ -27,6 +27,17 @@ namespace QubaDC
             };
         }
 
+        public override void DoTransaction(Action<DbTransaction> p)
+        {
+            this.AquireOpenConnection((con) =>
+            {
+                using (MySqlTransaction trans = con.BeginTransaction(IsolationLevel.Serializable))
+                {
+                    p((DbTransaction)trans);
+                }
+            });
+        }
+
         public String DataBase { get; set; }
 
         public override void CheckConnection()

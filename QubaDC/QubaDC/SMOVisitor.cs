@@ -9,6 +9,11 @@ namespace QubaDC
 {
     public abstract class SMOVisitor
     {
+        public DataConnection DataConnection { get; internal set; }
+        public SchemaManager SchemaManager { get; internal set; }
+
+        public SMORenderer SMORenderer { get; internal set; }
+
         internal abstract void Visit(AddColum addColum);
         internal abstract void Visit(MergeTable mergeTable);
         internal abstract void Visit(RenameTable renameTable);
@@ -20,7 +25,7 @@ namespace QubaDC
         internal abstract void Visit(CreateTable createTable);
         internal abstract void Visit(CopyTable copyTable);
 
-        public void Visit(SchemaModificationOperator op)
+        public void HandleSMO(SchemaModificationOperator op)
         {
             op.Accept(this);
         }

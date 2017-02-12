@@ -51,14 +51,18 @@
     <Compile Include="CRUD\InsertOperation.cs" />
     <Compile Include="CRUD\SelectOperation.cs" />
     <Compile Include="CRUD\UpdateOperation.cs" />
+    <Compile Include="DatabaseObjects\Schema.cs" />
     <Compile Include="DatabaseObjects\Table.cs" />
     <Compile Include="DataConnection.cs" />
+    <Compile Include="MySqlSMORenderer.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />
     <Compile Include="MySqlQueryStore.cs" />
+    <Compile Include="MySqlSchemaManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QubaDCSystem.cs" />
     <Compile Include="QueryStore.cs" />
+    <Compile Include="SchemaManager.cs" />
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />
     <Compile Include="Separated\SeparatedSMOHandler.cs" />
@@ -75,6 +79,7 @@
     <Compile Include="SMO\RenameColumn.cs" />
     <Compile Include="SMO\RenameTable.cs" />
     <Compile Include="SMO\SchemaModificationOperator.cs" />
+    <Compile Include="SMO\SMORenderer.cs" />
     <Compile Include="Utility\Guard.cs" />
   </ItemGroup>
   <ItemGroup>

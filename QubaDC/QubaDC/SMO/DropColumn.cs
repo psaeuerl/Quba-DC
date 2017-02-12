@@ -10,7 +10,7 @@ namespace QubaDC.SMO
     {
         public override void Accept(SMOVisitor visitor)
         {
-            visitor.Visit(this);
+            visitor.HandleSMO(this);
         }
     }
 }

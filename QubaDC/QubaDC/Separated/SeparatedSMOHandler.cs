@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.SMO;
+using QubaDC.Separated.SMO;
 
 namespace QubaDC.Separated
 {
@@ -26,7 +27,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(CreateTable createTable)
         {
-            throw new NotImplementedException();
+            SeparatedCreateTableHandler h = new SeparatedCreateTableHandler(this.DataConnection,this.SchemaManager, this.SMORenderer);
+            h.Handle(createTable);
         }
 
         internal override void Visit(CopyTable copyTable)
