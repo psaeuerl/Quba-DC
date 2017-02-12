@@ -20,8 +20,6 @@ namespace QubaDC.Tests
             //Create Empty Schema
             this.CreateEmptyDatabase("SeperatedTests");
             this.DataConnection.UseDatabase("SeperatedTests");
-            //Init the System
-            c.Init();
         }
 
 

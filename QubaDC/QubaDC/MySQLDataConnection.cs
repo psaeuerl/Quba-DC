@@ -16,6 +16,17 @@ namespace QubaDC
     {
         public NetworkCredential Credentials { get; set; } 
         public String Server { get; set; }
+
+        public MySQLDataConnection Clone()
+        {
+            return new MySQLDataConnection()
+            {
+                Credentials = new NetworkCredential(this.Credentials.UserName, this.Credentials.Password),
+                DataBase = this.DataBase,
+                Server = this.Server
+            };
+        }
+
         public String DataBase { get; set; }
 
         public override void CheckConnection()

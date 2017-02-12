@@ -9,7 +9,7 @@ namespace QubaDC
     public class MySQLQubaDCSystem : QubaDCSystem
     {
         public MySQLQubaDCSystem(MySQLDataConnection con, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
-            : base(con, separatedSMOHandler, separatedCRUDHandler)
+            : base(con, separatedSMOHandler, separatedCRUDHandler, new MySqlQueryStore(con))
         {
             this.TypedConnection = con; ;
         }
@@ -23,7 +23,7 @@ namespace QubaDC
   `ID` INT NOT NULL AUTO_INCREMENT,
   `Schema` MEDIUMTEXT NOT NULL,
   `SMO` VARCHAR(1000) NOT NULL,
-  `Timestamp` TIMESTAMP(7) NULL,
+  `Timestamp` TIMESTAMP(6) NULL,
   PRIMARY KEY (`ID`),
   UNIQUE INDEX `ID_UNIQUE` (`ID` ASC));
 ";

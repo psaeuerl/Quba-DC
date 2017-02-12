@@ -20,25 +20,26 @@ namespace QubaDC
             "Timestamp"
         };
 
-        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
+        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler, QueryStore qs)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
             this.CRUDHandler = separatedCRUDHandler;
+            this.QueryStore = qs;
         }
 
         public void Init()
         {
             //Which tables do we need?
-            //a.) Create SMO Tracking Table
-            //b.) Create 
+            //a.) Create SMO Tracking Table           
             CreateSMOTrackingTableIfNeeded();
+            //b.) SetupQueryStore
             SetupQueryStore();
         }
 
         private void SetupQueryStore()
-        {
-            //throw new NotImplementedException();
+        {            
+            this.QueryStore.Init();
         }
 
         private void CreateSMOTrackingTableIfNeeded()
@@ -57,6 +58,6 @@ namespace QubaDC
         public SMOVisitor SMOHandler { get; private set; }
         public DataConnection DataConnection { get; private set; }
         public CRUDVisitor CRUDHandler { get; private set; }
-
+        public QueryStore QueryStore { get; private set; }
     }
 }
