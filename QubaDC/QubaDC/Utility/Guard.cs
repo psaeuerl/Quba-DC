@@ -27,5 +27,16 @@ namespace QubaDC.Utility
                 throw new ArgumentException(msg);
             }
         }
+
+        internal static void ArgumentTrueForAll<T>(T[] ElementsToCheck, Func<T, bool> predicate, String message)
+        {
+            var y = ElementsToCheck.Select(x => new { el = x, b = predicate(x) }).Where(x => x.b == false).ToArray();
+            if(y.Length>0)
+            {
+                String Message = message + " Violated by: " + String.Join(System.Environment.NewLine, y.Select(z => z.el));
+                throw new ArgumentException(Message);
+
+            }
+        }
     }
 }

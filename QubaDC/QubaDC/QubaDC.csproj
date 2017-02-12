@@ -55,8 +55,10 @@
     <Compile Include="DataConnection.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />
+    <Compile Include="MySqlQueryStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QubaDCSystem.cs" />
+    <Compile Include="QueryStore.cs" />
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />
     <Compile Include="Separated\SeparatedSMOHandler.cs" />
