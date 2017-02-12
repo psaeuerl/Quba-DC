@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QubaDC.Tests
 {
-    public class SeparatedQBDCFixture : MysqlDBFixture
+    public class SeparatedQBDCFixture : MySqlDBFixture
     {
         public SeparatedQBDCFixture() : base()
         {

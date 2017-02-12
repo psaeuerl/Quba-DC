@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataConnectionTests.cs" />
-    <Compile Include="MysqlDBFixture.cs" />
+    <Compile Include="MySqlDBFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeparatedQBDCFixture.cs" />
     <Compile Include="MySQLFixtureTests.cs" />

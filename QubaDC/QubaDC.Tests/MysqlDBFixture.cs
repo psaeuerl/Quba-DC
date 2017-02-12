@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace QubaDC.Tests
 {
-    public class MysqlDBFixture : IDisposable
+    public class MySqlDBFixture : IDisposable
     {
-        public MysqlDBFixture()
+        public MySqlDBFixture()
         {
             this.DataConnection = new MySQLDataConnection()
             {
