@@ -8,6 +8,8 @@ namespace QubaDC.SMO
 {
     public abstract class SMORenderer
     {
-        public abstract String RenderCreateTable(CreateTable ct);
+        public abstract String RenderCreateTable(CreateTable ct, Boolean RemoveAdditionalColumnInfos=false);
+
+        public abstract IEnumerable<string> GetHistoryTableColumns();
     }
 }

@@ -30,7 +30,24 @@ namespace QubaDC.Separated.SMO
             {
                 //Create Table
                 String normalesCreateTable = SMORenderer.RenderCreateTable(createTable);
+                List<String> columns = new List<string>();
+                columns.AddRange(createTable.Columns);
+                columns.Add("startts");
+                columns.Add("endts");
+                columns.Add("guid");
+
+                List<String> columndefinitions = new List<string>();
+                columndefinitions.AddRange(createTable.ColumnDefinitions);
+                columndefinitions.AddRange(SMORenderer.GetHistoryTableColumns());
                 //Create History Table
+                CreateTable ctHistTable = new CreateTable()
+                {
+                    ColumnDefinitions = columndefinitions.ToArray(),
+                    Columns = columns.ToArray(),
+                    Schema = createTable.Schema,
+                    TableName = createTable.TableName + "_hist"
+                };
+                String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
                 //Query Schema, add tables to Schema
                 //Commit everything
             });
