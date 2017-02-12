@@ -7,14 +7,8 @@ using QubaDC.Separated;
 
 namespace QubaDC
 {
-    public class QubaDCSystem
+    public abstract class QubaDCSystem
     {
-
-        public QubaDCSystem(DataConnection connection, SMOVisitor SMOHandler)
-        {
-            this.DataConnection = connection;
-            this.SMOHandler = SMOHandler;
-        }
 
         public QubaDCSystem(DataConnection mySQLDataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler)
         {
@@ -25,6 +19,8 @@ namespace QubaDC
 
         public void Init()
         {
+            //Which tables do we need?
+            //
             throw new NotImplementedException();
         }
 

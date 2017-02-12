@@ -13,7 +13,7 @@ namespace QubaDC.Tests.Separated
     {
         private static QubaDCSystem GetConnection()
         {
-            QubaDCSystem c = new QubaDCSystem(
+            QubaDCSystem c = new MySQLQubaDCSystem(
                  new MySQLDataConnection()
                  {
                      Credentials = new System.Net.NetworkCredential("root", "rootpw"),

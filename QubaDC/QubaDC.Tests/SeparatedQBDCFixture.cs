@@ -11,7 +11,7 @@ namespace QubaDC.Tests
     {
         public SeparatedQBDCFixture() : base()
         {
-            QubaDCSystem c = new QubaDCSystem(
+            QubaDCSystem c = new MySQLQubaDCSystem(
                 this.DataConnection,
                   new SeparatedSMOHandler(),
                   new SeparatedCRUDHandler()
