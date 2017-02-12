@@ -48,6 +48,12 @@ namespace QubaDC
             }
         }
 
+        public void UseDatabase(string database)
+        {
+            this.DataBase = database;
+            this.CheckConnection();
+        }
+
         private string CreateConnectionString()
         {
             Guard.ArgumentNotNullOrWhiteSpace(Server, nameof(Server));

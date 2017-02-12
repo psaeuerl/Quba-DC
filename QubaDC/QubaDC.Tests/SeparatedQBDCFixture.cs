@@ -27,6 +27,13 @@ namespace QubaDC.Tests
             //Init the System
         }
 
+        internal void CreateEmptyDatabase(string Database)
+        {
+            DropDatabaseIfExists(Database);
+            this.QBDCSystem.DataConnection.ExecuteNonQuerySQL("CREATE DATABASE " + Database);
+            ((MySQLDataConnection)this.QBDCSystem.DataConnection).UseDatabase(Database);
+        }
+
         internal void DropDatabaseIfExists(string Database)
         {
             try
@@ -35,7 +42,7 @@ namespace QubaDC.Tests
             } catch(InvalidOperationException ex)
             {
                 var e = ex.InnerException.Message;
-                if(e != "Can't drop database '"+Database+"'; database doesn't exist")
+                if(!(e.Contains("Can't drop database '") &&e.Contains( "'; database doesn't exist")))
                 {
                     throw ex;
                 };
