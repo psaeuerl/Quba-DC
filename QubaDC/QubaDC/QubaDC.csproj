@@ -68,6 +68,7 @@
     <Compile Include="Separated\SeparatedSMOHandler.cs" />
     <Compile Include="SMOVisitor.cs" />
     <Compile Include="SMO\AddColumn.cs" />
+    <Compile Include="SMO\ColumnDefinition.cs" />
     <Compile Include="SMO\CopyTable.cs" />
     <Compile Include="SMO\CreateTable.cs" />
     <Compile Include="SMO\DecomposeTable.cs" />
