@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.DatabaseObjects;
+using System.Data;
+using QubaDC.Utility;
 
 namespace QubaDC
 {
     public class MySqlSchemaManager : SchemaManager
     {
-        private MySQLDataConnection Connection;
+        private MySQLDataConnection Connection { get; set; }
 
         public MySqlSchemaManager(MySQLDataConnection con)
         {
@@ -32,7 +34,23 @@ namespace QubaDC
 
         public override Schema GetCurrentSchema()
         {
-            throw new NotImplementedException();
+            String QueryFormat =
+@"SELECT 
+	`ID`
+    ,`Schema`
+    ,`SMO`
+    ,`Timestamp` 
+FROM `{0}`.qubadcsmotable
+ORDER BY id DESC LIMIT 0, 1";
+            String Query = String.Format(QueryFormat, this.Connection.DataBase);
+            DataTable t =  this.Connection.ExecuteQuery(Query);
+            Guard.StateEqual(1, t.Rows.Count);
+            DataRow row = t.Select().First();
+            return new Schema()
+            {
+
+
+            };            
         }
 
         public override void StoreSchema(Schema schema)
