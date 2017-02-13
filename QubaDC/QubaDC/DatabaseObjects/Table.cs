@@ -10,5 +10,7 @@ namespace QubaDC.DatabaseObjects
     {
         public String Name { get; set; }
         public String Schema { get; set; }
+
+        public String[] Columns { get; set; }
     }
 }
