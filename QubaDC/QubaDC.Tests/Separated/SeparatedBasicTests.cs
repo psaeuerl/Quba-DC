@@ -56,10 +56,9 @@ namespace QubaDC.Tests.Separated
             {
                 TableName = "baisctable",
                 Schema = currentDatabase,
-                Columns = new string[] { "ID", "STRVAL" },
-                ColumnDefinitions = new string[] {
-                 "`ID` INT NOT NULL AUTO_INCREMENT",
-                 "`Schema` MEDIUMTEXT NOT NULL"
+                Columns = new ColumnDefinition[] {
+                    new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
+                    new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
                 }
             };
             QBDC.SMOHandler.HandleSMO(t);

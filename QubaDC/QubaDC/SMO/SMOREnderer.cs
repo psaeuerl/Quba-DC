@@ -10,6 +10,6 @@ namespace QubaDC.SMO
     {
         public abstract String RenderCreateTable(CreateTable ct, Boolean RemoveAdditionalColumnInfos=false);
 
-        public abstract IEnumerable<string> GetHistoryTableColumns();
+        public abstract IEnumerable<ColumnDefinition> GetHistoryTableColumns();
     }
 }

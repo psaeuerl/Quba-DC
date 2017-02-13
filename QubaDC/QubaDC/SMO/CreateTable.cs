@@ -12,9 +12,7 @@ namespace QubaDC.SMO
 
         public String Schema { get; set; }
 
-        public String[] Columns { get; set; }
-
-        public string[] ColumnDefinitions { get; set; }
+        public ColumnDefinition[] Columns { get; set; }
 
         public override void Accept(SMOVisitor visitor)
         {
