@@ -37,6 +37,9 @@ namespace QubaDC.Tests
         public void GetSchemaWithoutStoredSchemaReturnsEmptySchema()
         {
             var Schema = this.SchemaManager.GetCurrentSchema();
+            Assert.NotNull(Schema);
+            Assert.NotNull(Schema.Tables);
+            Assert.Equal(0, Schema.Tables.Count());
         }
     }
 }

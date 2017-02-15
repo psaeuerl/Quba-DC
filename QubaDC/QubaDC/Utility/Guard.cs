@@ -41,7 +41,7 @@ namespace QubaDC.Utility
 
         internal static void StateEqual(object expected, object real)
         {
-            if(expected != real)
+            if(!expected.Equals(real))
             {
                 String msg = String.Format("StateEqual failed, Expected: {0}{1}Actual: {2}", expected.ToString(), System.Environment.NewLine, real.ToString());
                 throw new InvalidOperationException(msg);

@@ -44,7 +44,11 @@ FROM `{0}`.qubadcsmotable
 ORDER BY id DESC LIMIT 0, 1";
             String Query = String.Format(QueryFormat, this.Connection.DataBase);
             DataTable t =  this.Connection.ExecuteQuery(Query);
-            Guard.StateEqual(1, t.Rows.Count);
+            Guard.StateEqual(true, t.Rows.Count<=1);
+            if(t.Rows.Count==0)
+            {
+                return new Schema();
+            }
             DataRow row = t.Select().First();
             return new Schema()
             {

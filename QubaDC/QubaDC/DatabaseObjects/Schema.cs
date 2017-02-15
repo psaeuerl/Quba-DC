@@ -8,6 +8,6 @@ namespace QubaDC.DatabaseObjects
 {
     public class Schema
     {
-        public Table[] Tables { get; set; }
+        public Table[] Tables { get; set; } = new Table[] { };
     }
 }
