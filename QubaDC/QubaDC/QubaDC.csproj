@@ -86,6 +86,7 @@
     <Compile Include="SMO\SchemaModificationOperator.cs" />
     <Compile Include="SMO\SMORenderer.cs" />
     <Compile Include="Utility\Guard.cs" />
+    <Compile Include="Utility\JsonSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
