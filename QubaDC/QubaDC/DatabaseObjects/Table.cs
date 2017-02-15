@@ -12,5 +12,19 @@ namespace QubaDC.DatabaseObjects
         public String Schema { get; set; }
 
         public String[] Columns { get; set; }
+
+        public Table()
+        {
+            this.Name = String.Empty;
+            this.Schema = String.Empty; ;
+            this.Columns = new string[] { };
+        }
+
+        public Table(String Schema, String name, params String[] columns)
+        {
+            this.Name = name;
+            this.Schema = Schema;
+            this.Columns = columns;
+        }
     }
 }

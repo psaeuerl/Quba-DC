@@ -105,7 +105,7 @@ namespace QubaDC
             var result = this.ExecuteQuery(query)
                 .Select()
                 .Select(x => 
-                new Table
+                new Table()
                     {
                     Name = x["TABLE_NAME"].ToString(),
                     Schema = x["TABLE_SCHEMA"].ToString() }
