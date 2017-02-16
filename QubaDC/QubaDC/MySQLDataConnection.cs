@@ -27,13 +27,13 @@ namespace QubaDC
             };
         }
 
-        public override void DoTransaction(Action<DbTransaction> p)
+        public override void DoTransaction(Action<DbTransaction, DbConnection> p)
         {
             this.AquireOpenConnection((con) =>
             {
                 using (MySqlTransaction trans = con.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    p((DbTransaction)trans);
+                    p(trans, con);
                 }
             });
         }
@@ -92,11 +92,17 @@ namespace QubaDC
 
         public override void ExecuteNonQuerySQL(string SQL)
         {
-            this.AquireOpenConnection(con => { MySqlCommand com = con.CreateCommand();
+            this.AquireOpenConnection(con => {
+                ExecuteNonQuerySQL(SQL, con);
+            });
+        }
+
+        public override void ExecuteNonQuerySQL(string SQL, DbConnection openconnection)
+        {
+                MySqlCommand com = (MySqlCommand)openconnection.CreateCommand();
                 com.CommandType = System.Data.CommandType.Text;
                 com.CommandText = SQL;
                 com.ExecuteNonQuery();
-            });
         }
 
         public override Table[] GetAllTables()
@@ -126,6 +132,28 @@ namespace QubaDC
                 }
             });
             return result;
+        }
+
+        public override long? ExecuteInsert(string statement)
+        {
+            long? result = null;
+            this.AquireOpenConnection(con =>
+            {
+                result =  this.ExecuteInsert(statement, con);
+            });
+            return result;
+        }
+
+        public override long? ExecuteInsert(string statement, DbConnection c)
+        {
+            MySqlCommand cmd = (MySqlCommand)c.CreateCommand();
+            cmd.CommandText = statement;
+            cmd.CommandType = CommandType.Text;
+            long lastinsertedBefore = cmd.LastInsertedId;
+            long inserted = cmd.ExecuteNonQuery();
+            long newId = cmd.LastInsertedId;
+            var yx = cmd.UpdatedRowSource;
+            return lastinsertedBefore == newId? new long?(newId) : null;
         }
     }
 }
