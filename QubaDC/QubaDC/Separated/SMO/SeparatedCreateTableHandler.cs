@@ -27,10 +27,10 @@ namespace QubaDC.Separated.SMO
         {
             //1st start transaction
             var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction) =>
+            con.DoTransaction((transaction,c) =>
             {
                 //Create Table
-                String normalesCreateTable = SMORenderer.RenderCreateTable(createTable);
+                String normalCreateTable = SMORenderer.RenderCreateTable(createTable);
 
                 ////Create History Table
                 List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
@@ -44,8 +44,19 @@ namespace QubaDC.Separated.SMO
                 };
                 String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
                 //Query Schema, add tables to Schema
-                Schema x =  this.schemaManager.GetCurrentSchema();
+                SchemaInfo xy =  this.schemaManager.GetCurrentSchema();
+                Schema x = xy.Schema;
+                if (xy.ID == null)
+                {
+                    x = new Schema();
+                }
+  
+                x.AddTable(createTable.ToTable(), ctHistTable.ToTable());
+                String Statement = this.schemaManager.GetInsertSchemaStatement(x,createTable);
                 //Commit everything
+                this.DataConnection.ExecuteNonQuerySQL(normalCreateTable,c);
+                this.DataConnection.ExecuteNonQuerySQL(histCreateTable,c);
+                this.DataConnection.ExecuteInsert(Statement,c);
             });
         }
     }
