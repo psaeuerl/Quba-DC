@@ -65,6 +65,10 @@ namespace QubaDC.Tests.Separated
             var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables(); 
             Assert.Contains("baisctable", allTablesAfterCreateTable.Select(x => x.Name));
             Assert.Contains("baisctable_hist", allTablesAfterCreateTable.Select(x => x.Name));
+            var schemaInfo =  QBDC.SchemaManager.GetCurrentSchema();
+            var schema = schemaInfo.Schema;
+            Assert.Equal(1, schema.HistTables.Count());
+            Assert.Equal(1, schema.Tables.Count());
         }
     }
 }

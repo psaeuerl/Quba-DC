@@ -37,7 +37,7 @@ namespace Quba_DC.Tests
             Assert.ThrowsAny<InvalidOperationException>(() => con.CheckConnection());
         }
 
-        [Fact]       
+        [Fact]      
         public void WrongServerAtCheckConnectionThrowsException()
         {
             MySQLDataConnection c = GetConnection();
