@@ -9,17 +9,17 @@ namespace QubaDC.Utility
 {
     public class JsonSerializer
     {
-
-        public static String SerializeObject(Object o)
+        private static JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+    public static String SerializeObject(Object o)
         {
-            string output = JsonConvert.SerializeObject(o);
+            string output = JsonConvert.SerializeObject(o,settings);
             return output;
         }
 
         public static T DeserializeObject<T>(String obj)
         {
-            T result = JsonConvert.DeserializeObject<T>(obj);
-            return result;
+            object result = JsonConvert.DeserializeObject(obj, settings);
+            return (T)result;
         }
     }
 }
