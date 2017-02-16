@@ -29,6 +29,7 @@ namespace QubaDC
 ";
             String[] columnDefinitions = ct.Columns.Select(x =>
                 '`' + x.ColumName + "` "
+                + x.DataType + " "
                 + (x.Nullable ? "NULL" : "NOT NULL") + " "
                 + (IncludeAdditionalInformation ? x.AdditionalInformation : ""))
             .ToArray();
