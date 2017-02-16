@@ -15,8 +15,6 @@ namespace QubaDC.Tests
 
         private SchemaManager SchemaManager;
 
-        private readonly ITestOutputHelper output;
-
         public SchemaManagerTests(MySqlDBFixture fixture)
         {
             MySQLDataConnection con = fixture.DataConnection.Clone();
