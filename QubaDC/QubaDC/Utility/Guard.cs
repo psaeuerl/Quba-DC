@@ -47,5 +47,19 @@ namespace QubaDC.Utility
                 throw new InvalidOperationException(msg);
             }
         }
+
+        internal static void StateTrue(Boolean expected, String Msg     )
+        {
+            ThrowStateException<bool>((x) => x, expected, Msg, "Expected True got {1}"+System.Environment.NewLine+"{0}");
+        }
+
+        private static void ThrowStateException<T>(Func<T, Boolean> pre, T value, String Name, String Messge)
+        {
+            if (pre(value))
+            {
+                String msg = String.Format(Messge, Name, value);
+                throw new InvalidOperationException("InvalidState: "+msg);
+            }
+        }
     }
 }
