@@ -1,4 +1,5 @@
 ﻿using QubaDC.DatabaseObjects;
+using QubaDC.SMO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,10 @@ namespace QubaDC
     {
         public abstract String GetCreateSchemaStatement();
 
-        public abstract Schema GetCurrentSchema();
+        public abstract SchemaInfo GetCurrentSchema();
 
-        public abstract void StoreSchema(Schema schema);
+        public abstract SchemaInfo StoreSchema(Schema schema);
 
+        public abstract string GetInsertSchemaStatement(Schema schema, SchemaModificationOperator smo);
     }
 }

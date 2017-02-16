@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using QubaDC.DatabaseObjects;
 using System.Data;
 using QubaDC.Utility;
+using QubaDC.SMO;
 
 namespace QubaDC
 {
@@ -32,7 +33,7 @@ namespace QubaDC
             return stmt;
         }
 
-        public override Schema GetCurrentSchema()
+        public override SchemaInfo GetCurrentSchema()
         {
             String QueryFormat =
 @"SELECT 
@@ -47,19 +48,43 @@ ORDER BY id DESC LIMIT 0, 1";
             Guard.StateEqual(true, t.Rows.Count<=1);
             if(t.Rows.Count==0)
             {
-                return new Schema();
+                return new SchemaInfo();
             }
             DataRow row = t.Select().First();
-            return new Schema()
+
+            return new SchemaInfo()
             {
 
-
+                ID = row.Field<int>("ID"),
+                Schema = JsonSerializer.DeserializeObject<Schema>(row.Field<String>("Schema")),
+                SMO = JsonSerializer.DeserializeObject<SchemaModificationOperator>(row.Field<String>("SMO")),
+                TimeOfCreation = row.Field<DateTime>("Timestamp")             
             };            
         }
 
-        public override void StoreSchema(Schema schema)
+        public override SchemaInfo StoreSchema(Schema schema)
         {
-            throw new NotImplementedException();
+            return null;
+        }
+
+        public override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
+        {
+            String InsertFormat =
+             @"INSERT INTO `{0}`.`qubadcsmotable`
+(`Schema`,
+`SMO`,
+`Timestamp`)
+VALUES(
+'{1}',
+'{2}',
+CURRENT_TIMESTAMP
+);";
+            String argDb = this.Connection.DataBase;
+            String argSchema = JsonSerializer.SerializeObject(schema);
+            String argSMO = JsonSerializer.SerializeObject(smo);
+            //TODO => Use Parameterized Query
+            String result = String.Format(InsertFormat, argDb, argSchema, argSMO);
+            return result;
         }
     }
 }
