@@ -48,19 +48,5 @@ namespace QubaDC.Tests
             Assert.Null(Schema.ID);
             Assert.Null(Schema.Schema);
         }
-
-        [Fact]
-        public void StoringSchemaReturnsStorageInfo()
-        {
-            System.Diagnostics.Debug.WriteLine("In: StoringSchemaReturnsStorageInfo");
-            System.Diagnostics.Debug.WriteLine("CurrentDB: " + currentDatabase);
-            var xy = new Schema();
-            xy.AddTable(new Table("schema1", "table1", "column1"), new Table("schema1_hist", "table1", "column1"));
-            this.SchemaManager.StoreSchema(xy);
-            var x = this.SchemaManager.GetCurrentSchema();
-            //Assert.NotNull(Schema);
-            //Assert.NotNull(Schema.Tables);
-            //Assert.Equal(0, Schema.Tables.Count());
-        }
     }
 }
