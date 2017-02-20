@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
+using QubaDC.Separated.CRUD;
 
 namespace QubaDC.Separated
 {
     public class SeparatedCRUDHandler : CRUDVisitor
     {
+
         internal override void Visit(SelectOperation selectOperation)
         {
             throw new NotImplementedException();
@@ -16,7 +18,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(InsertOperation insertOperation)
         {
-            throw new NotImplementedException();
+            SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleInsert(insertOperation);                        
         }
 
         internal override void Visit(UpdateOperation updateOperation)
