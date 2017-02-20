@@ -9,6 +9,10 @@ namespace QubaDC
 {
     public abstract class CRUDVisitor
     {
+        public CRUDRenderer CRUDRenderer { get; set; }
+        public DataConnection DataConnection { get; set; }
+        public SchemaManager SchemaManager { get; set; }
+
         internal abstract void Visit(DeleteOperation deleteOperation);
 
         internal abstract void Visit(UpdateOperation updateOperation);
