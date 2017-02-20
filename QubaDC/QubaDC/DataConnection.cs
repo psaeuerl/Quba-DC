@@ -20,9 +20,10 @@ namespace QubaDC
         public abstract void ExecuteNonQuerySQL(string SQL, DbConnection openconnection);
 
 
-        public abstract Table[] GetAllTables();
+        public abstract TableSchema[] GetAllTables();
 
         public abstract DataTable ExecuteQuery(String SQL);
+        public abstract DataTable ExecuteQuery(String SQL, DbConnection openconnection);
 
         public abstract void DoTransaction(Action<DbTransaction,DbConnection> p);
 

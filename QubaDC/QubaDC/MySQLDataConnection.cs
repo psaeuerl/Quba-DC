@@ -105,32 +105,17 @@ namespace QubaDC
                 com.ExecuteNonQuery();
         }
 
-        public override Table[] GetAllTables()
+        public override TableSchema[] GetAllTables()
         {
             String query = String.Format("select TABLE_SCHEMA, TABLE_NAME from information_schema.tables WHERE TABLE_SCHEMA = '{0}'", this.DataBase);
             var result = this.ExecuteQuery(query)
                 .Select()
                 .Select(x => 
-                new Table()
+                new TableSchema()
                     {
                     Name = x["TABLE_NAME"].ToString(),
                     Schema = x["TABLE_SCHEMA"].ToString() }
                 ).ToArray();
-            return result;
-        }
-
-        public override DataTable ExecuteQuery(string SQL)
-        {
-            DataTable result = new DataTable();
-            this.AquireOpenConnection(con => {
-                MySqlCommand com = con.CreateCommand();
-                com.CommandType = System.Data.CommandType.Text;
-                com.CommandText = SQL;
-                using (MySqlDataReader reader = com.ExecuteReader())
-                {
-                    result.Load(reader);
-                }
-            });
             return result;
         }
 
@@ -154,6 +139,31 @@ namespace QubaDC
             long newId = cmd.LastInsertedId;
             var yx = cmd.UpdatedRowSource;
             return lastinsertedBefore == newId? new long?(newId) : null;
+        }
+
+        public override DataTable ExecuteQuery(string SQL, DbConnection openconnection)
+        {
+            DataTable result = new DataTable();
+
+                MySqlCommand com = (MySqlCommand)openconnection.CreateCommand();
+                com.CommandType = System.Data.CommandType.Text;
+                com.CommandText = SQL;
+                using (MySqlDataReader reader = com.ExecuteReader())
+                {
+                    result.Load(reader);
+                }
+
+            return result;
+        }
+
+        public override DataTable ExecuteQuery(string SQL)
+        {
+            DataTable result = null;
+            this.AquireOpenConnection(con =>
+            {
+                result = this.ExecuteQuery(SQL, con);
+            });
+            return result;
         }
     }
 }
