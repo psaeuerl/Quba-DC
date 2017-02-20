@@ -12,7 +12,8 @@ namespace QubaDC
             : base(con, separatedSMOHandler, separatedCRUDHandler, 
                   new MySqlQueryStore(con),
                   new MySqlSchemaManager(con),
-                  new MySqlSMORenderer())
+                  new MySqlSMORenderer(),
+                  new MySQLCrudRenderer())
         {
             this.TypedConnection = con; ;
         }
