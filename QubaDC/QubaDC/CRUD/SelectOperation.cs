@@ -18,7 +18,7 @@
     {
 
         public ColumnReference[] Columns { get; set; }
-        public SelectTable FromTable { get; set; }
+        public Table FromTable { get; set; }
 
         public JoinedTable[] JoinedTable { get; set; }
 
