@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using QubaDC.Separated;
 using QubaDC.Utility;
 using QubaDC.SMO;
+using QubaDC.CRUD;
 
 namespace QubaDC
 {
@@ -21,7 +22,7 @@ namespace QubaDC
             "Timestamp"
         };
 
-        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler, QueryStore qs, SchemaManager manager, SMORenderer renderer)
+        public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, CRUDVisitor separatedCRUDHandler, QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
@@ -29,11 +30,18 @@ namespace QubaDC
             this.QueryStore = qs;
             this.SchemaManager = manager;
             this.SMORenderer = renderer;
+            this.CRUDRenderer = r;
 
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;
             SMOHandler.SMORenderer = this.SMORenderer;
+
+            CRUDHandler.CRUDRenderer = this.CRUDRenderer;
+            CRUDHandler.SchemaManager = this.SchemaManager;
+            CRUDHandler.DataConnection = this.DataConnection;
         }
+
+       
 
         public void Init()
         {
@@ -66,5 +74,6 @@ namespace QubaDC
         public QueryStore QueryStore { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public CRUDRenderer CRUDRenderer { get; private set; }
     }
 }
