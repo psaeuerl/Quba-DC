@@ -1,5 +1,6 @@
 ﻿using QubaDC.Separated;
 using QubaDC.SMO;
+using QubaDC.Tests.DataBuilder;
 using QubaDC.Tests.xUnitExtension;
 using System;
 using System.Collections.Generic;
@@ -52,23 +53,17 @@ namespace QubaDC.Tests.Separated
         public void CreateTableWorks()
         {
             QBDC.Init();
-            CreateTable t = new CreateTable()
-            {
-                TableName = "baisctable",
-                Schema = currentDatabase,
-                Columns = new ColumnDefinition[] {
-                    new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
-                    new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
-                }
-            };
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
-            var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables(); 
+            var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables();
             Assert.Contains("baisctable", allTablesAfterCreateTable.Select(x => x.Name));
             Assert.Contains("baisctable_hist", allTablesAfterCreateTable.Select(x => x.Name));
-            var schemaInfo =  QBDC.SchemaManager.GetCurrentSchema();
+            var schemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             var schema = schemaInfo.Schema;
             Assert.Equal(1, schema.HistTables.Count());
             Assert.Equal(1, schema.Tables.Count());
         }
+
+      
     }
 }
