@@ -25,7 +25,7 @@ namespace QubaDC
   `ID` INT NOT NULL AUTO_INCREMENT,
   `Query` MEDIUMTEXT NOT NULL,
   `ReWrittenQuery` MEDIUMTEXT NOT NULL,
-  `Timestamp` TIMESTAMP(6) NULL,
+  `Timestamp` DATETIME(6) NULL,
   `Checkvalue` MEDIUMTEXT NOT NULL,
   `SchemaVersionIssued` INT NOT NULL,
   PRIMARY KEY (`ID`));";
