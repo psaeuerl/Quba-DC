@@ -35,7 +35,7 @@ namespace QubaDC.Separated.SMO
                 ////Create History Table
                 List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
                 columndefinitions.AddRange(createTable.Columns);
-                columndefinitions.AddRange(SMORenderer.GetHistoryTableColumns());
+                columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
                 CreateTable ctHistTable = new CreateTable()
                 { 
                     Columns = columndefinitions.ToArray(),
@@ -44,19 +44,20 @@ namespace QubaDC.Separated.SMO
                 };
                 String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
                 //Query Schema, add tables to Schema
-                SchemaInfo xy =  this.schemaManager.GetCurrentSchema();
+                SchemaInfo xy =  this.schemaManager.GetCurrentSchema(c);
                 Schema x = xy.Schema;
                 if (xy.ID == null)
                 {
                     x = new Schema();
                 }
   
-                x.AddTable(createTable.ToTable(), ctHistTable.ToTable());
+                x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
                 String Statement = this.schemaManager.GetInsertSchemaStatement(x,createTable);
                 //Commit everything
                 this.DataConnection.ExecuteNonQuerySQL(normalCreateTable,c);
                 this.DataConnection.ExecuteNonQuerySQL(histCreateTable,c);
                 this.DataConnection.ExecuteInsert(Statement,c);
+                transaction.Commit();                
             });
         }
     }
