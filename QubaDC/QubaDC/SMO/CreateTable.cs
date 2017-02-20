@@ -1,4 +1,5 @@
-﻿using QubaDC.DatabaseObjects;
+﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,28 @@ namespace QubaDC.SMO
             visitor.Visit(this);
         }    
 
-        public Table ToTable()
+        public TableSchema ToTableSchema()
         {
-            return new Table()
+            return new TableSchema()
             {
                 Columns = this.Columns.Select(x => x.ColumName).ToArray(),
                 Name = TableName,
                 Schema = Schema
             };
+        }
+
+        public Table ToTable()
+        {
+            return new Table()
+            {
+                TableName = this.TableName,
+                TableSchema = this.Schema
+            };
+        }
+
+        public string[] GetColumnNames()
+        {
+            return this.Columns.Select(x => x.ColumName).ToArray();
         }
     }
 }
