@@ -10,15 +10,7 @@ namespace QubaDC
 {
     public class MySqlSMORenderer : SMORenderer
     {
-        public override IEnumerable<ColumnDefinition> GetHistoryTableColumns()
-        {
-            return new ColumnDefinition[]
-            {
-                 new ColumnDefinition() { ColumName="startts", DataType ="TIMESTAMP(6)", Nullable = false },
-                 new ColumnDefinition() { ColumName="endts", DataType ="TIMESTAMP(6)", Nullable = false },
-                 new ColumnDefinition() { ColumName="guid", DataType ="char(36)", Nullable = false }
-            };
-        }
+    
 
         public override string RenderCreateTable(CreateTable ct, Boolean IncludeAdditionalInformation = true)
         {
