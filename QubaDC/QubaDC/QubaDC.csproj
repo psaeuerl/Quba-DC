@@ -54,6 +54,7 @@
     <Compile Include="CRUD\ColumnRigthHandOperand.cs" />
     <Compile Include="CRUD\ComparisionOperator.cs" />
     <Compile Include="CRUD\CRUDOperation.cs" />
+    <Compile Include="CRUD\CRUDRenderer.cs" />
     <Compile Include="CRUD\DeleteOperation.cs" />
     <Compile Include="CRUD\FromTable.cs" />
     <Compile Include="CRUD\InsertOperation.cs" />
@@ -63,11 +64,14 @@
     <Compile Include="CRUD\RightHandOperand.cs" />
     <Compile Include="CRUD\SelectOperation.cs" />
     <Compile Include="CRUD\SelectTable.cs" />
+    <Compile Include="CRUD\Table.cs" />
     <Compile Include="CRUD\UpdateOperation.cs" />
     <Compile Include="CRUD\WhereCondition.cs" />
     <Compile Include="DatabaseObjects\Schema.cs" />
-    <Compile Include="DatabaseObjects\Table.cs" />
+    <Compile Include="DatabaseObjects\TableSchema.cs" />
+    <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
     <Compile Include="DataConnection.cs" />
+    <Compile Include="MySQLCrudRenderer.cs" />
     <Compile Include="MySqlSMORenderer.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />
@@ -78,6 +82,8 @@
     <Compile Include="QueryStore.cs" />
     <Compile Include="SchemaInfo.cs" />
     <Compile Include="SchemaManager.cs" />
+    <Compile Include="Separated\CRUD\SeparatedInsertHandler.cs" />
+    <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />
     <Compile Include="Separated\SeparatedSMOHandler.cs" />
@@ -106,7 +112,6 @@
   <ItemGroup>
     <Folder Include="Hybrid\" />
     <Folder Include="Integrated\" />
-    <Folder Include="Separated\CRUD\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
