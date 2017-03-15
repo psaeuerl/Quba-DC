@@ -44,5 +44,15 @@ namespace QubaDC.SMO
         {
             return this.Columns.Select(x => x.ColumName).ToArray();
         }
+
+        internal FromTable ToFromTable(string reference)
+        {
+            return new FromTable()
+            {
+                TableName = this.TableName,
+                TableSchema = this.Schema,
+                 TableAlias = reference
+            };
+        }
     }
 }

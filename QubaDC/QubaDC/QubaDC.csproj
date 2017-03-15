@@ -83,6 +83,7 @@
     <Compile Include="SchemaInfo.cs" />
     <Compile Include="SchemaManager.cs" />
     <Compile Include="Separated\CRUD\SeparatedInsertHandler.cs" />
+    <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />

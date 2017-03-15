@@ -20,8 +20,8 @@ namespace QubaDC.Tests.Separated
             MySQLDataConnection con = fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
-                         new SeparatedSMOHandler(),
-                         new SeparatedCRUDHandler()
+                         new SeparatedSMOHandler()
+  //                       ,new SeparatedCRUDHandler()
                        );
             this.QBDC = c;
             //Create Empty Schema

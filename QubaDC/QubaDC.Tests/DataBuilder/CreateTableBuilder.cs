@@ -1,4 +1,5 @@
-﻿using QubaDC.SMO;
+﻿using QubaDC.CRUD;
+using QubaDC.SMO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,17 @@ namespace QubaDC.Tests.DataBuilder
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
                     new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
                 }
+            };
+        }
+
+        public static InsertOperation GetBasicTableInsert(string currentdatabase, string id, string value)
+        {
+            CreateTable t = CreateTableBuilder.BuildBasicTable(currentdatabase);
+            return new InsertOperation()
+            {
+                ColumnNames = t.GetColumnNames(),
+                InsertTable = t.ToTable(),
+                ValueLiterals = new String[] { "1", "'asfd'" }
             };
         }
     }

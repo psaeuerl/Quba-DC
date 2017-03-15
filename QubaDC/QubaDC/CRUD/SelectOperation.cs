@@ -1,4 +1,9 @@
-﻿namespace QubaDC.CRUD
+﻿using System;
+using System.Linq;
+using QubaDC.SMO;
+using System.Collections.Generic;
+
+namespace QubaDC.CRUD
 {
 
     //Example of an Select Statement:
@@ -18,14 +23,36 @@
     {
 
         public ColumnReference[] Columns { get; set; }
-        public Table FromTable { get; set; }
+        public FromTable FromTable { get; set; }
 
-        public JoinedTable[] JoinedTable { get; set; }
+        public JoinedTable[] JoinedTables { get; set; } = new JoinedTable[] { };
+        
+        
+        //public override void Accept(CRUDVisitor visitor)
+        //{
+        //    visitor.Visit(this);
+        //}
 
-        //TODO
-        public override void Accept(CRUDVisitor visitor)
+        public static SelectOperation FromCreateTable(CreateTable t)
         {
-            visitor.Visit(this);
+            String reference = t.TableName + "_ref";
+            return new SelectOperation()
+            {
+                Columns = t.Columns.Select(x => new ColumnReference()
+                {
+                    ColumnName = x.ColumName,
+                    TableReference = reference
+                }).ToArray()
+                 ,
+                FromTable = t.ToFromTable(reference)
+            };
+        }
+
+        internal IEnumerable<SelectTable> GetAllSelectedTables()
+        {
+            yield return this.FromTable;
+            foreach (var x in this.JoinedTables)
+                yield return x;
         }
     }
 }

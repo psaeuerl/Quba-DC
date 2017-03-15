@@ -20,8 +20,8 @@ namespace QubaDC.Tests.Separated
             MySQLDataConnection con = fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
-                         new SeparatedSMOHandler(),
-                         new SeparatedCRUDHandler()
+                         new SeparatedSMOHandler()
+                         //,new SeparatedCRUDHandler()
                        );
             this.QBDC = c;
             //Create Empty Schema
@@ -46,19 +46,20 @@ namespace QubaDC.Tests.Separated
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
+            Assert.False(true);
             //Insert some data
-            InsertOperation c = new InsertOperation()
-            {
-                ColumnNames = t.GetColumnNames(),
-                InsertTable = t.ToTable(),
-                ValueLiterals = new String[] { "1", "'asfd'" }
-            };
-            QBDC.CRUDHandler.Visit(c);
-            //TODO Insert 2-3 Rows
-            //Make a Request
-            //Insert 2-3 Rows
-            //Replay Request
-            //=> Result should be the same
+            //InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase,"1","'asdf'");
+            //QBDC.CRUDHandler.Visit(c);
+            //InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            //QBDC.CRUDHandler.Visit(c2);
+            ////Make a Request
+            //SelectOperation s =  SelectOperation.FromCreateTable(t);
+            //QBDC.CRUDHandler.Visit(s);
+            ////Insert 2-3 Rows
+            ////Replay Request
+            ////=> Result should be the same
         }
+
+      
     }
 }

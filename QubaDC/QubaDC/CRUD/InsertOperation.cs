@@ -16,9 +16,9 @@ namespace QubaDC.CRUD
         public String[] ColumnNames { get; set; }
         public String[] ValueLiterals { get; set; }
 
-        public override void Accept(CRUDVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        //public override void Accept(CRUDVisitor visitor)
+        //{
+        //    visitor.Visit(this);
+        //}
     }
 }

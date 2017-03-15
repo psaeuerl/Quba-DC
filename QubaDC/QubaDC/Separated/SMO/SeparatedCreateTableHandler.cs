@@ -25,40 +25,40 @@ namespace QubaDC.Separated.SMO
 
         internal void Handle(CreateTable createTable)
         {
-            //1st start transaction
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction,c) =>
-            {
-                //Create Table
-                String normalCreateTable = SMORenderer.RenderCreateTable(createTable);
+            ////1st start transaction
+            //var con = (MySQLDataConnection)DataConnection;
+            //con.DoTransaction((transaction,c) =>
+            //{
+            //    //Create Table
+            //    String normalCreateTable = SMORenderer.RenderCreateTable(createTable);
 
-                ////Create History Table
-                List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
-                columndefinitions.AddRange(createTable.Columns);
-                columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
-                CreateTable ctHistTable = new CreateTable()
-                { 
-                    Columns = columndefinitions.ToArray(),
-                    Schema = createTable.Schema,
-                    TableName = createTable.TableName + "_hist"
-                };
-                String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
-                //Query Schema, add tables to Schema
-                SchemaInfo xy =  this.schemaManager.GetCurrentSchema(c);
-                Schema x = xy.Schema;
-                if (xy.ID == null)
-                {
-                    x = new Schema();
-                }
+            //    ////Create History Table
+            //    List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
+            //    columndefinitions.AddRange(createTable.Columns);
+            //    columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
+            //    CreateTable ctHistTable = new CreateTable()
+            //    { 
+            //        Columns = columndefinitions.ToArray(),
+            //        Schema = createTable.Schema,
+            //        TableName = createTable.TableName + "_hist"
+            //    };
+            //    String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
+            //    //Query Schema, add tables to Schema
+            //    SchemaInfo xy =  this.schemaManager.GetCurrentSchema(c);
+            //    Schema x = xy.Schema;
+            //    if (xy.ID == null)
+            //    {
+            //        x = new Schema();
+            //    }
   
-                x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                String Statement = this.schemaManager.GetInsertSchemaStatement(x,createTable);
-                //Commit everything
-                this.DataConnection.ExecuteNonQuerySQL(normalCreateTable,c);
-                this.DataConnection.ExecuteNonQuerySQL(histCreateTable,c);
-                this.DataConnection.ExecuteInsert(Statement,c);
-                transaction.Commit();                
-            });
+            //    x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+            //    String Statement = this.schemaManager.GetInsertSchemaStatement(x,createTable);
+            //    //Commit everything
+            //    this.DataConnection.ExecuteNonQuerySQL(normalCreateTable,c);
+            //    this.DataConnection.ExecuteNonQuerySQL(histCreateTable,c);
+            //    this.DataConnection.ExecuteInsert(Statement,c);
+            //    transaction.Commit();                
+            //});
         }
     }
 }

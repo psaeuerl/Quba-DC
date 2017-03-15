@@ -62,14 +62,7 @@ CURRENT_TIMESTAMP
 
         private SchemaInfo ExecuteGetCurrentSchema(Func<String,DataTable> ExecuteQuery)
         {
-            String QueryFormat =
-@"SELECT 
-	`ID`
-    ,`Schema`
-    ,`SMO`
-    ,`Timestamp` 
-FROM `{0}`.qubadcsmotable
-ORDER BY id DESC LIMIT 0, 1";
+            String QueryFormat =  GetSelectFormat() + " LIMIT 0, 1";
             String Query = String.Format(QueryFormat, this.Connection.DataBase);
             DataTable t = ExecuteQuery(Query);
             Guard.StateEqual(true, t.Rows.Count <= 1);
@@ -79,6 +72,11 @@ ORDER BY id DESC LIMIT 0, 1";
             }
             DataRow row = t.Select().First();
 
+            return RowToSchemainfo(row);
+        }
+
+        private static SchemaInfo RowToSchemainfo(DataRow row)
+        {
             return new SchemaInfo()
             {
 
@@ -92,6 +90,26 @@ ORDER BY id DESC LIMIT 0, 1";
         public override SchemaInfo GetCurrentSchema()
         {
             return ExecuteGetCurrentSchema(x => this.Connection.ExecuteQuery(x));          
+        }
+
+        public override SchemaInfo[] GetAllSchemataOrderdByIdDescending()
+        {
+            string QueryFormat = GetSelectFormat();
+            String Query = String.Format(QueryFormat, this.Connection.DataBase);
+            DataTable t = this.Connection.ExecuteQuery(Query);
+            var result = t.Select().Select(x => RowToSchemainfo(x)).ToArray();
+            return result;
+        }
+
+        private static string GetSelectFormat()
+        {
+            return @"SELECT 
+	`ID`
+    ,`Schema`
+    ,`SMO`
+    ,`Timestamp` 
+FROM `{0}`.qubadcsmotable
+ORDER BY id DESC";
         }
     }
 }
