@@ -10,13 +10,74 @@ namespace QubaDC
 {
     public class MySqlSMORenderer : SMORenderer
     {
-    
+        public override string RenderCreateInsertTrigger(CreateTable createTable, CreateTable ctHistTable)
+        {
+            String format =
+        @"
+DELIMITER $$
+CREATE TRIGGER {0}_to{1}_insert
+AFTER INSERT
+ON {2}
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO {3}
+    ({4})
+    VALUES
+    (
+    {5},
+        NOW(),
+        null
+    );
+END $$
+DELIMITER;";
+            //0 => source_table_name
+            //1 => targettable
+            //2 => source_table_identifier
+            //3 => targettable_identifier
+            //4 => targettable columns
+            //5 => NEW.`column`from sourcetabl
+            String trigger = String.Format(format
+                , createTable.TableName
+                , ctHistTable.TableName
+                , GetQuotedTable(createTable)
+                , GetQuotedTable(ctHistTable)
+                , GetQuotedColumns(null,ctHistTable.Columns)
+                , GetQuotedColumns("NEW",createTable.Columns)
+                );
+            return trigger;
+        }
+
+
+        private String GetQuotedColumns(string ColumnIdentifier, ColumnDefinition[] columns)
+        {
+            String prefix = ColumnIdentifier == null ? "" : ColumnIdentifier + ".";
+            var quoatedColumns = columns.Select(x => prefix + GetQuoatedColumns(x)).ToArray();
+            String result = String.Join("," + System.Environment.NewLine, quoatedColumns);
+            return result;
+        }
+
+        private string GetQuoatedColumns(ColumnDefinition x)
+        {
+            return String.Format("`{0}`", x.ColumName);
+        }
+
+        private object GetQuotedTable(CreateTable createTable)
+        {
+            return String.Format("`{0}`.`{1}`", createTable.Schema, createTable.TableName);
+        }
+
+        //CREATE TABLE `development`.`testtable` (
+        //  `idTestTable` INT NOT NULL,
+        // PRIMARY KEY(`idTestTable`));
+
 
         public override string RenderCreateTable(CreateTable ct, Boolean IncludeAdditionalInformation = true)
         {
             String stmt =
 @"CREATE TABLE `{0}`.`{1}` (
 {2}
+{3}
 );
 ";
             String[] columnDefinitions = ct.Columns.Select(x =>
@@ -25,9 +86,17 @@ namespace QubaDC
                 + (x.Nullable ? "NULL" : "NOT NULL") + " "
                 + (IncludeAdditionalInformation ? x.AdditionalInformation : ""))
             .ToArray();
+            String PrimaryKey = "";
+            if(ct.PrimaryKey!=null)
+            {
+                String PKFormat = ", PRIMARY KEY({0})";
+                var cols = ct.PrimaryKey.Select(x => "`" + x + "`");
+                var pkToFormat = String.Join(",",cols);
+                PrimaryKey = String.Format(PKFormat, pkToFormat);                    
+            }
             String columns = String.Join(", " + System.Environment.NewLine, columnDefinitions);
          
-            String result = String.Format(stmt, ct.Schema, ct.TableName, String.Join(","+System.Environment.NewLine, columns));
+            String result = String.Format(stmt, ct.Schema, ct.TableName, String.Join(","+System.Environment.NewLine, columns),PrimaryKey);
             return result;
         }
     }
