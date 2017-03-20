@@ -1,5 +1,6 @@
 ﻿using QubaDC.CRUD;
 using QubaDC.DatabaseObjects;
+using QubaDC.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,21 +16,36 @@ namespace QubaDC.SMO
         public String Schema { get; set; }
 
         public ColumnDefinition[] Columns { get; set; }
+        public string[] PrimaryKey { get; set; }
 
         public override void Accept(SMOVisitor visitor)
         {
             visitor.Visit(this);
         }    
 
-        public TableSchema ToTableSchema()
+        public void ThrowIfNotValid()
         {
-            return new TableSchema()
-            {
-                Columns = this.Columns.Select(x => x.ColumName).ToArray(),
-                Name = TableName,
-                Schema = Schema
-            };
+            Guard.ArgumentNotNullOrWhiteSpace(TableName, nameof(TableName));
+            Guard.ArgumentNotNullOrWhiteSpace(Schema, nameof(Schema));
+            foreach (var x in Columns)
+                x.ThrowIfNotValid();
+            
+            Guard.ArgumentNotNull(PrimaryKey,nameof(PrimaryKey));
+            if (PrimaryKey.Length == 0)
+                return;
+            var NotContained = PrimaryKey.Except(Columns.Select(x => x.ColumName));
+            Guard.StateTrue(NotContained.Count() == 0, "Following PKS are not contained: " + String.Join(",", NotContained));
         }
+
+        //public TableSchema ToTableSchema()
+        //{
+        //    return new TableSchema()
+        //    {
+        //        Columns = this.Columns.Select(x => x.ColumName).ToArray(),
+        //        Name = TableName,
+        //        Schema = Schema
+        //    };
+        //}
 
         public Table ToTable()
         {
@@ -54,5 +70,16 @@ namespace QubaDC.SMO
                  TableAlias = reference
             };
         }
+
+        public TableSchema ToTableSchema()
+        {
+            return new TableSchema()
+            {
+                Columns = this.Columns.Select(x => x.ColumName).ToArray(),
+                Name = TableName,
+                Schema = Schema
+            };
+        }
+
     }
 }
