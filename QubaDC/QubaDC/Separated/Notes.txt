@@ -1,0 +1,23 @@
+﻿PS-2017-03-15
+
+Extracting Default values with the Function: DEFAULT is not supported.
+We tried the following example:
+CREATE TABLE `development`.`autoinc_now_test` (
+  `ICColumn` INT NOT NULL AUTO_INCREMENT,
+  `datetime_insert_now` DATETIME NULL,
+  `datetime_insert_defaulttonull` DATETIME NULL DEFAULT NOW(),
+  PRIMARY KEY (`ICColumn`))
+
+  SELECT DEFAULT(`autoinc_now_test`.`datetime_insert_defaulttonull`) from `development`.`autoinc_now_test`
+
+  The select returns null, although NOW() should be returned.
+
+
+  Design:
+
+  Insert before or after?
+
+  We Design it with after?
+  Why?
+  It is not relevant as all queries that go against the stored data can be queried there.
+  Also this supports default values on the tables
