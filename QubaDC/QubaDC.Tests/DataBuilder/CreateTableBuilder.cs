@@ -19,7 +19,8 @@ namespace QubaDC.Tests.DataBuilder
                 Columns = new ColumnDefinition[] {
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
                     new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
-                }
+                },
+                PrimaryKey = new String[] {"ID"}
             };
         }
 
