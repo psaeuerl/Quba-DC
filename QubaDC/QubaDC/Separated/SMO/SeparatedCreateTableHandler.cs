@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using QubaDC.SMO;
 using QubaDC;
 using QubaDC.DatabaseObjects;
+using QubaDC.Utility;
 
 namespace QubaDC.Separated.SMO
 {
@@ -25,40 +26,54 @@ namespace QubaDC.Separated.SMO
 
         internal void Handle(CreateTable createTable)
         {
-            ////1st start transaction
-            //var con = (MySQLDataConnection)DataConnection;
-            //con.DoTransaction((transaction,c) =>
-            //{
-            //    //Create Table
-            //    String normalCreateTable = SMORenderer.RenderCreateTable(createTable);
+            Guard.StateTrue(createTable.PrimaryKey.Length > 0, "Primary Key Requiered");
 
-            //    ////Create History Table
-            //    List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
-            //    columndefinitions.AddRange(createTable.Columns);
-            //    columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
-            //    CreateTable ctHistTable = new CreateTable()
-            //    { 
-            //        Columns = columndefinitions.ToArray(),
-            //        Schema = createTable.Schema,
-            //        TableName = createTable.TableName + "_hist"
-            //    };
-            //    String histCreateTable = SMORenderer.RenderCreateTable(ctHistTable,true);
-            //    //Query Schema, add tables to Schema
-            //    SchemaInfo xy =  this.schemaManager.GetCurrentSchema(c);
-            //    Schema x = xy.Schema;
-            //    if (xy.ID == null)
-            //    {
-            //        x = new Schema();
-            //    }
-  
-            //    x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-            //    String Statement = this.schemaManager.GetInsertSchemaStatement(x,createTable);
-            //    //Commit everything
-            //    this.DataConnection.ExecuteNonQuerySQL(normalCreateTable,c);
-            //    this.DataConnection.ExecuteNonQuerySQL(histCreateTable,c);
-            //    this.DataConnection.ExecuteInsert(Statement,c);
-            //    transaction.Commit();                
-            //});
+            var con = (MySQLDataConnection)DataConnection;
+            con.DoTransaction((transaction, c) =>
+            {
+                //What to do?
+                //Create Table normal
+                //Create Table Hist
+                //Create Trigger on normal
+                String createBaseTable = SMORenderer.RenderCreateTable(createTable);
+                ////Create History Table
+                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
+                Schema x = xy.Schema;
+                if (xy.ID == null)
+                {
+                    x = new Schema();
+                    xy.ID = 0;
+                 }
+
+
+                List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
+                columndefinitions.AddRange(createTable.Columns);
+                columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
+                CreateTable ctHistTable = new CreateTable()
+                {
+                    Columns = columndefinitions.ToArray(),
+                    Schema = createTable.Schema,
+                    TableName = createTable.TableName + "_" + xy.ID
+                };
+                String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+
+                //INsert Trigger 
+                String trigger = SMORenderer.RenderCreateInsertTrigger(createTable, ctHistTable);
+
+                //Manage Schema Statement
+                x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
+             
+                //Add tables
+                con.ExecuteNonQuerySQL(createBaseTable, c);
+                con.ExecuteNonQuerySQL(createHistTable, c);
+                //Add Trigger
+                con.ExecuteSQLScript(trigger, c);
+                //Store Schema
+                con.ExecuteNonQuerySQL(updateSchema, c);
+                transaction.Commit();
+            });
         }
+
     }
 }
