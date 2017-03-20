@@ -16,7 +16,6 @@ namespace QubaDC.Separated
             {
                  new ColumnDefinition() { ColumName="startts", DataType ="DATETIME(6)", Nullable = false },
                  new ColumnDefinition() { ColumName="endts", DataType ="DATETIME(6)", Nullable = true },
-                 new ColumnDefinition() { ColumName="guid", DataType ="char(36)", Nullable = false }
             };
         }
     }
