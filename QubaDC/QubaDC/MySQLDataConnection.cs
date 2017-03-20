@@ -107,6 +107,7 @@ namespace QubaDC
 
         public override void ExecuteSQLScript(string SQL, DbConnection openconnection)
         {
+            //Otherwise, Delimiter is not support @ MySQL and we need it for Triggers
             MySqlScript m = new MySqlScript((MySql.Data.MySqlClient.MySqlConnection) openconnection, SQL);
             m.Execute();
         }
