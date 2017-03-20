@@ -57,7 +57,7 @@ namespace QubaDC.Tests.Separated
             QBDC.SMOHandler.HandleSMO(t);
             var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables();
             Assert.Contains("baisctable", allTablesAfterCreateTable.Select(x => x.Name));
-            Assert.Contains("baisctable_hist", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("baisctable_1", allTablesAfterCreateTable.Select(x => x.Name));
             var schemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             var schema = schemaInfo.Schema;
             Assert.Equal(1, schema.HistTables.Count());
