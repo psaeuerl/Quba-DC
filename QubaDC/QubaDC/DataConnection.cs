@@ -18,6 +18,8 @@ namespace QubaDC
 
         public abstract void ExecuteNonQuerySQL(string SQL);
         public abstract void ExecuteNonQuerySQL(string SQL, DbConnection openconnection);
+        public abstract void ExecuteSQLScript(string SQL, DbConnection openconnection);
+
 
 
         public abstract TableSchema[] GetAllTables();

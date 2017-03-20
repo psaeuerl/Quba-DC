@@ -101,8 +101,14 @@ namespace QubaDC
         {
                 MySqlCommand com = (MySqlCommand)openconnection.CreateCommand();
                 com.CommandType = System.Data.CommandType.Text;
-                com.CommandText = SQL;
+                com.CommandText = SQL;            
                 com.ExecuteNonQuery();
+        }
+
+        public override void ExecuteSQLScript(string SQL, DbConnection openconnection)
+        {
+            MySqlScript m = new MySqlScript((MySql.Data.MySqlClient.MySqlConnection) openconnection, SQL);
+            m.Execute();
         }
 
         public override TableSchema[] GetAllTables()
