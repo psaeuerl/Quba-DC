@@ -55,7 +55,7 @@ namespace QubaDC.Utility
 
         private static void ThrowStateException<T>(Func<T, Boolean> pre, T value, String Name, String Messge)
         {
-            if (pre(value))
+            if (!pre(value))
             {
                 String msg = String.Format(Messge, Name, value);
                 throw new InvalidOperationException("InvalidState: "+msg);
