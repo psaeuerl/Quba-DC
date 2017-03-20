@@ -24,8 +24,6 @@ namespace QubaDC.DatabaseObjects
                 HistTableSchema = histequivalent.Schema
             });
             this._HistTables.Add(histequivalent);
-            //PS Not sure if i should check here also that the columns got more
-            Guard.StateTrue(table.Name == histequivalent.Name + "_hist", "Table name does not equal histname_hist");
         }
 
         internal Table FindHistTable(Table insertTable)
@@ -35,5 +33,6 @@ namespace QubaDC.DatabaseObjects
             TableSchema h = this._HistTables.Find(x => x.Schema == withHist.HistTableSchema && x.Name == withHist.HistTableName);
             return h.ToTable();
         }
+
     }
 }
