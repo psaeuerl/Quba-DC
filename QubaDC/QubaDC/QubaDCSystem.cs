@@ -7,6 +7,7 @@ using QubaDC.Separated;
 using QubaDC.Utility;
 using QubaDC.SMO;
 using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 
 namespace QubaDC
 {
@@ -59,13 +60,15 @@ namespace QubaDC
             this.QueryStore.Init();
         }
 
-        private void CreateSMOTrackingTableIfNeeded()
+        public void CreateSMOTrackingTableIfNeeded()
         { 
             if(!DataConnection.GetAllTables().Any(x=>x.Name== QubaDCSMOTable))
             {
                 String sql = this.SchemaManager.GetCreateSchemaStatement();
                 Guard.ArgumentTrueForAll<String>(QubaDCSMOColumns, (x) => { return sql.Contains(x); }, "SMO Table Columns");
                 this.DataConnection.ExecuteNonQuerySQL(sql);
+                String insert = this.SchemaManager.GetInsertSchemaStatement(new Schema(), null);
+                this.DataConnection.ExecuteNonQuerySQL(insert);
             }
         }
     
