@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QubaDC.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,12 @@ namespace QubaDC.SMO
         public Boolean Nullable { get; set; }
 
         public String AdditionalInformation { get; set; }
+
+        internal void ThrowIfNotValid()
+        {
+            Guard.ArgumentNotNullOrWhiteSpace(ColumName, nameof(ColumName));
+            Guard.ArgumentNotNullOrWhiteSpace(DataType, nameof(DataType));
+            Guard.ArgumentNotNullOrWhiteSpace(AdditionalInformation, nameof(AdditionalInformation));
+        }
     }
 }
