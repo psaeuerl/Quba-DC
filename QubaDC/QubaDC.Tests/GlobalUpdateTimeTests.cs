@@ -53,7 +53,11 @@ namespace QubaDC.Tests
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
-            Assert.True(tables.Select(x => x.Name.ToLowerInvariant()).Contains(QubaDCSystem.GlobalUpdateTableName));
+            Assert.True(tables.Select(x => x.Name.ToLowerInvariant()).Contains(QubaDCSystem.GlobalUpdateTableName.ToLowerInvariant()));
+            var update = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+            Assert.Null(update);
         }
+
+
     }
 }

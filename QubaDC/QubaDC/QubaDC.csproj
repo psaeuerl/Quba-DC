@@ -72,6 +72,7 @@
     <Compile Include="DatabaseObjects\TableSchema.cs" />
     <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
     <Compile Include="DataConnection.cs" />
+    <Compile Include="GlobalUpdate.cs" />
     <Compile Include="GlobalUpdateTimeManager.cs" />
     <Compile Include="MySQLCrudRenderer.cs" />
     <Compile Include="MySQLGlobalUpdateTimeManager.cs" />

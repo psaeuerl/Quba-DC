@@ -9,5 +9,6 @@ namespace QubaDC
     public abstract class GlobalUpdateTimeManager
     {
         public abstract String GetCreateUpdateTimeTableStatement();
+        public abstract GlobalUpdate GetLatestUpdate();
     }
 }
