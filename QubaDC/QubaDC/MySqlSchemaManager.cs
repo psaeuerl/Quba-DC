@@ -111,5 +111,29 @@ CURRENT_TIMESTAMP
 FROM `{0}`.qubadcsmotable
 ORDER BY id DESC";
         }
+
+        public override string GetInsertToGlobalUpdateTrigger()
+        {
+            String result = String.Format(@"DELIMITER $$
+CREATE TRIGGER `{0}`.qubadcsmotable_to_global_timestamp
+AFTER INSERT
+ON `{0}`.`{1}`
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO `{0}`.`{2}`
+    (
+`Timestamp`,
+`Operation`
+)
+    VALUES
+    (
+        NOW(6),
+        CONCAT('Schemaupdate: ', NEW.ID)
+    );
+END $$
+DELIMITER;", this.Connection.DataBase,QubaDCSystem.QubaDCSMOTable,QubaDCSystem.GlobalUpdateTableName);
+            return result;
+        }
     }
 }

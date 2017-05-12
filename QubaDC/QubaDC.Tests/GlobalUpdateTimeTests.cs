@@ -48,14 +48,31 @@ namespace QubaDC.Tests
         }
 
         [Fact]
-        public void QBDCIniCreatesGlobalTimeStampTable()
+        public void QBDCInitCreatesGlobalTimeStampTable()
         {
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
             Assert.True(tables.Select(x => x.Name.ToLowerInvariant()).Contains(QubaDCSystem.GlobalUpdateTableName.ToLowerInvariant()));
             var update = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-            Assert.Null(update);
+            Assert.NotNull(update);
+            Assert.Equal(1, update.ID);            
+        }
+
+        [Fact]
+        public void SMOCreatesGlobalUpdate()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            var tables = QBDC.DataConnection.GetAllTables();
+            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+
+            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+            Assert.Equal(2, update2.ID);
+            Assert.True(update2.DateTime > update1.DateTime);
         }
 
 

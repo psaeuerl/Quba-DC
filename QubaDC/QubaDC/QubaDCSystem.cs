@@ -65,21 +65,28 @@ namespace QubaDC
         }
 
         public void CreateSMOTrackingTableIfNeeded()
-        { 
-            if(!DataConnection.GetAllTables().Any(x=>x.Name== QubaDCSMOTable))
+        {
+            this.DataConnection.DoTransaction((transaction, c) =>
             {
-                String sql = this.SchemaManager.GetCreateSchemaStatement();
-                Guard.ArgumentTrueForAll<String>(QubaDCSMOColumns, (x) => { return sql.Contains(x); }, "SMO Table Columns");
-                this.DataConnection.ExecuteNonQuerySQL(sql);
-                String insert = this.SchemaManager.GetInsertSchemaStatement(new Schema(), null);
-                this.DataConnection.ExecuteNonQuerySQL(insert);
-            }
+                if (!DataConnection.GetAllTables().Any(x => x.Name == GlobalUpdateTableName))
+                {
+                    String sql = this.GlobalUpdateTimeManager.GetCreateUpdateTimeTableStatement();
+                    this.DataConnection.ExecuteNonQuerySQL(sql, c);
+                }
 
-            if (!DataConnection.GetAllTables().Any(x => x.Name == GlobalUpdateTableName))
-            {
-                String sql = this.GlobalUpdateTimeManager.GetCreateUpdateTimeTableStatement();
-                this.DataConnection.ExecuteNonQuerySQL(sql);
-            }
+                if (!DataConnection.GetAllTables().Any(x => x.Name == QubaDCSMOTable))
+                {
+                    String sql = this.SchemaManager.GetCreateSchemaStatement();
+                    Guard.ArgumentTrueForAll<String>(QubaDCSMOColumns, (x) => { return sql.Contains(x); }, "SMO Table Columns");
+                    this.DataConnection.ExecuteNonQuerySQL(sql, c);
+
+                    String trigger = this.SchemaManager.GetInsertToGlobalUpdateTrigger();
+                    this.DataConnection.ExecuteSQLScript(trigger, c);
+                    String insert = this.SchemaManager.GetInsertSchemaStatement(new Schema(), null);
+                    this.DataConnection.ExecuteNonQuerySQL(insert, c);
+                    transaction.Commit();
+                }
+            });
         }
     
 

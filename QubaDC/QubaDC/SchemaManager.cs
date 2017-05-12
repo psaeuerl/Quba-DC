@@ -19,5 +19,6 @@ namespace QubaDC
 
         public abstract SchemaInfo GetCurrentSchema(DbConnection openConnection);
         public abstract SchemaInfo[] GetAllSchemataOrderdByIdDescending();
+        public abstract string GetInsertToGlobalUpdateTrigger();
     }
 }

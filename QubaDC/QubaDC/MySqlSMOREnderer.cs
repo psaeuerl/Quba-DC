@@ -26,7 +26,7 @@ BEGIN
     VALUES
     (
     {5},
-        NOW(),
+        NOW(6),
         null
     );
 END $$
