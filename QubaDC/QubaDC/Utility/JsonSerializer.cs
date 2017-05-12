@@ -21,5 +21,12 @@ namespace QubaDC.Utility
             object result = JsonConvert.DeserializeObject(obj, settings);
             return (T)result;
         }
+
+        public static T CopyItem<T>(T toCopy)
+        {
+            String s = SerializeObject(toCopy);
+            T result = DeserializeObject<T>(s);
+            return result;
+        }
     }
 }

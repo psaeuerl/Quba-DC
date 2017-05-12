@@ -15,6 +15,7 @@ namespace QubaDC.Tests
                 this.DataConnection,
                   new SeparatedSMOHandler()
                   ,new SeparatedCRUDHandler()
+                , new SeparatedQSSelectHandler()
                 );
             this.QBDCSystem = c;
             //Create Empty Schema

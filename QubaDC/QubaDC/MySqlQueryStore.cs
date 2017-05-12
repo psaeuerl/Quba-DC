@@ -10,9 +10,9 @@ namespace QubaDC
     {
 
 
-        public MySqlQueryStore(MySQLDataConnection dataConnection) : base(dataConnection)
+        public MySqlQueryStore(MySQLDataConnection dataConnection, QueryStoreSelectHandler handler) : base(dataConnection, handler)
         {
-            this.TypedConnection = dataConnection;
+            this.TypedConnection = dataConnection;          
         }
 
         public MySQLDataConnection TypedConnection { get; private set; }

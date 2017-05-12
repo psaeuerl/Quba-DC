@@ -35,6 +35,8 @@ namespace QubaDC
             this.SMORenderer = renderer;
             this.CRUDRenderer = r;
 
+            qs.SchemaManager = manager;
+
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;
             SMOHandler.SMORenderer = this.SMORenderer;

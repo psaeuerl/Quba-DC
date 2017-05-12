@@ -21,7 +21,9 @@ namespace QubaDC.Tests.Separated
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
-                        ,new SeparatedCRUDHandler()
+                        , new SeparatedCRUDHandler()
+                                                 , new SeparatedQSSelectHandler()
+
                        );
             this.QBDC = c;
             //Create Empty Schema
@@ -64,6 +66,6 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(1, schema.Tables.Count());
         }
 
-      
+
     }
 }

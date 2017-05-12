@@ -22,6 +22,7 @@ namespace QubaDC.Tests.Separated
                         con,
                          new SeparatedSMOHandler()
                          ,new SeparatedCRUDHandler()
+                         , new SeparatedQSSelectHandler()
                        );
             this.QBDC = c;
             //Create Empty Schema
@@ -52,6 +53,7 @@ namespace QubaDC.Tests.Separated
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.Visit(c2);
             ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s =  SelectOperation.FromCreateTable(t);
             var result = QBDC.QueryStore.HandleSelect(s);
             ////Insert 2-3 Rows

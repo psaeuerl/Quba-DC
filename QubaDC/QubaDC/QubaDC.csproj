@@ -52,6 +52,7 @@
     <Compile Include="CRUDVisitor.cs" />
     <Compile Include="CRUD\ColumnReference.cs" />
     <Compile Include="CRUD\ColumnRigthHandOperand.cs" />
+    <Compile Include="CRUD\ColumnSorting.cs" />
     <Compile Include="CRUD\ComparisionOperator.cs" />
     <Compile Include="CRUD\CRUDOperation.cs" />
     <Compile Include="CRUD\CRUDRenderer.cs" />
@@ -80,11 +81,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QubaDCSystem.cs" />
     <Compile Include="QueryStore.cs" />
+    <Compile Include="QueryStoreSelectHandler.cs" />
     <Compile Include="SchemaInfo.cs" />
     <Compile Include="SchemaManager.cs" />
     <Compile Include="Separated\CRUD\SeparatedInsertHandler.cs" />
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
+    <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />
     <Compile Include="Separated\SeparatedSMOHandler.cs" />

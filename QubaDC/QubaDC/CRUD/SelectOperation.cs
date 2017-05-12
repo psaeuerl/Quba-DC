@@ -27,6 +27,8 @@ namespace QubaDC.CRUD
 
         public JoinedTable[] JoinedTables { get; set; } = new JoinedTable[] { };
 
+        public ColumnSorting[] SortingColumns { get; set; } = new ColumnSorting[] { };
+
 
         public override void Accept(CRUDVisitor visitor)
         {
