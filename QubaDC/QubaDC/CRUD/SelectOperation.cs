@@ -26,12 +26,12 @@ namespace QubaDC.CRUD
         public FromTable FromTable { get; set; }
 
         public JoinedTable[] JoinedTables { get; set; } = new JoinedTable[] { };
-        
-        
-        //public override void Accept(CRUDVisitor visitor)
-        //{
-        //    visitor.Visit(this);
-        //}
+
+
+        public override void Accept(CRUDVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
 
         public static SelectOperation FromCreateTable(CreateTable t)
         {

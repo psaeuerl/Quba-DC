@@ -24,12 +24,12 @@ namespace QubaDC
         };
 
         public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, 
-            //CRUDVisitor separatedCRUDHandler, 
+            CRUDVisitor separatedCRUDHandler, 
             QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
-            //this.CRUDHandler = separatedCRUDHandler;
+            this.CRUDHandler = separatedCRUDHandler;
             this.QueryStore = qs;
             this.SchemaManager = manager;
             this.SMORenderer = renderer;
@@ -39,9 +39,9 @@ namespace QubaDC
             SMOHandler.SchemaManager = this.SchemaManager;
             SMOHandler.SMORenderer = this.SMORenderer;
 
-            //CRUDHandler.CRUDRenderer = this.CRUDRenderer;
-            //CRUDHandler.SchemaManager = this.SchemaManager;
-            //CRUDHandler.DataConnection = this.DataConnection;
+            CRUDHandler.CRUDRenderer = this.CRUDRenderer;
+            CRUDHandler.SchemaManager = this.SchemaManager;
+            CRUDHandler.DataConnection = this.DataConnection;
         }
 
        
@@ -75,7 +75,7 @@ namespace QubaDC
 
         public SMOVisitor SMOHandler { get; private set; }
         public DataConnection DataConnection { get; private set; }
-        //public CRUDVisitor CRUDHandler { get; private set; }
+        public CRUDVisitor CRUDHandler { get; private set; }
         public QueryStore QueryStore { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }

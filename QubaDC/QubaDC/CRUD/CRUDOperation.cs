@@ -8,7 +8,7 @@ namespace QubaDC.CRUD
 {
     public abstract class CRUDOperation
     {
-       // public abstract void Accept(CRUDVisitor visitor);
+        public abstract void Accept(CRUDVisitor visitor);
 
     }
 }

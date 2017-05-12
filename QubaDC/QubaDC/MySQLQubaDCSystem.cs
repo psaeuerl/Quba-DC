@@ -9,10 +9,10 @@ namespace QubaDC
     public class MySQLQubaDCSystem : QubaDCSystem
     {
         public MySQLQubaDCSystem(MySQLDataConnection con, SMOVisitor separatedSMOHandler
-            //, CRUDVisitor separatedCRUDHandler
+            , CRUDVisitor separatedCRUDHandler
             )
             : base(con, separatedSMOHandler, 
-                  //separatedCRUDHandler, 
+                  separatedCRUDHandler, 
                   new MySqlQueryStore(con),
                   new MySqlSchemaManager(con),
                   new MySqlSMORenderer(),

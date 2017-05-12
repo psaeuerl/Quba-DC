@@ -14,7 +14,7 @@ namespace QubaDC.Tests
             QubaDCSystem c = new MySQLQubaDCSystem(
                 this.DataConnection,
                   new SeparatedSMOHandler()
-                  //,new SeparatedCRUDHandler()
+                  ,new SeparatedCRUDHandler()
                 );
             this.QBDCSystem = c;
             //Create Empty Schema

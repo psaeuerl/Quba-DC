@@ -21,3 +21,28 @@ CREATE TABLE `development`.`autoinc_now_test` (
   Why?
   It is not relevant as all queries that go against the stored data can be queried there.
   Also this supports default values on the tables
+
+
+  PS-2016-03-21
+
+  ABout Requierement R9 - Recommendation:
+ 1.  Ensure stable sorting and normalise query (R5 ).
+ 2.  Compute query hash (R4 ). 
+ 3.  Open transaction and lock tables (I)
+ 4.  Execute (original) query and retrieve subset. 
+ 5.  Assign the last global update timestamp to the query (R7 ). 
+ 6.  Close transaction and unlock tables (A) 
+ 7.  Compute result set verication hash (R6 ). 
+ 8.  Decision process: 
+	(a)  Decide if the query requires a new PID (R8 ).  
+	If so: (b)  Persist metadata and query (R9 )
+
+We go away from this one on the following:
+1.) Done (normalized + sorted)
+3.) Open Transaction is done, but no locks on the tables
+Why?
+Actually we can perform the whole query on the history tables (not disturbing the current ongoing transactions in the operative system).
+If, however, we would like to perform the query on the actual data we have the problem of completly determining the time it is executed.
+Therefor we would need the Locking Table.
+
+

@@ -21,7 +21,7 @@ namespace QubaDC.Tests.Separated
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
-                         //,new SeparatedCRUDHandler()
+                         ,new SeparatedCRUDHandler()
                        );
             this.QBDC = c;
             //Create Empty Schema
@@ -46,15 +46,14 @@ namespace QubaDC.Tests.Separated
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
-            Assert.False(true);
             //Insert some data
-            //InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase,"1","'asdf'");
-            //QBDC.CRUDHandler.Visit(c);
-            //InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
-            //QBDC.CRUDHandler.Visit(c2);
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.Visit(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            QBDC.CRUDHandler.Visit(c2);
             ////Make a Request
-            //SelectOperation s =  SelectOperation.FromCreateTable(t);
-            //QBDC.CRUDHandler.Visit(s);
+            SelectOperation s =  SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.HandleSelect(s);
             ////Insert 2-3 Rows
             ////Replay Request
             ////=> Result should be the same

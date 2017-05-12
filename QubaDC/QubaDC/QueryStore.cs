@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QubaDC.CRUD;
 
 namespace QubaDC
 {
@@ -38,5 +39,10 @@ namespace QubaDC
         }
 
         protected abstract string GetCreateQueryStoreTableStatement();
+
+        public object HandleSelect(SelectOperation s)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

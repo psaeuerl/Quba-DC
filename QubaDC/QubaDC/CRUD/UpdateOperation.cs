@@ -9,9 +9,9 @@ namespace QubaDC.CRUD
     public class UpdateOperation : CRUDOperation
     {
         ////TODO
-        //public override void Accept(CRUDVisitor visitor)
-        //{
-        //    visitor.Visit(this);
-        //}
+        public override void Accept(CRUDVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

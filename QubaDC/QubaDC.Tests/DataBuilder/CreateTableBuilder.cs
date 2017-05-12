@@ -31,7 +31,7 @@ namespace QubaDC.Tests.DataBuilder
             {
                 ColumnNames = t.GetColumnNames(),
                 InsertTable = t.ToTable(),
-                ValueLiterals = new String[] { "1", "'asfd'" }
+                ValueLiterals = new String[] {id, value}
             };
         }
     }
