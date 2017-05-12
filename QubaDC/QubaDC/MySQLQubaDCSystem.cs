@@ -16,7 +16,8 @@ namespace QubaDC
                   new MySqlQueryStore(con, selecthandler),
                   new MySqlSchemaManager(con),
                   new MySqlSMORenderer(),
-                  new MySQLCrudRenderer())
+                  new MySQLCrudRenderer(),
+                  new MySQLGlobalUpdateTimeManager(con))
         {
             this.TypedConnection = con; ;
         }

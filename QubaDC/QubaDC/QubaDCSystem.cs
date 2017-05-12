@@ -14,6 +14,7 @@ namespace QubaDC
     public abstract class QubaDCSystem
     {
         public const String QubaDCSMOTable = "QubaDCSMOTable";
+        public const String GlobalUpdateTableName = "QubaDCGlobalUpdate";
 
         public readonly static String[] QubaDCSMOColumns = new string[]
         {
@@ -25,7 +26,7 @@ namespace QubaDC
 
         public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, 
             CRUDVisitor separatedCRUDHandler, 
-            QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r)
+            QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r, GlobalUpdateTimeManager globalTimeManager)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
@@ -34,6 +35,7 @@ namespace QubaDC
             this.SchemaManager = manager;
             this.SMORenderer = renderer;
             this.CRUDRenderer = r;
+            this.GlobalUpdateTimeManager = globalTimeManager;
 
             qs.SchemaManager = manager;
 
@@ -72,6 +74,12 @@ namespace QubaDC
                 String insert = this.SchemaManager.GetInsertSchemaStatement(new Schema(), null);
                 this.DataConnection.ExecuteNonQuerySQL(insert);
             }
+
+            if (!DataConnection.GetAllTables().Any(x => x.Name == GlobalUpdateTableName))
+            {
+                String sql = this.GlobalUpdateTimeManager.GetCreateUpdateTimeTableStatement();
+                this.DataConnection.ExecuteNonQuerySQL(sql);
+            }
         }
     
 
@@ -82,5 +90,6 @@ namespace QubaDC
         public SchemaManager SchemaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
         public CRUDRenderer CRUDRenderer { get; private set; }
+        public GlobalUpdateTimeManager GlobalUpdateTimeManager { get; private set; }
     }
 }

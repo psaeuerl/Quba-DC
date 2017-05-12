@@ -63,6 +63,7 @@
     <Compile Include="DataBuilder\CreateTableBuilder.cs" />
     <Compile Include="DataConnectionTests.cs" />
     <Compile Include="Fixtures\MySqlDBFixture.cs" />
+    <Compile Include="GlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fixtures\SeparatedQBDCFixture.cs" />
