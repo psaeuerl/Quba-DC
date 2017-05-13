@@ -11,20 +11,20 @@ using Xunit;
 
 namespace QubaDC.Tests
 {
-    public class GlobalUpdateTimeTests : IClassFixture<MySqlDBFixture>, IDisposable
+    public class SeparatedGlobalUpdateTimeTests : IClassFixture<MySqlDBFixture>, IDisposable
     {
         private string currentDatabase;
 
         private SchemaManager SchemaManager;
 
-        public GlobalUpdateTimeTests(MySqlDBFixture fixture)
+        public SeparatedGlobalUpdateTimeTests(MySqlDBFixture fixture)
         {
             MySQLDataConnection con = fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
                         , new SeparatedCRUDHandler()
-                                                 , new SeparatedQSSelectHandler()
+                        , new SeparatedQSSelectHandler()
 
                        );
             this.QBDC = c;
