@@ -15,7 +15,7 @@ namespace QubaDC
             String format =
         @"
 DELIMITER $$
-CREATE TRIGGER {0}_to{1}_insert
+CREATE TRIGGER {8}.{0}_to{1}_insert
 AFTER INSERT
 ON {2}
 FOR EACH ROW
@@ -28,6 +28,14 @@ BEGIN
     {5},
         NOW(6),
         null
+    );
+
+    INSERT INTO {6}
+    (`Timestamp`, `Operation`)
+    VALUES
+    (
+      NOW(6),
+      CONCAT('Insert on table: ','{7}')
     );
 END $$
 DELIMITER;";
@@ -42,8 +50,11 @@ DELIMITER;";
                 , ctHistTable.TableName
                 , GetQuotedTable(createTable)
                 , GetQuotedTable(ctHistTable)
-                , GetQuotedColumns(null,ctHistTable.Columns)
-                , GetQuotedColumns("NEW",createTable.Columns)
+                , GetQuotedColumns(null, ctHistTable.Columns)
+                , GetQuotedColumns("NEW", createTable.Columns)
+                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
+                , GetQuotedTable(createTable)
+                , Quote(ctHistTable.Schema)
                 );
             return trigger;
         }
@@ -59,12 +70,22 @@ DELIMITER;";
 
         private string GetQuoatedColumns(ColumnDefinition x)
         {
-            return String.Format("`{0}`", x.ColumName);
+            return Quote(x.ColumName);
+        }
+
+        private String Quote(String x)
+        {
+            return String.Format("`{0}`", x);
         }
 
         private object GetQuotedTable(CreateTable createTable)
         {
-            return String.Format("`{0}`.`{1}`", createTable.Schema, createTable.TableName);
+            return GetQuotedTable(createTable.Schema,createTable.TableName);
+        }
+
+        private  object GetQuotedTable(String schema, String name )
+        {
+            return String.Format("`{0}`.`{1}`", schema, name);
         }
 
         //CREATE TABLE `development`.`testtable` (

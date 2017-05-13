@@ -69,6 +69,7 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteNonQuerySQL(createHistTable, c);
                 //Add Trigger
                 con.ExecuteSQLScript(trigger, c);
+
                 //Store Schema
                 con.ExecuteNonQuerySQL(updateSchema, c);
                 transaction.Commit();

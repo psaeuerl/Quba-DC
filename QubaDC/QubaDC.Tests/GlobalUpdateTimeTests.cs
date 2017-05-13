@@ -1,4 +1,5 @@
-﻿using QubaDC.Separated;
+﻿using QubaDC.CRUD;
+using QubaDC.Separated;
 using QubaDC.SMO;
 using QubaDC.Tests.DataBuilder;
 using System;
@@ -75,6 +76,26 @@ namespace QubaDC.Tests
             Assert.True(update2.DateTime > update1.DateTime);
         }
 
-        //TODO => Insert writes
+
+        [Fact]
+        public void InsertCreatesGlobalUpdate()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            var tables = QBDC.DataConnection.GetAllTables();
+            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+
+            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.Visit(c);
+            var update3 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            Assert.Equal(3, update3.ID);
+            Assert.True(update2.DateTime > update1.DateTime);
+        }
     }
 }
