@@ -12,15 +12,21 @@ namespace QubaDC.Tests.DataBuilder
     {
         public static CreateTable BuildBasicTable(String schema)
         {
+            return BuildBasicTable(schema, "bisctable");
+            
+        }
+
+        public static CreateTable BuildBasicTable(String schema,String name)
+        {
             return new CreateTable()
             {
-                TableName = "baisctable",
+                TableName = name,
                 Schema = schema,
                 Columns = new ColumnDefinition[] {
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
                     new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
                 },
-                PrimaryKey = new String[] {"ID"}
+                PrimaryKey = new String[] { "ID" }
             };
         }
 

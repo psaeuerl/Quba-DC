@@ -45,7 +45,7 @@ namespace QubaDC
 VALUES(
 '{1}',
 '{2}',
-CURRENT_TIMESTAMP
+NOW(3)
 );";
             String argDb = this.Connection.DataBase;
             String argSchema = JsonSerializer.SerializeObject(schema);
@@ -128,12 +128,36 @@ BEGIN
 )
     VALUES
     (
-        NOW(6),
+        NOW(3),
         CONCAT('Schemaupdate: ', NEW.ID)
     );
 END $$
 DELIMITER;", this.Connection.DataBase,QubaDCSystem.QubaDCSMOTable,QubaDCSystem.GlobalUpdateTableName);
             return result;
+        }
+
+        public override SchemaInfo GetSchemaActiveAt(DateTime dateTime)
+        {
+
+            String select = 
+@"SELECT * FROM `{0}`.`{1}`
+where timestamp = (
+
+Select MAX(timestamp) FROM `{0}`.`{1}`
+WHERE timestamp <= {2}
+)";
+            String dtLiteral = MySQLDialectHelper.RenderDateTime(dateTime);
+            String Query = String.Format(select, this.Connection.DataBase, QubaDCSystem.QubaDCSMOTable, dtLiteral);
+            DataTable t = this.Connection.ExecuteQuery(Query);
+            if (t.Rows.Count == 0)
+            {
+                return new SchemaInfo();
+            }
+            if (t.Rows.Count > 1)
+                throw new InvalidOperationException("GetSchemaAt returned more than one row");
+            DataRow row = t.Select().First();
+
+            return RowToSchemainfo(row);
         }
     }
 }

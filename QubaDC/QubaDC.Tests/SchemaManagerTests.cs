@@ -1,5 +1,8 @@
 ﻿using QubaDC.DatabaseObjects;
 using QubaDC.Separated;
+using QubaDC.SMO;
+using QubaDC.Tests.DataBuilder;
+using QubaDC.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +58,27 @@ namespace QubaDC.Tests
             Assert.Null(Schema.SMO);
             Assert.NotNull(Schema);
             Assert.NotNull(Schema.TimeOfCreation);
+        }
+
+        [Fact]
+        public void GetSchemaActiveAtWorks()
+        {
+            this.QBDC.CreateSMOTrackingTableIfNeeded();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+
+            CreateTable t2 = CreateTableBuilder.BuildBasicTable(this.currentDatabase,"t2");
+            QBDC.SMOHandler.HandleSMO(t2);
+
+
+            var schemata = this.SchemaManager.GetAllSchemataOrderdByIdDescending();
+            foreach(var schema in schemata)
+            {
+                SchemaInfo schemaat = this.SchemaManager.GetSchemaActiveAt(schema.TimeOfCreation);
+                String schemaser = JsonSerializer.SerializeObject(schema);
+                String schemaatset = JsonSerializer.SerializeObject(schemaat);
+                Assert.Equal(schemaser, schemaatset);
+            }
         }
     }
 }

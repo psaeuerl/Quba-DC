@@ -38,6 +38,7 @@ namespace QubaDC
             this.GlobalUpdateTimeManager = globalTimeManager;
 
             qs.SchemaManager = manager;
+            qs.TimeManager = globalTimeManager;
 
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;

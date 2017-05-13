@@ -26,7 +26,7 @@ BEGIN
     VALUES
     (
     {5},
-        NOW(6),
+        NOW(3),
         null
     );
 
@@ -34,7 +34,7 @@ BEGIN
     (`Timestamp`, `Operation`)
     VALUES
     (
-      NOW(6),
+      NOW(3),
       CONCAT('Insert on table: ','{7}')
     );
 END $$

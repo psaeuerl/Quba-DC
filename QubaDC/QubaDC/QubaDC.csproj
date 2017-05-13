@@ -75,6 +75,7 @@
     <Compile Include="GlobalUpdate.cs" />
     <Compile Include="GlobalUpdateTimeManager.cs" />
     <Compile Include="MySQLCrudRenderer.cs" />
+    <Compile Include="MySQLDialectHelper.cs" />
     <Compile Include="MySQLGlobalUpdateTimeManager.cs" />
     <Compile Include="MySqlSMORenderer.cs" />
     <Compile Include="MySQLDataConnection.cs" />

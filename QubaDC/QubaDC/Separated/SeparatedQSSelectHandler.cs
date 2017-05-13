@@ -10,7 +10,7 @@ namespace QubaDC.Separated
 {
     public class SeparatedQSSelectHandler : QueryStoreSelectHandler
     {
-        public override void HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con)
+        public override void HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.
@@ -28,9 +28,12 @@ namespace QubaDC.Separated
 
 
             //What to do here:
+            //0.) Get last updated Timestamp
+            var lastGlobalUpdate =  timemanager.GetLatestUpdate();
             //a.) copy the operation
             var newOperation = JsonSerializer.CopyItem(s);
             //b.) change all tables to the respective history ones
+            SchemaInfo SchemaInfo = manager.GetSchemaActiveAt(lastGlobalUpdate.DateTime);
             foreach(var selectedTable in newOperation.GetAllSelectedTables())
             {
                 
