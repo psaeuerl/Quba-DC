@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace QubaDC.CRUD
 {
-    public class DeleteOperation : CRUDOperation
+    public class DeleteOperation 
     {
-        ////TODO
-        public override void Accept(CRUDVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+
     }
 }

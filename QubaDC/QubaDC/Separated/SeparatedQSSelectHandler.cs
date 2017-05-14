@@ -106,9 +106,11 @@ namespace QubaDC.Separated
                 TimeStampRestrictions.Add(newOperation.Restriction);
 
             newOperation.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
-            //d.) execute it and return
+            //d.) render it and return
 
-            cRUDHandler.Visit(newOperation);
+            String select= cRUDHandler.RenderSelectOperation(newOperation);
+
+            //f.) Execute it
             throw new NotImplementedException();
         }
     }

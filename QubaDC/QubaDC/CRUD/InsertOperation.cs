@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QubaDC.CRUD
 {
-    public class InsertOperation : CRUDOperation
+    public class InsertOperation 
     {
 
         //INSERT INTO <TABLE> <COLUMNS> <VALUES>
@@ -16,9 +16,6 @@ namespace QubaDC.CRUD
         public String[] ColumnNames { get; set; }
         public String[] ValueLiterals { get; set; }
 
-        public override void Accept(CRUDVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+
     }
 }

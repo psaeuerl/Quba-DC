@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
+using System.Data;
 
 namespace QubaDC
 {
@@ -13,20 +14,19 @@ namespace QubaDC
         public DataConnection DataConnection { get; set; }
         public SchemaManager SchemaManager { get; set; }
 
-        internal abstract void Visit(DeleteOperation deleteOperation);
+        public abstract String Visit(DeleteOperation deleteOperation);
 
-        internal abstract void Visit(UpdateOperation updateOperation);
-
-
-        internal abstract void Visit(SelectOperation selectOperation);
+        public abstract String Visit(UpdateOperation updateOperation);
 
 
-        internal abstract void Visit(InsertOperation insertOperation);
+        public abstract String RenderSelectOperation(SelectOperation selectOperation);
+
+        public abstract DataTable ExecuteSelectOperaiton(SelectOperation sel);
 
 
-        public void Visit(CRUDOperation crudOP)
-        {
-            crudOP.Accept(this);
-        }
+
+        public abstract void HandleInsert(InsertOperation insertOperation);
+
+
     }
 }

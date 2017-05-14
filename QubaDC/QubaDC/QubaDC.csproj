@@ -56,7 +56,6 @@
     <Compile Include="Restrictions\ColumnOperand.cs" />
     <Compile Include="CRUD\ColumnSorting.cs" />
     <Compile Include="CRUD\ComparisionOperator.cs" />
-    <Compile Include="CRUD\CRUDOperation.cs" />
     <Compile Include="CRUD\CRUDRenderer.cs" />
     <Compile Include="CRUD\DeleteOperation.cs" />
     <Compile Include="CRUD\FromTable.cs" />

@@ -19,7 +19,7 @@ namespace QubaDC.CRUD
     //Additionally ... WhereConditions are AND concatenated
     //Can be easily extended for it
     //
-    public class SelectOperation : CRUDOperation
+    public class SelectOperation 
     {
 
         public ColumnReference[] Columns { get; set; }
@@ -32,10 +32,7 @@ namespace QubaDC.CRUD
 
         public Restriction Restriction { get; set; } = null;
 
-        public override void Accept(CRUDVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+
 
         public static SelectOperation FromCreateTable(CreateTable t)
         {

@@ -5,30 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
 using QubaDC.Separated.CRUD;
+using System.Data;
 
 namespace QubaDC.Separated
 {
     public class SeparatedCRUDHandler : CRUDVisitor
     {
 
-        internal override void Visit(SelectOperation selectOperation)
+        public override String RenderSelectOperation(SelectOperation selectOperation)
         {
             SeparatedSelectHandler h = new SeparatedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-            h.HandleSelect(selectOperation);
+            String select = h.HandleSelect(selectOperation);
+            return select;
         }
 
-        internal override void Visit(InsertOperation insertOperation)
+        public override DataTable ExecuteSelectOperaiton(SelectOperation sel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void HandleInsert(InsertOperation insertOperation)
         {
             SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             h.HandleInsert(insertOperation);
         }
 
-        internal override void Visit(UpdateOperation updateOperation)
+        public override String Visit(UpdateOperation updateOperation)
         {
             throw new NotImplementedException();
         }
 
-        internal override void Visit(DeleteOperation deleteOperation)
+        public override String Visit(DeleteOperation deleteOperation)
         {
             throw new NotImplementedException();
         }

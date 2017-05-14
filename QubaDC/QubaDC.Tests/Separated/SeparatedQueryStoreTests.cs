@@ -49,9 +49,9 @@ namespace QubaDC.Tests.Separated
             QBDC.SMOHandler.HandleSMO(t);
             //Insert some data
             InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.Visit(c);
+            QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
-            QBDC.CRUDHandler.Visit(c2);
+            QBDC.CRUDHandler.HandleInsert(c2);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s =  SelectOperation.FromCreateTable(t);

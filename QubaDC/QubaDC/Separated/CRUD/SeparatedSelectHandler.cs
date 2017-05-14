@@ -20,8 +20,11 @@ namespace QubaDC.Separated.CRUD
         public DataConnection DataConnection { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
 
-        internal void HandleSelect(SelectOperation selectOperation)
+        internal String HandleSelect(SelectOperation selectOperation)
         {
+
+            return null;
+            ;
             //    //What happens here?
             //    //a.) Reformulate Query
             //    TargetTable[] targetTables = GenerateTargetTables(selectOperation);

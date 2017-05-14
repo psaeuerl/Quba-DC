@@ -91,7 +91,7 @@ namespace QubaDC.Tests
             var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
 
             InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.Visit(c);
+            QBDC.CRUDHandler.HandleInsert(c);
             var update3 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
 
             Assert.Equal(3, update3.ID);
