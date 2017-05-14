@@ -12,5 +12,30 @@ namespace QubaDC.CRUD
 
         public abstract string SerializeDateTime(DateTime now);
         internal abstract string SerializeString(string v);
+
+        internal string Quote(string tableReference)
+        {
+            return String.Format("`{0}`", tableReference);
+        }
+
+        internal string RenderJoinType(JoinType join)
+        {
+            switch (join)
+            {
+                case JoinType.InnerJoin:
+                    return "INNER JOIN";
+                case JoinType.LeftJoin:
+                    return "LEFT JOIN";
+                case JoinType.RightJoin:
+                    return "RIGHT JOIN";
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        internal string RenderRestriction(Restriction joinCondition)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

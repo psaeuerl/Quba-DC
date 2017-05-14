@@ -22,80 +22,65 @@ namespace QubaDC.Separated.CRUD
 
         internal String HandleSelect(SelectOperation selectOperation)
         {
+            String Format =
+@"SELECT
+{0}
+FROM {1}
+{2}
+{3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Group By
 
+            String columns = RenderColumns(selectOperation.Columns);
+            String fromPart = RenderFromPart(selectOperation);
             return null;
-            ;
-            //    //What happens here?
-            //    //a.) Reformulate Query
-            //    TargetTable[] targetTables = GenerateTargetTables(selectOperation);
-            //    SchemaInfo[] schemas = SchemaManager.GetAllSchemataOrderdByIdDescending();
-            //    foreach (var schemaInfo in schemas)
-            //    {
-            //        ApplySchemaChangesToTargetTables(schemaInfo, targetTables);
-            //    }
-            //    String query = RenderSelect(selectOperation, targetTables);
-            //    //b.) Execute Query
 
-            //    //c.) Calculate the value and all
-            //    //d.) Store in QS
-
-
-
-            //What happes in the Insert Operation?
-
-            //a => get the current schema
-            //b => build insert statement for the history table
-            ////Insert both
-            //this.DataConnection.DoTransaction((trans, con) =>
-            //{
-            //    String insertIntoBaseTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
-
-            //    SchemaInfo s = this.SchemaManager.GetCurrentSchema(con);
-            //    Table histTable = s.Schema.FindHistTable(insertOperation.InsertTable);
-
-            //    List<String> histcolumns = new List<string>();
-            //    histcolumns.AddRange(insertOperation.ColumnNames);
-            //    histcolumns.AddRange(SeparatedConstants.GetHistoryTableColumns().Select(x => x.ColumName));
-            //    String[] histColumnsFinal = histcolumns.ToArray();
-
-            //    List<String> histValues = new List<string>();
-            //    histValues.AddRange(insertOperation.ValueLiterals);
-            //    histValues.AddRange(new String[] {
-            //    CRUDRenderer.SerializeDateTime(DateTime.Now),
-            //       "NULL",
-            //       CRUDRenderer.SerializeString(Guid.NewGuid().ToString())
-            //    });
-            //    String[] histValuesFinal = histValues.ToArray();
-
-            //    String insertIntoHistTable = this.CRUDRenderer.RenderInsert(histTable, histColumnsFinal, histValuesFinal);
-            //    this.DataConnection.ExecuteQuery(insertIntoBaseTable, con);
-            //    this.DataConnection.ExecuteQuery(insertIntoHistTable, con);
-            //    trans.Commit();
-            //});
         }
 
-        //private string RenderSelect(SelectOperation selectOperation, TargetTable[] targetTables)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private string RenderFromPart(SelectOperation selectOperation)
+        {
+            String table = RenderFromTable(selectOperation.FromTable);
+            var parts = selectOperation.JoinedTables.Select(x => RenderJoinedTable(x));
+            var joined = String.Join(System.Environment.NewLine, parts);
+            var result = String.Join(System.Environment.NewLine, table, joined);
+            return result;
+        }
 
-        //private void ApplySchemaChangesToTargetTables(SchemaInfo schemaInfo, TargetTable[] targetTables)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private String RenderJoinedTable(JoinedTable x)
+        {            
+            String Format = "{0} {1} {2}";
+            //0 => condition
+            //1 => tablename
+            //2 => joinrestriction
+            String joinType = CRUDRenderer.RenderJoinType(x.Join);
+            String table = CRUDRenderer.Quote(x.TableSchema) + "."
+                 + CRUDRenderer.Quote(x.TableName) +
+                 (x.TableAlias == null ? "" :
+                 "AS " + CRUDRenderer.Quote(x.TableAlias));
 
-        //private TargetTable[] GenerateTargetTables(SelectOperation selectOperation)
-        //{
-        //    var SelectTables = selectOperation.GetAllSelectedTables();
-        //    //Assign Columns
-        //    var tableWithColumns = SelectTables.Select(x =>
-        //    new
-        //    {
-        //        Columns = selectOperation.Columns.Where(y => y.TableReference == x.TableAlias).ToArray(),
-        //        Table = x
-        //    });
-        //    TargetTable[] result = tableWithColumns.Select(x => TargetTable.FromSelectTableWithColumns(x.Columns, x.Table)).ToArray();
-        //    return result;
-        //}
+            String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
+            String result = String.Format(Format, joinType, table, rest);
+            return result;
+        }
+
+
+        private string RenderFromTable(FromTable fromTable)
+        {
+            return CRUDRenderer.Quote(fromTable.TableSchema) + "."
+                 + CRUDRenderer.Quote(fromTable.TableName) +
+                 (fromTable.TableAlias == null ? "" :
+                 "AS " + CRUDRenderer.Quote(fromTable.TableAlias));
+        }
+
+        private string RenderColumns(ColumnReference[] columns)
+        {
+            var cols = columns.Select(x => RenderColumn(x));
+            var res = String.Join(", ", cols);
+            return res;
+        }
+
+        private String RenderColumn(ColumnReference x)
+        {
+            return CRUDRenderer.Quote(x.TableReference) +"."+ CRUDRenderer.Quote(x.ColumnName);
+
+        }
     }
 }
