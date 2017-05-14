@@ -1,7 +1,7 @@
 ﻿namespace QubaDC.CRUD
 {
 
-    public class ColumnRigthHandOperand : RightHandOperand
+    public class ColumnOperand : RestrictionOperand
     {
         public ColumnReference Column { get; set; }
     }

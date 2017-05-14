@@ -9,13 +9,15 @@ namespace QubaDC.Separated
 {
     public class SeparatedConstants
     {
+        public const String StartTS = "startts";
+        public const String EndTS = "endts";
 
         public static IEnumerable<ColumnDefinition> GetHistoryTableColumns()
         {
             return new ColumnDefinition[]
             {
-                 new ColumnDefinition() { ColumName="startts", DataType ="DATETIME(6)", Nullable = false },
-                 new ColumnDefinition() { ColumName="endts", DataType ="DATETIME(6)", Nullable = true },
+                 new ColumnDefinition() { ColumName=StartTS, DataType ="DATETIME(3)", Nullable = false },
+                 new ColumnDefinition() { ColumName=EndTS, DataType ="DATETIME(3)", Nullable = true },
             };
         }
     }

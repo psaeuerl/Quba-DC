@@ -14,7 +14,7 @@ namespace QubaDC
     public abstract class QubaDCSystem
     {
         public const String QubaDCSMOTable = "QubaDCSMOTable";
-        public const String GlobalUpdateTableName = "QubaDCGlobalUpdate";
+        public const String GlobalUpdateTableName = "QubaDCGlobalUpdate";        
 
         public readonly static String[] QubaDCSMOColumns = new string[]
         {
@@ -39,6 +39,7 @@ namespace QubaDC
 
             qs.SchemaManager = manager;
             qs.TimeManager = globalTimeManager;
+            qs.CRUDHandler = separatedCRUDHandler;
 
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;

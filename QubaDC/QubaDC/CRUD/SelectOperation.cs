@@ -30,6 +30,8 @@ namespace QubaDC.CRUD
         public ColumnSorting[] SortingColumns { get; set; } = new ColumnSorting[] { };
 
 
+        public Restriction Restriction { get; set; } = null;
+
         public override void Accept(CRUDVisitor visitor)
         {
             visitor.Visit(this);

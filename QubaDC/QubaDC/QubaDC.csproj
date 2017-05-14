@@ -49,9 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RestrictionOperand.cs" />
+    <Compile Include="Restrictions\AndRestriction.cs" />
     <Compile Include="CRUDVisitor.cs" />
     <Compile Include="CRUD\ColumnReference.cs" />
-    <Compile Include="CRUD\ColumnRigthHandOperand.cs" />
+    <Compile Include="Restrictions\ColumnOperand.cs" />
     <Compile Include="CRUD\ColumnSorting.cs" />
     <Compile Include="CRUD\ComparisionOperator.cs" />
     <Compile Include="CRUD\CRUDOperation.cs" />
@@ -61,13 +63,10 @@
     <Compile Include="CRUD\InsertOperation.cs" />
     <Compile Include="CRUD\JoinedTable.cs" />
     <Compile Include="CRUD\JoinType.cs" />
-    <Compile Include="CRUD\LiteralRigthHandOperand.cs" />
-    <Compile Include="CRUD\RightHandOperand.cs" />
     <Compile Include="CRUD\SelectOperation.cs" />
     <Compile Include="CRUD\SelectTable.cs" />
     <Compile Include="CRUD\Table.cs" />
     <Compile Include="CRUD\UpdateOperation.cs" />
-    <Compile Include="CRUD\WhereCondition.cs" />
     <Compile Include="DatabaseObjects\Schema.cs" />
     <Compile Include="DatabaseObjects\TableSchema.cs" />
     <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
@@ -86,6 +85,14 @@
     <Compile Include="QubaDCSystem.cs" />
     <Compile Include="QueryStore.cs" />
     <Compile Include="QueryStoreSelectHandler.cs" />
+    <Compile Include="Restriction.cs" />
+    <Compile Include="Restrictions\ColumnRestrictionOperand.cs" />
+    <Compile Include="Restrictions\DateTimeRestrictionOperand.cs" />
+    <Compile Include="Restrictions\LiteralOperand.cs" />
+    <Compile Include="Restrictions\OperatorRestriction.cs" />
+    <Compile Include="Restrictions\OrRestriction.cs" />
+    <Compile Include="Restrictions\RestrictionOperator.cs" />
+    <Compile Include="Restrictions\ValueRestrictionOperand.cs" />
     <Compile Include="SchemaInfo.cs" />
     <Compile Include="SchemaManager.cs" />
     <Compile Include="Separated\CRUD\SeparatedInsertHandler.cs" />

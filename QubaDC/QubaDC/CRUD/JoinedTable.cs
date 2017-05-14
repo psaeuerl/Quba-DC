@@ -4,6 +4,6 @@
     public class JoinedTable : SelectTable
     {
         public JoinType Join { get; set; }
-        public WhereCondition[] WhereConditions { get; set; }
+        public Restriction JoinCondition { get; set; }
     }
 }

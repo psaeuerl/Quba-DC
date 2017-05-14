@@ -9,6 +9,6 @@ namespace QubaDC
 {
     public abstract class QueryStoreSelectHandler
     {
-        public abstract void HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager);
+        public abstract void HandleSelect(SelectOperation s, SchemaManager schemaManager, DataConnection dataConnection, GlobalUpdateTimeManager timeManager, CRUDVisitor cRUDHandler);
     }
 }

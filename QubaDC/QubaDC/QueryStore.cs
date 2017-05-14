@@ -27,6 +27,7 @@ namespace QubaDC
         public SchemaManager SchemaManager { get; set; }
 
         public GlobalUpdateTimeManager TimeManager { get; set; }
+        public CRUDVisitor CRUDHandler { get; internal set; }
 
         public QueryStore(DataConnection dataConnection,QueryStoreSelectHandler handler)
         {
@@ -66,7 +67,7 @@ namespace QubaDC
             //2.Compute query hash (R4). 
             //Open if needed .... really ... query is stored completly
             //3-4-5-6 handeld here
-          //  SelectHandler.HandleSelect(s, SchemaManager,DataConnection);
+            SelectHandler.HandleSelect(s, SchemaManager,DataConnection, TimeManager, CRUDHandler);
             //7.Compute result set verication hash(R6). 
             GenerteResultHash();
 
