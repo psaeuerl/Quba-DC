@@ -12,7 +12,7 @@ namespace QubaDC.Separated
 {
     public class SeparatedQSSelectHandler : QueryStoreSelectHandler
     {
-        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager, CRUDVisitor cRUDHandler)
+        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager, CRUDVisitor cRUDHandler,QueryStore qs)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.
@@ -133,7 +133,8 @@ namespace QubaDC.Separated
                 normResult = con.ExecuteQuery(select, c);
                 hashTable = con.ExecuteQuery(selectHash, c);
                 hash = hashTable.Select().First().Field<String>(0);
-                String insert = cRUDHandler.CRUDRenderer.RenderQueryStoreInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid);
+                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid);
+                con.ExecuteInsert(insert, c);
             });
 
             hash = hashTable.Select().First().Field<String>(0);

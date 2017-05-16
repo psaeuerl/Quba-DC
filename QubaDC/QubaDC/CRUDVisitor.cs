@@ -27,7 +27,5 @@ namespace QubaDC
 
         public abstract void HandleInsert(InsertOperation insertOperation);
         internal abstract string RenderHashSelect(SelectOperation newOperation);
-
-
     }
 }

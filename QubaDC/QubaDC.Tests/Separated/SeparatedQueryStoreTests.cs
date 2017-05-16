@@ -55,7 +55,7 @@ namespace QubaDC.Tests.Separated
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s =  SelectOperation.FromCreateTable(t);
-            var result = QBDC.QueryStore.HandleSelect(s);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
             ////Insert 2-3 Rows
             ////Replay Request
             ////=> Result should be the same

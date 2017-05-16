@@ -10,7 +10,7 @@ namespace QubaDC
 {
     public abstract class QueryStore
     {
-        public const String QueryStoreTable = "QueryStore";
+        public const String QueryStoreTable = "querystore";
         public static readonly String[] QueryStoreTableColumns = new String[]
         {
             "ID",
@@ -50,7 +50,7 @@ namespace QubaDC
 
         protected abstract string GetCreateQueryStoreTableStatement();
 
-        public object HandleSelect(SelectOperation s)
+        public object ExecuteSelect(SelectOperation s)
         {
             //What to do here?
             //FROM Identification of Reproducible Subsets for Data Citation, Sharing and Re-Use
@@ -70,16 +70,12 @@ namespace QubaDC
             //2.Compute query hash (R4). 
             //Open if needed .... really ... query is stored completly
             //3-4-5-6-7-8 handeld here
-            QueryStoreSelectResult res = SelectHandler.HandleSelect(opInProgress, SchemaManager,DataConnection, TimeManager, CRUDHandler);
+            QueryStoreSelectResult res = SelectHandler.HandleSelect(opInProgress, SchemaManager,DataConnection, TimeManager, CRUDHandler,this);
 
 
 
             return null;
         }
-
-        internal abstract int StoreResult(QueryStoreSelectResult res);
-
-
 
         private void EnsureSorting(SelectOperation s)
         {
@@ -89,5 +85,7 @@ namespace QubaDC
             sortings.AddRange(sorits);
             s.SortingColumns = sortings.ToArray();
         }
+
+        internal abstract string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid);
     }
 }

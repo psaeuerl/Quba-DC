@@ -69,26 +69,6 @@ namespace QubaDC
             return result;
         }
 
-        internal override String RenderQueryStoreInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid)
-        {
-//            INSERT INTO `separatedquerystoretests_41f0ec4c4e67467eb7f95fdda7cfd54a`.`querystore`
-//(`ID`,
-//`Query`,
-//`QuerySerialized`,
-//`ReWrittenQuery`,
-//`ReWrittenQuerySerialized`,
-//`Timestamp`,
-//`Hash`,
-//`GUID`)
-//VALUES
-//(<{ ID: }>,
-//<{ Query: }>,
-//<{ QuerySerialized: }>,
-//<{ ReWrittenQuery: }>,
-//<{ ReWrittenQuerySerialized: }>,
-//<{ Timestamp: }>,
-//<{ Hash: }>,
-//<{ GUID: }>);
-        }
+
     }
 }
