@@ -21,16 +21,24 @@ namespace QubaDC
         {
 
             String Statemnet =
-   @"CREATE TABLE `"+this.TypedConnection.DataBase+@"`.`querystore` (
+   @"CREATE TABLE `"+this.TypedConnection.DataBase+ @"`.`querystore` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `Query` MEDIUMTEXT NOT NULL,
+  `QuerySerialized` MEDIUMTEXT NOT NULL,
   `ReWrittenQuery` MEDIUMTEXT NOT NULL,
-  `Timestamp` DATETIME(6) NULL,
-  `Checkvalue` MEDIUMTEXT NOT NULL,
-  `SchemaVersionIssued` INT NOT NULL,
+  `ReWrittenQuerySerialized` MEDIUMTEXT NOT NULL,
+  `Timestamp` DATETIME(3) NULL,
+  `Hash` MEDIUMTEXT NOT NULL,
+  `GUID` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`ID`));";
             return Statemnet;
 
+        }
+
+        internal override int StoreResult(QueryStoreSelectResult res)
+        {
+            ;
+            throw new NotImplementedException();
         }
     }
 }

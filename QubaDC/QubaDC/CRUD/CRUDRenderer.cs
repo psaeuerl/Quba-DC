@@ -33,9 +33,8 @@ namespace QubaDC.CRUD
             }
         }
 
-        internal string RenderRestriction(Restriction joinCondition)
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract string RenderRestriction(Restriction joinCondition);
+
+        internal abstract String RenderQueryStoreInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid);
     }
 }

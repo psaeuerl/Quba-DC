@@ -31,8 +31,7 @@ namespace QubaDC.CRUD
 
 
         public Restriction Restriction { get; set; } = null;
-
-
+        public bool RenderHashColumn { get; internal set; }
 
         public static SelectOperation FromCreateTable(CreateTable t)
         {

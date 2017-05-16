@@ -9,5 +9,10 @@ namespace QubaDC.Restrictions
     public class DateTimeRestrictionOperand : RestrictionOperand
     {
         public DateTime Value { get; set; }
+        public override T Accept<T>(RestrictionTreeTraverser<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
     }
 }

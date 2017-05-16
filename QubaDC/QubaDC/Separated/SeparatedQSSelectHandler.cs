@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using QubaDC.CRUD;
 using QubaDC.Utility;
 using QubaDC.Restrictions;
+using System.Data;
 
 namespace QubaDC.Separated
 {
     public class SeparatedQSSelectHandler : QueryStoreSelectHandler
     {
-        public override void HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager, CRUDVisitor cRUDHandler)
+        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, GlobalUpdateTimeManager timemanager, CRUDVisitor cRUDHandler)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.
@@ -106,12 +107,48 @@ namespace QubaDC.Separated
                 TimeStampRestrictions.Add(newOperation.Restriction);
 
             newOperation.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
+
+            //c.2) add the hash-column to it
+            newOperation.RenderHashColumn = true;
+
             //d.) render it and return
 
             String select= cRUDHandler.RenderSelectOperation(newOperation);
 
+            String originalSerialized = JsonSerializer.SerializeObject(s);
+            String originalrenderd = cRUDHandler.RenderSelectOperation(s);
+
+            String RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
+
+            String selectHash = cRUDHandler.RenderHashSelect(newOperation);
+
             //f.) Execute it
-            throw new NotImplementedException();
+            DataTable normResult = null;
+            DataTable hashTable = null;
+            String hash = null;
+            Guid guid = Guid.NewGuid();
+            String time = cRUDHandler.CRUDRenderer.SerializeDateTime(queryTime);
+            con.DoTransaction((trans, c) =>
+            {
+                normResult = con.ExecuteQuery(select, c);
+                hashTable = con.ExecuteQuery(selectHash, c);
+                hash = hashTable.Select().First().Field<String>(0);
+                String insert = cRUDHandler.CRUDRenderer.RenderQueryStoreInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid);
+            });
+
+            hash = hashTable.Select().First().Field<String>(0);
+            var execResult = new QueryStoreSelectResult()
+            {
+                RewrittenSerialized = JsonSerializer.SerializeObject(newOperation),
+                RewrittenRenderd = select,
+                Result = normResult,
+                TimeStampOfExecution = queryTime
+                , Hash = hash
+                , GUID = guid
+
+            };
+            return execResult;
         }
+
     }
 }

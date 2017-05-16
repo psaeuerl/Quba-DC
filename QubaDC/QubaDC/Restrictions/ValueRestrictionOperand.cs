@@ -9,5 +9,10 @@ namespace QubaDC.Restrictions
     public class ValueRestrictionOperand  : RestrictionOperand
     {
         public String Value { get; set; }
+
+        public override T Accept<T>(RestrictionTreeTraverser<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 }

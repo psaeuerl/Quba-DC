@@ -12,5 +12,9 @@ namespace QubaDC.Restrictions
         public RestrictionOperator Op { get; set; }
         public RestrictionOperand RHS { get; set; }
 
+        public override T Accept<T>(RestrictionTreeTraverser<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace QubaDC.Separated
         public override String RenderSelectOperation(SelectOperation selectOperation)
         {
             SeparatedSelectHandler h = new SeparatedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-            String select = h.HandleSelect(selectOperation);
+            String select = h.HandleSelect(selectOperation,false);
             return select;
         }
 
@@ -39,5 +39,15 @@ namespace QubaDC.Separated
         {
             throw new NotImplementedException();
         }
+
+        internal override string RenderHashSelect(SelectOperation newOperation)
+        {
+            SeparatedSelectHandler h = new SeparatedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleSelect(newOperation, true);
+            return select;
+
+        }
+
+
     }
 }

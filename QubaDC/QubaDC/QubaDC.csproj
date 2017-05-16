@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MySQLRestrictionVisitor.cs" />
+    <Compile Include="QueryStoreSelectResult.cs" />
     <Compile Include="RestrictionOperand.cs" />
     <Compile Include="Restrictions\AndRestriction.cs" />
     <Compile Include="CRUDVisitor.cs" />
@@ -85,11 +87,11 @@
     <Compile Include="QueryStore.cs" />
     <Compile Include="QueryStoreSelectHandler.cs" />
     <Compile Include="Restriction.cs" />
-    <Compile Include="Restrictions\ColumnRestrictionOperand.cs" />
     <Compile Include="Restrictions\DateTimeRestrictionOperand.cs" />
     <Compile Include="Restrictions\LiteralOperand.cs" />
     <Compile Include="Restrictions\OperatorRestriction.cs" />
     <Compile Include="Restrictions\OrRestriction.cs" />
+    <Compile Include="RestrictionTreeTraverser.cs" />
     <Compile Include="Restrictions\RestrictionOperator.cs" />
     <Compile Include="Restrictions\ValueRestrictionOperand.cs" />
     <Compile Include="SchemaInfo.cs" />

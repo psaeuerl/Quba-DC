@@ -20,19 +20,58 @@ namespace QubaDC.Separated.CRUD
         public DataConnection DataConnection { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
 
-        internal String HandleSelect(SelectOperation selectOperation)
+        internal String HandleSelect(SelectOperation selectOperation,Boolean RenderAsHash)
         {
             String Format =
 @"SELECT
 {0}
 FROM {1}
 {2}
-{3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Group By
-
-            String columns = RenderColumns(selectOperation.Columns);
+{3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
+            String columns = "";
+            if (!RenderAsHash)
+                columns = RenderColumns(selectOperation.Columns);
+            else
+                columns = this.RenderAsHash(selectOperation.Columns);
             String fromPart = RenderFromPart(selectOperation);
-            return null;
+            String wherePart = RenderWherePart(selectOperation.Restriction);
+            String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
+            String select = String.Format(Format, columns, fromPart, wherePart, OrderBy);
+            return select;
 
+        }
+
+        private string RenderAsHash(ColumnReference[] columns)
+        {
+            var cols = columns.Select(x => RenderColumn(x)).Select(x => "MD5(" + x + ")").ToArray();
+            var res = String.Join(", ", cols);
+            String sel = String.Format("MD5( GROUP_CONCAT( CONCAT_WS('#',{0}) SEPARATOR '#' ) )", res);
+            return sel;
+        }
+
+        private string RenderOrderBy(ColumnSorting[] sortingColumns)
+        {
+            String[] sortings = sortingColumns.Select(x => RenderSorintg(x)).ToArray();
+            String result = String.Join(", ", sortings);
+            if (result == "")
+                return result;
+            return "ORDER BY "+result;            
+        }
+
+        private String RenderSorintg(ColumnSorting x)
+        {
+            String asc = x.SortAscending ? "ASC" : "DESC";
+            String result = RenderColumn(x.Column) + " " + asc;
+            return result;
+        }
+
+        private string RenderWherePart(Restriction restriction)
+        {
+            String rest = CRUDRenderer.RenderRestriction(restriction);
+            if (rest != null)
+                return "WHERE " + rest;
+            else
+                return "";
         }
 
         private string RenderFromPart(SelectOperation selectOperation)
@@ -67,7 +106,7 @@ FROM {1}
             return CRUDRenderer.Quote(fromTable.TableSchema) + "."
                  + CRUDRenderer.Quote(fromTable.TableName) +
                  (fromTable.TableAlias == null ? "" :
-                 "AS " + CRUDRenderer.Quote(fromTable.TableAlias));
+                 " AS " + CRUDRenderer.Quote(fromTable.TableAlias));
         }
 
         private string RenderColumns(ColumnReference[] columns)

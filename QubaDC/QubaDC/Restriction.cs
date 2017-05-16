@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QubaDC.Restrictions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace QubaDC
 {
     public abstract class Restriction
     {
+        public abstract T Accept<T>(RestrictionTreeTraverser<T> visitor);
     }
 }

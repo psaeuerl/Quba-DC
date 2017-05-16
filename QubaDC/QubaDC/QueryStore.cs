@@ -15,9 +15,11 @@ namespace QubaDC
         {
             "ID",
             "Query",
+            "QuerySerialized",
             "ReWrittenQuery",
+            "ReWrittenQuerySerialized",
             "Timestamp",
-            "Checkvalue"
+            "Hash"
         };
 
         private DataConnection DataConnection;
@@ -62,36 +64,30 @@ namespace QubaDC
             //8.Decision process: (a)Decide if the query requires a new PID
             //(R8).If so: (b)Persist metadata and query(R9)
 
+            SelectOperation opInProgress = JsonSerializer.CopyItem<SelectOperation>(s);
             //1.Ensure stable sorting and normalise query(R5). 
-            EnsureSorting(s);
+            EnsureSorting(opInProgress);
             //2.Compute query hash (R4). 
             //Open if needed .... really ... query is stored completly
-            //3-4-5-6 handeld here
-            SelectHandler.HandleSelect(s, SchemaManager,DataConnection, TimeManager, CRUDHandler);
-            //7.Compute result set verication hash(R6). 
-            GenerteResultHash();
+            //3-4-5-6-7-8 handeld here
+            QueryStoreSelectResult res = SelectHandler.HandleSelect(opInProgress, SchemaManager,DataConnection, TimeManager, CRUDHandler);
 
-            //8.Decision process: 
-            //(a)Decide if the query requires a new PID (R8)
-            //If so: (b)Persist metadata and query     (R9)
-            //Approach here => always store
-            StoreResult();
+
+
             return null;
         }
 
-        private void StoreResult()
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract int StoreResult(QueryStoreSelectResult res);
 
-        private void GenerteResultHash()
-        {
-            throw new NotImplementedException();
-        }
+
 
         private void EnsureSorting(SelectOperation s)
         {
-            ;//TODO
+            var notcontained = s.Columns.Where(x => !s.SortingColumns.Any(y => y.Column.IsTheSame(x))).ToArray(); ;//TODO
+            var sorits = notcontained.Select(x => new ColumnSorting() { Column = x, SortAscending = true });
+            List<ColumnSorting> sortings = new List<ColumnSorting>(s.SortingColumns);
+            sortings.AddRange(sorits);
+            s.SortingColumns = sortings.ToArray();
         }
     }
 }
