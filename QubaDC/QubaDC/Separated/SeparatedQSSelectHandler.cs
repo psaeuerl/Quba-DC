@@ -121,7 +121,8 @@ namespace QubaDC.Separated
             String RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
 
             String selectHash = cRUDHandler.RenderHashSelect(newOperation);
-
+            String selectHashSerialized = cRUDHandler.RenderHashSelect(newOperation);
+            
             //f.) Execute it
             DataTable normResult = null;
             DataTable hashTable = null;
@@ -133,11 +134,12 @@ namespace QubaDC.Separated
                 normResult = con.ExecuteQuery(select, c);
                 hashTable = con.ExecuteQuery(selectHash, c);
                 hash = hashTable.Select().First().Field<String>(0);
-                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid);
-                con.ExecuteInsert(insert, c);
+                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid,selectHash, selectHashSerialized);
+               long? id = con.ExecuteInsert(insert, c);
+                System.Diagnostics.Debug.WriteLine(id.Value);
+                trans.Commit();
             });
 
-            hash = hashTable.Select().First().Field<String>(0);
             var execResult = new QueryStoreSelectResult()
             {
                 RewrittenSerialized = JsonSerializer.SerializeObject(newOperation),
@@ -151,5 +153,37 @@ namespace QubaDC.Separated
             return execResult;
         }
 
+        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs,DataConnection con)
+        {
+            String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
+            DataTable t = con.ExecuteQuery(selectQueryStoreROw);
+            if (t.Rows.Count != 1)
+                throw new InvalidOperationException("Expected to get 1 Row, got: " + t.Rows.Count + " Could not do rexecue for guid: " + gUID.ToString());
+            var row = t.Select().First();
+
+            String hash = row.Field<String>("Hash");
+            String query = row.Field<String>("ReWrittenQuerySerialized");
+            String querySerialized = row.Field<String>("HashSelectSerialized");
+
+            DataTable normaResult = null;
+            DataTable hashTable = null;
+            con.DoTransaction((trans, c) =>
+            {
+
+                hashTable = con.ExecuteQuery(querySerialized, c);
+                String currentHash = hashTable.Select().First().Field<String>(0);
+                if (currentHash != hash)
+                    throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal");
+                normaResult = con.ExecuteQuery(query, c);
+                trans.Commit();
+            });
+
+            return new QueryStoreReexecuteResult()
+            {
+                GUID = gUID,
+                Hash = hash,
+                Result = normaResult
+            };
+        }
     }
 }

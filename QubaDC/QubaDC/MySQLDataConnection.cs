@@ -145,7 +145,7 @@ namespace QubaDC
             long inserted = cmd.ExecuteNonQuery();
             long newId = cmd.LastInsertedId;
             var yx = cmd.UpdatedRowSource;
-            return lastinsertedBefore == newId? new long?(newId) : null;
+            return newId;
         }
 
         public override DataTable ExecuteQuery(string SQL, DbConnection openconnection)

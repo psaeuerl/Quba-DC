@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MySQLRestrictionVisitor.cs" />
+    <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />
     <Compile Include="RestrictionOperand.cs" />
     <Compile Include="Restrictions\AndRestriction.cs" />

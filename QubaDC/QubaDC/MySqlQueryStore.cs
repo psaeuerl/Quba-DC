@@ -16,11 +16,34 @@ namespace QubaDC
 
         public MySQLDataConnection TypedConnection { get; private set; }
 
+        internal override string RenderSelectForQueryStore(Guid gUID)
+        {
+            String query = @"SELECT `querystore`.`ID`,
+    `querystore`.`Query`,
+    `querystore`.`QuerySerialized`,
+    `querystore`.`ReWrittenQuery`,
+    `querystore`.`ReWrittenQuerySerialized`,
+    `querystore`.`Timestamp`,
+    `querystore`.`Hash`,
+    `querystore`.`HashSelect`,
+    `querystore`.`HashSelectSerialized`,
+    `querystore`.`GUID`
+FROM `{0}`.`{1}`
+WHERE `querystore`.`GUID` = '{2}';
+";
+            String guid = gUID.ToString();
+            String schema = this.TypedConnection.DataBase;
+            String table = QueryStore.QueryStoreTable;
+
+            String result = String.Format(query, schema, table, guid);
+            return result;            
+        }
+
         protected override string GetCreateQueryStoreTableStatement()
         {
 
             String Statemnet =
-   @"CREATE TABLE `"+this.TypedConnection.DataBase+ @"`.`"+QueryStore.QueryStoreTable+@"` (
+   @"CREATE TABLE `"+this.TypedConnection.DataBase+ @"`.`"+QueryStore.QueryStoreTable+ @"` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `Query` MEDIUMTEXT NOT NULL,
   `QuerySerialized` MEDIUMTEXT NOT NULL,
@@ -28,13 +51,15 @@ namespace QubaDC
   `ReWrittenQuerySerialized` MEDIUMTEXT NOT NULL,
   `Timestamp` DATETIME(3) NULL,
   `Hash` MEDIUMTEXT NOT NULL,
+  `HashSelectSerialized` MEDIUMTEXT NOT NULL,
+  `HashSelect` MEDIUMTEXT NOT NULL,
   `GUID` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`ID`));";
             return Statemnet;
 
         }
 
-        internal override string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid)
+        internal override string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid, String hashselect, String hashselectserialized)
         {
             String insert = @"INSERT INTO `{0}`.`{1}`
 (
@@ -44,6 +69,8 @@ namespace QubaDC
 `ReWrittenQuerySerialized`,
 `Timestamp`,
 `Hash`,
+`HashSelect`,
+`HashSelectSerialized`,
 `GUID`)
 VALUES
 ('{2}'
@@ -52,18 +79,22 @@ VALUES
 ,'{5}'
 ,{6}
 ,'{7}'
+,'{10}'
+,'{9}'
 ,'{8}');";
 
             String result = String.Format(insert,
-                this.TypedConnection.DataBase, 
-                QueryStore.QueryStoreTable, 
-                originalrenderd.Replace("'","\\'").Replace(System.Environment.NewLine," "), 
+                this.TypedConnection.DataBase,
+                QueryStore.QueryStoreTable,
+                originalrenderd.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 originalSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 rewrittenSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 select.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
-                time, 
+                time,
                 hash.Replace("'", "\\'"),
-                guid.ToString());
+                guid.ToString(),
+                hashselect.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
+                hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "));
             return result;
         }
 

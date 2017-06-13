@@ -19,6 +19,8 @@ namespace QubaDC
             "ReWrittenQuery",
             "ReWrittenQuerySerialized",
             "Timestamp",
+            "HashSelect",
+            "HashSelectSerialized",
             "Hash"
         };
 
@@ -50,7 +52,7 @@ namespace QubaDC
 
         protected abstract string GetCreateQueryStoreTableStatement();
 
-        public object ExecuteSelect(SelectOperation s)
+        public QueryStoreSelectResult ExecuteSelect(SelectOperation s)
         {
             //What to do here?
             //FROM Identification of Reproducible Subsets for Data Citation, Sharing and Re-Use
@@ -73,8 +75,14 @@ namespace QubaDC
             QueryStoreSelectResult res = SelectHandler.HandleSelect(opInProgress, SchemaManager,DataConnection, TimeManager, CRUDHandler,this);
 
 
+            return res;
+        }
 
-            return null;
+
+        public QueryStoreReexecuteResult ReExecuteSelect(Guid gUID)
+        {
+            QueryStoreReexecuteResult res =SelectHandler.ReExecuteSelectFor(gUID, this,this.DataConnection);
+            return res;
         }
 
         private void EnsureSorting(SelectOperation s)
@@ -86,6 +94,7 @@ namespace QubaDC
             s.SortingColumns = sortings.ToArray();
         }
 
-        internal abstract string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid);
+        internal abstract string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, String time, string hash, Guid guid,string hashquery, string hashqueryserialized);
+        internal abstract string RenderSelectForQueryStore(Guid gUID);
     }
 }
