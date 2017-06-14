@@ -59,6 +59,9 @@ namespace QubaDC.Separated.SMO
 
                 //INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(createTable, ctHistTable);
+                //Delete Trigger
+                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable, ctHistTable);
+
 
                 //Manage Schema Statement
                 x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
@@ -69,6 +72,7 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteNonQuerySQL(createHistTable, c);
                 //Add Trigger
                 con.ExecuteSQLScript(trigger, c);
+                con.ExecuteSQLScript(deleteTrigger, c);
 
                 //Store Schema
                 con.ExecuteNonQuerySQL(updateSchema, c);

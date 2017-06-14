@@ -97,6 +97,7 @@
     <Compile Include="Restrictions\ValueRestrictionOperand.cs" />
     <Compile Include="SchemaInfo.cs" />
     <Compile Include="SchemaManager.cs" />
+    <Compile Include="Separated\CRUD\SeparatedDeleteHandler.cs" />
     <Compile Include="Separated\CRUD\SeparatedInsertHandler.cs" />
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
