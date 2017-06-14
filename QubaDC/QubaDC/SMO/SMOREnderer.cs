@@ -11,5 +11,6 @@ namespace QubaDC.SMO
         public abstract String RenderCreateTable(CreateTable ct, Boolean RemoveAdditionalColumnInfos=false);
 
         public abstract string RenderCreateInsertTrigger(CreateTable createTable, CreateTable ctHistTable);
+        internal abstract string RenderCreateDeleteTrigger(CreateTable createTable, CreateTable ctHistTable);
     }
 }
