@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.Restrictions;
 using QubaDC.SMO;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,35 @@ namespace QubaDC.Tests.DataBuilder
                 InsertTable = t.ToTable(),
                 ValueLiterals = new String[] {id, value}
             };
+        }
+
+        public static DeleteOperation GetBasicTableDelete(string currentdatabase, string id, string schema)
+        {
+            CreateTable t = CreateTableBuilder.BuildBasicTable(currentdatabase);
+            return new DeleteOperation()
+            {
+
+                Table = t.ToTable(),
+                Restriction = new AndRestriction()
+                {
+                    Restrictions = new Restriction[]
+                     {
+                          new OperatorRestriction()
+                          {
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "ID", TableReference ="bisctable" } },
+                                 Op = RestrictionOperator.Equals,
+                                 RHS = new LiteralOperand() { Literal = id }
+                          },
+                                                    new OperatorRestriction()
+                          {
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "Schema", TableReference ="bisctable" } },
+                                 Op = RestrictionOperator.Equals,
+                                 RHS = new LiteralOperand() { Literal = schema }
+                          }
+                     }
+                }
+            };
+
         }
     }
 }

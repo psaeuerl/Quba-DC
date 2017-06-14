@@ -42,7 +42,7 @@ namespace QubaDC.Tests.Separated
         }
 
         [Fact]
-        public void ReexecutingWorks()
+        public void ReexecutingAfterInsertWorks()
         {
             //Create Basic Table
             QBDC.Init();
@@ -71,6 +71,48 @@ namespace QubaDC.Tests.Separated
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
 
             AssertResults(result, result2);
+
+            //Check that reexecuting select produces different hash (ensures that delete  was executed)
+
+            var resultAfterInsert = QBDC.QueryStore.ExecuteSelect(s);
+
+            Assert.NotEqual(resultAfterInsert.Hash, result.Hash);
+        }
+
+        [Fact]
+        public void ReexecutingAfterDeleteWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            QBDC.CRUDHandler.HandleInsert(c2);
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+            //Delete one row
+            DeleteOperation c3 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleDeletOperation(c3);
+
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            AssertResults(result, result2);
+
+            //Check that reexecuting select produces different hash (ensures that delete  was executed)
+
+            var resultAfterDelete = QBDC.QueryStore.ExecuteSelect(s);
+
+            Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
+
+
+
         }
 
         private void AssertResults(QueryStoreSelectResult result, QueryStoreReexecuteResult result2)
