@@ -14,18 +14,17 @@ namespace QubaDC
         public DataConnection DataConnection { get; set; }
         public SchemaManager SchemaManager { get; set; }
 
-        public abstract String Visit(DeleteOperation deleteOperation);
+        public abstract void HandleDeletOperation(DeleteOperation deleteOperation);
 
         public abstract String Visit(UpdateOperation updateOperation);
 
 
-        public abstract String RenderSelectOperation(SelectOperation selectOperation);
-
-        public abstract DataTable ExecuteSelectOperaiton(SelectOperation sel);
-
 
 
         public abstract void HandleInsert(InsertOperation insertOperation);
+
+        public abstract String RenderSelectOperation(SelectOperation selectOperation);
+
         internal abstract string RenderHashSelect(SelectOperation newOperation);
     }
 }

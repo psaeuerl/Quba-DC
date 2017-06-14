@@ -19,11 +19,6 @@ namespace QubaDC.Separated
             return select;
         }
 
-        public override DataTable ExecuteSelectOperaiton(SelectOperation sel)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void HandleInsert(InsertOperation insertOperation)
         {
             SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
@@ -35,9 +30,10 @@ namespace QubaDC.Separated
             throw new NotImplementedException();
         }
 
-        public override String Visit(DeleteOperation deleteOperation)
+        public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            throw new NotImplementedException();
+            SeparatedDeleteHandler h = new SeparatedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleDelete(deleteOperation);
         }
 
         internal override string RenderHashSelect(SelectOperation newOperation)
