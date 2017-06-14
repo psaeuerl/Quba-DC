@@ -8,6 +8,8 @@ namespace QubaDC.CRUD
 {
     public class DeleteOperation 
     {
+        public Table Table { get; set; }
 
+        public Restriction Restriction { get; set; } = null;
     }
 }
