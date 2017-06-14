@@ -33,6 +33,7 @@ namespace QubaDC.CRUD
             }
         }
 
+        internal abstract string RenderDelete(Table table, Restriction restriction);
         internal abstract string RenderRestriction(Restriction joinCondition);
 
     }

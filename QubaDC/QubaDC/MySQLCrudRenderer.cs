@@ -69,6 +69,15 @@ namespace QubaDC
             return result;
         }
 
+        internal override string RenderDelete(Table table, Restriction restriction)
+        {
+            String restrictions = RenderRestriction(restriction);
+            String restPart = String.IsNullOrWhiteSpace(restrictions) ? "" : "WHERE " + restrictions;
+            String tableRef = PrepareTable(table);
 
+            String baseDelete = "DELETE FROM {0} {1}";
+            String deleteResult = String.Format(baseDelete, tableRef, restPart);
+            return deleteResult;
+        }
     }
 }
