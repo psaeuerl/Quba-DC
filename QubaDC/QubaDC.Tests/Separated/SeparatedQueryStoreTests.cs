@@ -42,7 +42,7 @@ namespace QubaDC.Tests.Separated
         }
 
         [Fact]
-        public void CreateTableWorks()
+        public void ReexecutingWorks()
         {
             //Create Basic Table
             QBDC.Init();
