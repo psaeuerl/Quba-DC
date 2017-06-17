@@ -11,9 +11,10 @@ namespace QubaDC.Tests.DataBuilder
 {
     public class CreateTableBuilder
     {
+        public const String BasicTableName = "basictable";
         public static CreateTable BuildBasicTable(String schema)
         {
-            return BuildBasicTable(schema, "bisctable");
+            return BuildBasicTable(schema, BasicTableName);
             
         }
 
@@ -55,13 +56,13 @@ namespace QubaDC.Tests.DataBuilder
                      {
                           new OperatorRestriction()
                           {
-                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "ID", TableReference ="bisctable" } },
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "ID", TableReference =BasicTableName } },
                                  Op = RestrictionOperator.Equals,
                                  RHS = new LiteralOperand() { Literal = id }
                           },
                                                     new OperatorRestriction()
                           {
-                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "Schema", TableReference ="bisctable" } },
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "Schema", TableReference =BasicTableName } },
                                  Op = RestrictionOperator.Equals,
                                  RHS = new LiteralOperand() { Literal = schema }
                           }
