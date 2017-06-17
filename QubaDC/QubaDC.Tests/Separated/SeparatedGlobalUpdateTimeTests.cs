@@ -11,15 +11,16 @@ using Xunit;
 
 namespace QubaDC.Tests
 {
-    public class SeparatedGlobalUpdateTimeTests : IClassFixture<MySqlDBFixture>, IDisposable
+    public class SeparatedGlobalUpdateTimeTests : IDisposable
     {
         private string currentDatabase;
 
         private SchemaManager SchemaManager;
 
-        public SeparatedGlobalUpdateTimeTests(MySqlDBFixture fixture)
+        public SeparatedGlobalUpdateTimeTests()
         {
-            MySQLDataConnection con = fixture.DataConnection.Clone();
+            this.Fixture = new MySqlDBFixture();
+            MySQLDataConnection con = Fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
@@ -30,9 +31,9 @@ namespace QubaDC.Tests
             this.QBDC = c;
             //Create Empty Schema
             this.currentDatabase = "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
-            fixture.CreateEmptyDatabase(currentDatabase);
+            Fixture.CreateEmptyDatabase(currentDatabase);
             con.UseDatabase(currentDatabase);
-            this.Fixture = fixture;
+            this.Fixture = Fixture;
             this.SchemaManager = c.SchemaManager;
         }
 
