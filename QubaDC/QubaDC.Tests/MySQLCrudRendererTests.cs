@@ -8,16 +8,18 @@ using System.Data;
 
 namespace QubaDC.Tests
 {
-    public class MySQLCrudRendererTests : IClassFixture<MySqlDBFixture>
+    public class MySQLCrudRendererTests
     {
         public MySqlDBFixture MySQLDB { get; private set; }
         public MySQLCrudRenderer MySQLCrudRenderer { get; private set; }
 
-        public MySQLCrudRendererTests(MySqlDBFixture f)
+        public MySQLCrudRendererTests()
         {
-            this.MySQLDB = f;
+            this.MySQLDB = new MySqlDBFixture();
             this.MySQLCrudRenderer = new MySQLCrudRenderer();
         }
+
+
 
         [Fact]
         public void RenderTimeStampWorks()

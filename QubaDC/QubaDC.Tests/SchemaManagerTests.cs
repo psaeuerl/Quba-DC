@@ -13,15 +13,16 @@ using Xunit.Abstractions;
 
 namespace QubaDC.Tests
 {
-    public class SchemaManagerTests : IClassFixture<MySqlDBFixture>, IDisposable
+    public class SchemaManagerTests :  IDisposable
     {
         private string currentDatabase;
 
         private SchemaManager SchemaManager;
 
-        public SchemaManagerTests(MySqlDBFixture fixture)
+        public SchemaManagerTests( )
         {
-            MySQLDataConnection con = fixture.DataConnection.Clone();
+            this.Fixture = new MySqlDBFixture();
+            MySQLDataConnection con = Fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
@@ -32,9 +33,8 @@ namespace QubaDC.Tests
             this.QBDC = c;
             //Create Empty Schema
             this.currentDatabase = "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
-            fixture.CreateEmptyDatabase(currentDatabase);
+            Fixture.CreateEmptyDatabase(currentDatabase);
             con.UseDatabase(currentDatabase);
-            this.Fixture = fixture;
             this.SchemaManager = c.SchemaManager;
         }
 

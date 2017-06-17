@@ -9,11 +9,11 @@ using Xunit;
 
 namespace QubaDC.Tests
 {
-    public class MySQLQueryStoreTests : IClassFixture<MySqlDBFixture>
+    public class MySQLQueryStoreTests
     {
-        public MySQLQueryStoreTests(MySqlDBFixture f)
+        public MySQLQueryStoreTests()
         {
-            this.MySQLDB = f;
+            this.MySQLDB = new MySqlDBFixture();
         }
 
         public MySqlDBFixture MySQLDB { get; private set; }
