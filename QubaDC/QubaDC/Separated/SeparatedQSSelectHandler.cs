@@ -173,7 +173,7 @@ namespace QubaDC.Separated
                 hashTable = con.ExecuteQuery(querySerialized, c);
                 String currentHash = hashTable.Select().First().Field<String>(0);
                 if (currentHash != hash)
-                    throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal");
+                    throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal, HashSelect: "+querySerialized+System.Environment.NewLine+ "Select: "+query);
                 normaResult = con.ExecuteQuery(query, c);
                 trans.Commit();
             });
