@@ -16,15 +16,11 @@ namespace QubaDC
 
         public abstract void HandleDeletOperation(DeleteOperation deleteOperation);
 
-        public abstract String Visit(UpdateOperation updateOperation);
-
-
-
-
         public abstract void HandleInsert(InsertOperation insertOperation);
 
         public abstract String RenderSelectOperation(SelectOperation selectOperation);
 
         internal abstract string RenderHashSelect(SelectOperation newOperation);
+        public abstract void HandleUpdateOperation(UpdateOperation c2);
     }
 }

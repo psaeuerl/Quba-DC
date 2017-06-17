@@ -71,5 +71,29 @@ namespace QubaDC.Tests.DataBuilder
             };
 
         }
+
+        public static UpdateOperation GetBasicTableUpdate(string currentdatabase, string oldid, string newvalue)
+        {
+            CreateTable t = CreateTableBuilder.BuildBasicTable(currentdatabase);
+            return new UpdateOperation()
+            {
+
+                Table = t.ToTable(),
+                Restriction = new AndRestriction()
+                {
+                    Restrictions = new Restriction[]
+                     {
+                          new OperatorRestriction()
+                          {
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "ID", TableReference =BasicTableName } },
+                                 Op = RestrictionOperator.Equals,
+                                 RHS = new LiteralOperand() { Literal = oldid }
+                          }
+                     }
+                },
+                ColumnNames = new string[] { "Schema" },
+                 ValueLiterals = new string[] {"'"+newvalue+"'"}
+            };
+        }
     }
 }

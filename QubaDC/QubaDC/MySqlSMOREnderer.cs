@@ -15,7 +15,7 @@ namespace QubaDC
             String format =
         @"
 DELIMITER $$
-CREATE TRIGGER {8}.insert_{0}_to{1}
+CREATE TRIGGER {8}.insert_{0}_to_{1}
 AFTER INSERT
 ON {2}
 FOR EACH ROW
@@ -80,10 +80,10 @@ DELIMITER;";
 
         private object GetQuotedTable(CreateTable createTable)
         {
-            return GetQuotedTable(createTable.Schema,createTable.TableName);
+            return GetQuotedTable(createTable.Schema, createTable.TableName);
         }
 
-        private  object GetQuotedTable(String schema, String name )
+        private object GetQuotedTable(String schema, String name)
         {
             return String.Format("`{0}`.`{1}`", schema, name);
         }
@@ -108,16 +108,16 @@ DELIMITER;";
                 + (IncludeAdditionalInformation ? x.AdditionalInformation : ""))
             .ToArray();
             String PrimaryKey = "";
-            if(ct.PrimaryKey!=null)
+            if (ct.PrimaryKey != null)
             {
                 String PKFormat = ", PRIMARY KEY({0})";
                 var cols = ct.PrimaryKey.Select(x => "`" + x + "`");
-                var pkToFormat = String.Join(",",cols);
-                PrimaryKey = String.Format(PKFormat, pkToFormat);                    
+                var pkToFormat = String.Join(",", cols);
+                PrimaryKey = String.Format(PKFormat, pkToFormat);
             }
             String columns = String.Join(", " + System.Environment.NewLine, columnDefinitions);
-         
-            String result = String.Format(stmt, ct.Schema, ct.TableName, String.Join(","+System.Environment.NewLine, columns),PrimaryKey);
+
+            String result = String.Format(stmt, ct.Schema, ct.TableName, String.Join("," + System.Environment.NewLine, columns), PrimaryKey);
             return result;
         }
 
@@ -126,7 +126,7 @@ DELIMITER;";
             String format =
                 @"
 DELIMITER $$
-CREATE TRIGGER {0}.del_{1}_to_{2}
+CREATE TRIGGER {0}.delete_{1}_to_{2}
 AFTER DELETE
 ON {5}
 FOR EACH ROW
@@ -162,7 +162,7 @@ DELIMITER;";
                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
 
                );
-              
+
             return trigger;
         }
 
@@ -172,6 +172,58 @@ DELIMITER;";
                 .Select(x => String.Format("{0} = OLD.{0}", x));
             var where = String.Join(" AND" + System.Environment.NewLine, columns);
             return where;
+        }
+
+        internal override string RenderCreateUpdateTrigger(CreateTable createTable, CreateTable ctHistTable)
+        {
+            String format =
+        @"
+DELIMITER $$
+CREATE TRIGGER {0}.update_{1}_to_{2}
+AFTER UPDATE
+ON {5}
+FOR EACH ROW
+BEGIN
+
+    UPDATE {3}
+    SET endts = NOW(3)
+    WHERE
+    {4};
+
+    INSERT INTO {3}
+    ({8})
+    VALUES
+    (
+    {9},
+        NOW(3),
+        null
+    );
+
+    INSERT INTO {6}
+    (`Timestamp`, `Operation`)
+    VALUES
+    (
+      NOW(3),
+      CONCAT('Insert on table: ','{7}')
+    );
+END $$
+DELIMITER;";
+
+
+            String trigger = String.Format(format
+                , Quote(ctHistTable.Schema)
+                , createTable.TableName
+                , ctHistTable.TableName
+                , GetQuotedTable(ctHistTable)
+                , GetColumnWherePart(createTable.Columns)
+                , GetQuotedTable(createTable)
+                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
+                                , GetQuotedTable(createTable)
+                , GetQuotedColumns(null, ctHistTable.Columns)
+                , GetQuotedColumns("NEW", createTable.Columns)
+
+               );
+            return trigger;
         }
     }
 }

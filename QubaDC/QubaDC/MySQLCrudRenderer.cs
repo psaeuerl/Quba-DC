@@ -50,9 +50,6 @@ namespace QubaDC
         public override string SerializeDateTime(DateTime now)
         {
             return MySQLDialectHelper.RenderDateTime(now);
-            //String format = "{{ ts '{0:D4}-{1:D2}-{2:D2} {3:D2}:{4:D2}:{5:D2}.{6:D}' }}";
-            //String result = String.Format(format, now.Year, now.Month, now.Day,now.Hour,now.Minute,now.Second,now.Millisecond%1000000);
-            //return result;
         }
 
         internal override string SerializeString(string v)
@@ -78,6 +75,20 @@ namespace QubaDC
             String baseDelete = "DELETE FROM {0} {1}";
             String deleteResult = String.Format(baseDelete, tableRef, restPart);
             return deleteResult;
+        }
+
+        internal override string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction)
+        {
+            String restrictions = RenderRestriction(restriction);
+            String restPart = String.IsNullOrWhiteSpace(restrictions) ? "" : "WHERE " + restrictions;
+            String tableRef = PrepareTable(table);
+
+            String[] setValues = columnNames.Zip(valueLiterals, (x, y) => QualifyObjectName(x) + " = " + y).ToArray();
+            String settingvalues = String.Join(System.Environment.NewLine, setValues);
+
+            String baseUpdate = "UPDATE {0} SET {1} {2}";
+            String updateResult = String.Format(baseUpdate, tableRef, settingvalues,restPart);
+            return updateResult;
         }
     }
 }

@@ -125,5 +125,32 @@ namespace QubaDC.Tests
             Assert.Equal(4, update4.ID);
             Assert.True(update4.DateTime > update3.DateTime);
         }
+
+        [Fact]
+        public void UpdateCreatesGlobalUpdate()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            var tables = QBDC.DataConnection.GetAllTables();
+            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+
+            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            var update3 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+
+            UpdateOperation c2 = CreateTableBuilder.GetBasicTableUpdate(this.currentDatabase, "1", "asdfxyz");
+            QBDC.CRUDHandler.HandleUpdateOperation(c2);
+
+            var update4 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+
+            Assert.Equal(4, update4.ID);
+            Assert.True(update4.DateTime > update3.DateTime);
+        }
     }
 }

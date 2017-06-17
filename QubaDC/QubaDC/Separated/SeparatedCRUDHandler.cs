@@ -25,11 +25,6 @@ namespace QubaDC.Separated
             h.HandleInsert(insertOperation);
         }
 
-        public override String Visit(UpdateOperation updateOperation)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
             SeparatedDeleteHandler h = new SeparatedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
@@ -44,6 +39,10 @@ namespace QubaDC.Separated
 
         }
 
-
+        public override void HandleUpdateOperation(UpdateOperation c2)
+        {
+            SeparatedUpdateHandler h = new SeparatedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleUpdate(c2);
+        }
     }
 }
