@@ -12,12 +12,13 @@ using Xunit;
 
 namespace QubaDC.Tests.Separated
 {
-    public class SeparatedQueryStoreTests : IClassFixture<MySqlDBFixture>, IDisposable
+    public class SeparatedQueryStoreCRUDTests : IDisposable
     {
         private string currentDatabase;
 
-        public SeparatedQueryStoreTests(MySqlDBFixture fixture)
+        public SeparatedQueryStoreCRUDTests()
         {
+            this.fixture = new MySqlDBFixture();
             MySQLDataConnection con = fixture.DataConnection.Clone();
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
@@ -30,15 +31,17 @@ namespace QubaDC.Tests.Separated
             this.currentDatabase = "SeparatedQueryStoreTests_" + Guid.NewGuid().ToString().Replace("-", "");
             fixture.CreateEmptyDatabase(currentDatabase);
             con.UseDatabase(currentDatabase);
-            this.Fixture = fixture;
+            this.fixture = fixture;
         }
 
-        public MySqlDBFixture Fixture { get; private set; }
+        public MySqlDBFixture fixture { get; private set; }
         public QubaDCSystem QBDC { get; private set; }
+        public bool Succcess { get; private set; } = false;
 
         public void Dispose()
         {
-            this.Fixture.DropDatabaseIfExists(currentDatabase);
+            if(Succcess)
+                this.fixture.DropDatabaseIfExists(currentDatabase);
         }
 
         [Fact]
@@ -77,6 +80,7 @@ namespace QubaDC.Tests.Separated
             var resultAfterInsert = QBDC.QueryStore.ExecuteSelect(s);
 
             Assert.NotEqual(resultAfterInsert.Hash, result.Hash);
+            this.Succcess = true;
         }
 
         [Fact]
@@ -111,8 +115,7 @@ namespace QubaDC.Tests.Separated
 
             Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
 
-
-
+            this.Succcess = true;
         }
 
         private void AssertResults(QueryStoreSelectResult result, QueryStoreReexecuteResult result2)

@@ -72,7 +72,7 @@
     <Compile Include="SchemaManagerTests.cs" />
     <Compile Include="SchemaSerializationTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
-    <Compile Include="Separated\SeparatedQueryStoreTests.cs" />
+    <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />
     <Compile Include="xUnitExtension\CustomTestCollectionOrderer.cs" />
     <Compile Include="xUnitExtension\OrderAttribute.cs" />
