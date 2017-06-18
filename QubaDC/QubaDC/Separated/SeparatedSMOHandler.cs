@@ -12,7 +12,8 @@ namespace QubaDC.Separated
     {
         internal override void Visit(RenameTable renameTable)
         {
-            throw new NotImplementedException();
+            SeparatedRenameTableHandler h = new SeparatedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameTable);
         }
 
         internal override void Visit(PartitionTable partitionTable)
