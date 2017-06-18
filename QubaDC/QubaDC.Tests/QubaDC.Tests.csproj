@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomAsserts\QueryStoreAsserts.cs" />
     <Compile Include="DataBuilder\CreateTableBuilder.cs" />
     <Compile Include="DataConnectionTests.cs" />
     <Compile Include="Fixtures\MySqlDBFixture.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="SchemaManagerTests.cs" />
     <Compile Include="SchemaSerializationTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
+    <Compile Include="Separated\SeparatedQueryStoreSMOTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />
     <Compile Include="xUnitExtension\CustomTestCollectionOrderer.cs" />

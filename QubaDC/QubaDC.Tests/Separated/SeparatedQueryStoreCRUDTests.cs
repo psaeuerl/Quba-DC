@@ -1,6 +1,7 @@
 ﻿using QubaDC.CRUD;
 using QubaDC.Separated;
 using QubaDC.SMO;
+using QubaDC.Tests.CustomAsserts;
 using QubaDC.Tests.DataBuilder;
 using System;
 using System.Collections.Generic;
@@ -73,7 +74,7 @@ namespace QubaDC.Tests.Separated
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
 
-            AssertResults(result, result2);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
             //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
@@ -107,7 +108,7 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleDeletOperation(c3);
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
-            AssertResults(result, result2);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
             //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
@@ -142,7 +143,7 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleUpdateOperation(c3);
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
-            AssertResults(result, result2);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
             //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
@@ -153,21 +154,5 @@ namespace QubaDC.Tests.Separated
             this.Succcess = true;
         }
 
-        private void AssertResults(QueryStoreSelectResult result, QueryStoreReexecuteResult result2)
-        {
-            Assert.Equal(result2.Hash, result.Hash);
-
-            StringWriter wt = new StringWriter();
-            result.Result.WriteXml(wt);
-            wt.Flush();
-            String r1Data = wt.ToString();
-
-            StringWriter wt2 = new StringWriter();
-            result2.Result.WriteXml(wt2);
-            wt2.Flush();
-            String r2Data = wt2.ToString();
-            Assert.Equal(r1Data, r2Data);
-
-        }
     }
 }
