@@ -234,5 +234,10 @@ DELIMITER;";
             String result = String.Format(baseRename, oldName, newName);
             return result;
         }
+
+        internal override string RenderDropTable(DropTable dropTable)
+        {
+            return "DROP TABLE " + GetQuotedTable(dropTable.Schema, dropTable.TableName);
+        }
     }
 }

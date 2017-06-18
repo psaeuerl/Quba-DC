@@ -42,6 +42,14 @@ namespace QubaDC.DatabaseObjects
             return FindTable(new Table() { TableSchema = Schema, TableName = Name });
         }
 
+        public Boolean ContainsTable(String Schema, String Name)
+        {
+            var tables = _Tables.Where(x => x.MatchesTable(new Table() { TableName = Name, TableSchema = Schema })).ToArray();
+            Guard.StateTrue(tables.Length <= 1, "Expected to find zero or one matching table for: " + Schema + "." + Name + " got: " + tables.Length);
+
+            return tables.Length == 1;
+        }
+
         public TableSchemaWithHistTable FindTable(Table t)
         {
             var tables = _Tables.Where(x => x.MatchesTable(t)).ToArray();

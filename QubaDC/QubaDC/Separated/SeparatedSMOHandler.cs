@@ -23,7 +23,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(DropTable dropTable)
         {
-            throw new NotImplementedException();
+            SeparatedDropTableHandler h = new SeparatedDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(dropTable);
         }
 
         internal override void Visit(CreateTable createTable)
