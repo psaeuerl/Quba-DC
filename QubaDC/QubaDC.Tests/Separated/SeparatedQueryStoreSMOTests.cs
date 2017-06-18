@@ -133,5 +133,51 @@ namespace QubaDC.Tests.Separated
             this.Succcess = true;
         }
 
+
+        [Fact]
+        public void CopyTableWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            QBDC.CRUDHandler.HandleInsert(c2);
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+
+            CopyTable ct = new CopyTable()
+            {
+                Schema = t.Schema,
+                TableName = t.TableName,
+                CopiedSchema = t.Schema,
+                CopiedTableName = "copied_basic_table"
+            };
+
+            QBDC.SMOHandler.HandleSMO(ct);
+
+            var newSchema = QBDC.SchemaManager.GetCurrentSchema();
+
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+
+            //check that new schema contains renamed table
+            //check that new schema does not contain original table
+
+            SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(3, newSchemaInfo.ID);
+            Assert.False(newSchemaInfo.Schema.ContainsTable(ct.Schema, ct.TableName));
+
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+            this.Succcess = true;
+        }
+
     }
 }

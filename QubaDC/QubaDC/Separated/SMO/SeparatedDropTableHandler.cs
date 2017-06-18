@@ -27,7 +27,6 @@ namespace QubaDC.Separated.SMO
 
         internal void Handle(DropTable dropTable)
         {
-            ;
             //What to do here?
             //a.) Drop Table
             //b.) Schemamanager => RemoveTable            

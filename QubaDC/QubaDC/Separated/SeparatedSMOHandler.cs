@@ -35,7 +35,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(CopyTable copyTable)
         {
-            throw new NotImplementedException();
+            SeparatedCopyTableHandler h = new SeparatedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(copyTable);
         }
 
         internal override void Visit(DecomposeTable decomposeTable)
