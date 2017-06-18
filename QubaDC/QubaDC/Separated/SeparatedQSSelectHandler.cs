@@ -41,7 +41,7 @@ namespace QubaDC.Separated
             SchemaInfo SchemaInfo = manager.GetSchemaActiveAt(lastGlobalUpdate.DateTime);
             foreach(var selectedTable in newOperation.GetAllSelectedTables())
             {
-                var histTable = SchemaInfo.Schema.FindHistTable(selectedTable);
+                var histTable = SchemaInfo.Schema.FindHistTable(selectedTable).ToTable();
                 selectedTable.TableName = histTable.TableName;
                 selectedTable.TableSchema = histTable.TableSchema;
                 OperatorRestriction  startTs = new OperatorRestriction()
