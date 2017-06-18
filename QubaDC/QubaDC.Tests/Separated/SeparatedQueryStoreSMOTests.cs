@@ -77,6 +77,9 @@ namespace QubaDC.Tests.Separated
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
 
+            //check that new schema contains renamed table
+            //check that new schema does not contain original table
+
             SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             Assert.Equal(3, newSchemaInfo.ID);
             Assert.IsType<RenameTable>(newSchemaInfo.SMO);
