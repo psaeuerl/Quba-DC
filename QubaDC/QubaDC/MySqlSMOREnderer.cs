@@ -83,7 +83,7 @@ DELIMITER;";
             return GetQuotedTable(createTable.Schema, createTable.TableName);
         }
 
-        private object GetQuotedTable(String schema, String name)
+        private String GetQuotedTable(String schema, String name)
         {
             return String.Format("`{0}`.`{1}`", schema, name);
         }
@@ -224,6 +224,15 @@ DELIMITER;";
 
                );
             return trigger;
+        }
+
+        internal override string RenderRenameTable(RenameTable renameTable)
+        {
+            String baseRename = "RENAME TABLE {0} TO {1}";
+            String oldName = GetQuotedTable(renameTable.OldSchema, renameTable.OldTableName);
+            String newName = GetQuotedTable(renameTable.NewSchema, renameTable.NewTableName);
+            String result = String.Format(baseRename, oldName, newName);
+            return result;
         }
     }
 }
