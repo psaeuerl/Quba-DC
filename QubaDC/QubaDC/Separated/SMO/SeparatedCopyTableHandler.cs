@@ -24,7 +24,7 @@ namespace QubaDC.Separated.SMO
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
 
-        internal void Handle(CopyTable createTable)
+        internal void Handle(CopyTable copyTable)
         {
             //What to do here?
             //a.) Copy table
@@ -32,60 +32,65 @@ namespace QubaDC.Separated.SMO
             //c.) Delete Trigger to the table
             //d.) Recreate Trigger on the table with correct hist table
             //e.) Copy Data
-            ;
-            //var con = (MySQLDataConnection)DataConnection;
-            //con.DoTransaction((transaction, c) =>
-            //{
-            //    //What to do?
-            //    //Create Table normal
-            //    //Create Table Hist
-            //    //Create Trigger on normal
-            //    String createBaseTable = SMORenderer.RenderCreateTable(createTable);
-            //    ////Create History Table
-            //    SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-            //    Schema x = xy.Schema;
-            //    if (xy.ID == null)
-            //    {
-            //        x = new Schema();
-            //        xy.ID = 0;
-            //     }
+
+            var con = (MySQLDataConnection)DataConnection;
+            con.DoTransaction((transaction, c) =>
+            {
+
+                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
+                Schema currentSchema = xy.Schema;
 
 
-            //    List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
-            //    columndefinitions.AddRange(createTable.Columns);
-            //    columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
-            //    CreateTable ctHistTable = new CreateTable()
-            //    {
-            //        Columns = columndefinitions.ToArray(),
-            //        Schema = createTable.Schema,
-            //        TableName = createTable.TableName + "_" + xy.ID
-            //    };
-            //    String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(copyTable.Schema, copyTable.TableName);
+                TableSchema originalHistTable = xy.Schema.FindHistTable(originalTable.Table.ToTable());
 
-            //    //INsert Trigger 
-            //    String trigger = SMORenderer.RenderCreateInsertTrigger(createTable, ctHistTable);
-            //    //Delete Trigger
-            //    String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable, ctHistTable);
-            //    //Update Trigger
-            //    String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable, ctHistTable);
+                var copiedTableSchema = new TableSchema()
+                {
+                    Columns = originalTable.Table.Columns,
+                    Name = copyTable.CopiedTableName,
+                    Schema = copyTable.CopiedSchema
+                };
+                var copiedHistSchema = new TableSchema()
+                {
+                    Columns = originalHistTable.Columns,
+                    Name = copyTable.CopiedTableName + "_" + xy.ID,
+                    Schema = copyTable.CopiedSchema
+                };
+                currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
+
+                //Copy Table without Triggers
+                String copyTableSQL = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, copiedTableSchema.Schema, copiedTableSchema.Name);
+                con.ExecuteNonQuerySQL(copyTableSQL, c);
+
+                //Copy Hist Table without Triggers
+                String copyHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, copiedHistSchema.Schema, copiedHistSchema.Name);
+                con.ExecuteNonQuerySQL(copyHistTableSQL, c);
+
+                //Create Triggers on copiedTable
+
+                //INsert Trigger 
+                String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
+                //Delete Trigger
+                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(copiedTableSchema, copiedHistSchema);
+                //Update Trigger
+                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(copiedTableSchema, copiedHistSchema);
+
+                //Add Trigger
+                con.ExecuteSQLScript(trigger, c);
+                con.ExecuteSQLScript(deleteTrigger, c);
+                con.ExecuteSQLScript(UpdateTrigger, c);
+
+                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, copyTable);
+
+                con.ExecuteNonQuerySQL(updateSchema, c);
 
 
-            //    //Manage Schema Statement
-            //    x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-            //    String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
-             
-            //    //Add tables
-            //    con.ExecuteNonQuerySQL(createBaseTable, c);
-            //    con.ExecuteNonQuerySQL(createHistTable, c);
-            //    //Add Trigger
-            //    con.ExecuteSQLScript(trigger, c);
-            //    con.ExecuteSQLScript(deleteTrigger, c);
-            //    con.ExecuteSQLScript(UpdateTrigger, c);
+                //Insert data from old to new
+                String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, copiedTableSchema);
+                transaction.Commit();
+            });
+        
 
-            //    //Store Schema
-            //    con.ExecuteNonQuerySQL(updateSchema, c);
-            //    transaction.Commit();
-            //});
         }
 
     }

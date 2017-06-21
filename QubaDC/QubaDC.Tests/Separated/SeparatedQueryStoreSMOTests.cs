@@ -166,16 +166,14 @@ namespace QubaDC.Tests.Separated
 
             var newSchema = QBDC.SchemaManager.GetCurrentSchema();
 
-            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
 
             //check that new schema contains renamed table
             //check that new schema does not contain original table
 
             SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             Assert.Equal(3, newSchemaInfo.ID);
-            Assert.False(newSchemaInfo.Schema.ContainsTable(ct.Schema, ct.TableName));
+            Assert.True(newSchemaInfo.Schema.ContainsTable(ct.Schema, ct.TableName));
 
-            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
             this.Succcess = true;
         }
 

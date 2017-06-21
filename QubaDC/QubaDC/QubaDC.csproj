@@ -109,6 +109,7 @@
     <Compile Include="Separated\SMO\SeparatedCreateTableHandler.cs" />
     <Compile Include="Separated\SeparatedCRUDHandler.cs" />
     <Compile Include="Separated\SeparatedSMOHandler.cs" />
+    <Compile Include="Separated\SMO\SeparatedSMOHelper.cs" />
     <Compile Include="SMOVisitor.cs" />
     <Compile Include="SMO\AddColumn.cs" />
     <Compile Include="SMO\ColumnDefinition.cs" />

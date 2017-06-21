@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using QubaDC.SMO;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace QubaDC
 {
     public class MySqlSMORenderer : SMORenderer
     {
-        public override string RenderCreateInsertTrigger(CreateTable createTable, CreateTable ctHistTable)
+        public override string RenderCreateInsertTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
             String format =
         @"
@@ -46,8 +47,8 @@ DELIMITER;";
             //4 => targettable columns
             //5 => NEW.`column`from sourcetabl
             String trigger = String.Format(format
-                , createTable.TableName
-                , ctHistTable.TableName
+                , createTable.Name
+                , ctHistTable.Name
                 , GetQuotedTable(createTable)
                 , GetQuotedTable(ctHistTable)
                 , GetQuotedColumns(null, ctHistTable.Columns)
@@ -57,15 +58,6 @@ DELIMITER;";
                 , Quote(ctHistTable.Schema)
                 );
             return trigger;
-        }
-
-
-        private String GetQuotedColumns(string ColumnIdentifier, ColumnDefinition[] columns)
-        {
-            String prefix = ColumnIdentifier == null ? "" : ColumnIdentifier + ".";
-            var quoatedColumns = columns.Select(x => prefix + GetQuoatedColumn(x)).ToArray();
-            String result = String.Join("," + System.Environment.NewLine, quoatedColumns);
-            return result;
         }
 
         private string GetQuoatedColumn(ColumnDefinition x)
@@ -78,10 +70,6 @@ DELIMITER;";
             return String.Format("`{0}`", x);
         }
 
-        private object GetQuotedTable(CreateTable createTable)
-        {
-            return GetQuotedTable(createTable.Schema, createTable.TableName);
-        }
 
         private String GetQuotedTable(String schema, String name)
         {
@@ -121,7 +109,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderCreateDeleteTrigger(CreateTable createTable, CreateTable ctHistTable)
+        internal override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
             String format =
                 @"
@@ -154,8 +142,8 @@ DELIMITER;";
             //5 => NEW.`column`from sourcetabl
             String trigger = String.Format(format
                 , Quote(ctHistTable.Schema)
-                , createTable.TableName
-                , ctHistTable.TableName
+                , createTable.Name
+                , ctHistTable.Name
                 , GetQuotedTable(ctHistTable)
                , GetColumnWherePart(createTable.Columns)
                , GetQuotedTable(createTable)
@@ -166,15 +154,7 @@ DELIMITER;";
             return trigger;
         }
 
-        private object GetColumnWherePart(ColumnDefinition[] baseColumns)
-        {
-            var columns = baseColumns.Select(x => GetQuoatedColumn(x))
-                .Select(x => String.Format("{0} = OLD.{0}", x));
-            var where = String.Join(" AND" + System.Environment.NewLine, columns);
-            return where;
-        }
-
-        internal override string RenderCreateUpdateTrigger(CreateTable createTable, CreateTable ctHistTable)
+        internal override string RenderCreateUpdateTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
             String format =
         @"
@@ -212,8 +192,8 @@ DELIMITER;";
 
             String trigger = String.Format(format
                 , Quote(ctHistTable.Schema)
-                , createTable.TableName
-                , ctHistTable.TableName
+                , createTable.Name
+                , ctHistTable.Name
                 , GetQuotedTable(ctHistTable)
                 , GetColumnWherePart(createTable.Columns)
                 , GetQuotedTable(createTable)
@@ -225,6 +205,30 @@ DELIMITER;";
                );
             return trigger;
         }
+
+        private object GetQuotedColumns(String ColumnIdentifier, string[] columns)
+        {
+            String prefix = ColumnIdentifier == null ? "" : ColumnIdentifier + ".";
+            var quoatedColumns = columns.Select(x => prefix + Quote(x)).ToArray();
+            String result = String.Join("," + System.Environment.NewLine, quoatedColumns);
+            return result;
+        }
+
+        private object GetColumnWherePart(string[] baseColumns)
+        {
+            var columns = baseColumns.Select(x => Quote(x))
+              .Select(x => String.Format("{0} = OLD.{0}", x));
+            var where = String.Join(" AND" + System.Environment.NewLine, columns);
+            return where;
+        }
+
+
+        private String GetQuotedTable(TableSchema ctHistTable)
+        {
+            return GetQuotedTable(ctHistTable.Schema, ctHistTable.Name);
+        }
+
+
 
         internal override string RenderRenameTable(RenameTable renameTable)
         {
@@ -238,6 +242,25 @@ DELIMITER;";
         internal override string RenderDropTable(DropTable dropTable)
         {
             return "DROP TABLE " + GetQuotedTable(dropTable.Schema, dropTable.TableName);
+        }
+
+        internal override string RenderCopyTable(String schema,String tablename,String newschema, String newname)
+        {
+            String baseFormat = "CREATE TABLE {0} LIKE {1}; ";
+            String oldTable = GetQuotedTable(schema,tablename);
+            String newTable = GetQuotedTable(newschema, newname);
+            String result = String.Format(baseFormat, newTable, oldTable);
+            return result;
+        }
+
+        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema)
+        {
+            String baseFormat = "INSERT {0} SELECT * FROM {1};";
+            String oldTable = GetQuotedTable(table);
+            String target = GetQuotedTable(copiedTableSchema);
+            String result = String.Format(baseFormat, target, oldTable);
+            return result;
+
         }
     }
 }

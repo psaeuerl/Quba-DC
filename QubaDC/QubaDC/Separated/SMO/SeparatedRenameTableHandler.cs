@@ -39,7 +39,7 @@ namespace QubaDC.Separated.SMO
 
                 String renameTableSQL = SMORenderer.RenderRenameTable(renameTable);
 
-                //Change Shchema
+                //Change Shchema    
                 //take old table, remove it, add it with new names
                 SchemaInfo xy = this.schemaManager.GetCurrentSchema();
                 Schema x = xy.Schema;

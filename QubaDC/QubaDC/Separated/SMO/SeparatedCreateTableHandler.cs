@@ -43,35 +43,29 @@ namespace QubaDC.Separated.SMO
                 {
                     x = new Schema();
                     xy.ID = 0;
-                 }
+                }
 
+                CreateTable ctHistTable = CreateHistTable(createTable, xy);
 
-                List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
-                columndefinitions.AddRange(createTable.Columns);
-                columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
-                CreateTable ctHistTable = new CreateTable()
-                {
-                    Columns = columndefinitions.ToArray(),
-                    Schema = createTable.Schema,
-                    TableName = createTable.TableName + "_" + xy.ID
-                };
                 String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
 
-                //INsert Trigger 
-                String trigger = SMORenderer.RenderCreateInsertTrigger(createTable, ctHistTable);
-                //Delete Trigger
-                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable, ctHistTable);
-                //Update Trigger
-                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable, ctHistTable);
 
 
                 //Manage Schema Statement
                 x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
                 String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
-             
+
                 //Add tables
                 con.ExecuteNonQuerySQL(createBaseTable, c);
                 con.ExecuteNonQuerySQL(createHistTable, c);
+
+                //INsert Trigger 
+                String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                //Delete Trigger
+                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                //Update Trigger
+                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+
                 //Add Trigger
                 con.ExecuteSQLScript(trigger, c);
                 con.ExecuteSQLScript(deleteTrigger, c);
@@ -83,5 +77,18 @@ namespace QubaDC.Separated.SMO
             });
         }
 
+        private static CreateTable CreateHistTable(CreateTable createTable, SchemaInfo xy)
+        {
+            List<ColumnDefinition> columndefinitions = new List<ColumnDefinition>();
+            columndefinitions.AddRange(createTable.Columns);
+            columndefinitions.AddRange(SeparatedConstants.GetHistoryTableColumns());
+            CreateTable ctHistTable = new CreateTable()
+            {
+                Columns = columndefinitions.ToArray(),
+                Schema = createTable.Schema,
+                TableName = createTable.TableName + "_" + xy.ID
+            };
+            return ctHistTable;
+        }
     }
 }
