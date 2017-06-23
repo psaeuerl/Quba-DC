@@ -166,13 +166,27 @@ namespace QubaDC.Tests.Separated
 
             var newSchema = QBDC.SchemaManager.GetCurrentSchema();
 
-
-            //check that new schema contains renamed table
-            //check that new schema does not contain original table
+            //check that new schema contains copied table            
+            //check that they have the same data
 
             SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             Assert.Equal(3, newSchemaInfo.ID);
-            Assert.True(newSchemaInfo.Schema.ContainsTable(ct.Schema, ct.TableName));
+            var xy = newSchemaInfo.Schema.FindTable(ct.CopiedSchema, ct.CopiedTableName);
+            Assert.True(newSchemaInfo.Schema.ContainsTable(ct.CopiedSchema, ct.CopiedTableName));
+
+            String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
+            Assert.Equal(3, triggersOnCopeidTable.Length);
+
+            //Check that they contain the same data
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
+
+            s2.FromTable = new FromTable() { TableSchema = ct.CopiedSchema, TableName = ct.CopiedTableName, TableAlias="ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();      
+            var result3 = QBDC.QueryStore.ExecuteSelect(s2);
+  
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
 
             this.Succcess = true;
         }

@@ -44,6 +44,19 @@ namespace QubaDC.Tests
             }
         }
 
+        public String[] GetTriggersForTable(String Schema,String Table)
+        {
+            String baseSelect = @"select TRIGGER_NAME
+from information_schema.triggers
+where TRIGGER_SCHEMA = '{0}'
+AND EVENT_OBJECT_TABLE = '{1}'";
+            String query = String.Format(baseSelect, Schema, Table);
+            var resultTable = this.DataConnection.ExecuteQuery(query);
+            var resultNames = resultTable.Select().Select(x => x.ItemArray[0].ToString()).ToArray();
+            return resultNames;
+
+        }
+
         public virtual void Dispose()
         {
             ;//NOP

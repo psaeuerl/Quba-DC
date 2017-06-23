@@ -87,6 +87,7 @@ namespace QubaDC.Separated.SMO
 
                 //Insert data from old to new
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, copiedTableSchema);
+                con.ExecuteNonQuerySQL(insertFromTable);
                 transaction.Commit();
             });
         
