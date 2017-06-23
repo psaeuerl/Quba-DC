@@ -191,5 +191,69 @@ namespace QubaDC.Tests.Separated
             this.Succcess = true;
         }
 
+        [Fact]
+        public void MergeTableWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+
+            CreateTable t2 = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            t2.TableName = "basictable2";
+            QBDC.SMOHandler.HandleSMO(t2);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'b1table'");
+            QBDC.CRUDHandler.HandleInsert(c);
+
+
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'b2table'");
+            c2.InsertTable.TableName = t2.TableName;
+            QBDC.CRUDHandler.HandleInsert(c2);
+
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            //SelectOperation s = SelectOperation.FromCreateTable(t);
+            //var result = QBDC.QueryStore.ExecuteSelect(s);
+
+            //Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+            MergeTable mt = new MergeTable()
+            {
+                ResultSchema = t.Schema,
+                ResultTableName = "mergedtable",
+                FirstSchema = t.Schema,
+                FirstTableName = t.TableName,
+                SecondSchema = t2.Schema,
+                SecondTableName = t2.TableName
+            };
+
+            QBDC.SMOHandler.HandleSMO(mt);
+
+            var newSchema = QBDC.SchemaManager.GetCurrentSchema();
+
+            ////check that new schema contains copied table            
+            ////check that they have the same data
+
+            SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(4, newSchemaInfo.ID);
+            var xy = newSchemaInfo.Schema.FindTable(mt.ResultSchema, mt.ResultTableName);
+            Assert.True(newSchemaInfo.Schema.ContainsTable(mt.ResultSchema, mt.ResultTableName));
+
+           String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(mt.ResultSchema, mt.ResultTableName);
+           Assert.Equal(3, triggersOnCopeidTable.Length);
+
+            ////Check that they contain the same data
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+            //var result2 = QBDC.QueryStore.ExecuteSelect(s2);
+            //Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
+
+            s2.FromTable = new FromTable() { TableSchema = mt.ResultSchema, TableName = mt.ResultTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            var selectFromMergedTable = QBDC.CRUDHandler.RenderSelectOperation(s2);
+            var resulttable = QBDC.DataConnection.ExecuteQuery(selectFromMergedTable);
+            Assert.Equal(2, resulttable.Rows.Count);
+            this.Succcess = true;
+        }
     }
 }

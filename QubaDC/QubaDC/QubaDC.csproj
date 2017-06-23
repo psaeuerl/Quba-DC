@@ -103,6 +103,7 @@
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
+    <Compile Include="Separated\SMO\SeparatedMergeTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedCopyTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDropTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedRenameTableHandler.cs" />

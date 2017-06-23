@@ -68,7 +68,7 @@ FROM {1}
         private string RenderWherePart(Restriction restriction)
         {
             String rest = CRUDRenderer.RenderRestriction(restriction);
-            if (rest != null)
+            if (!String.IsNullOrWhiteSpace(rest))
                 return "WHERE " + rest;
             else
                 return "";

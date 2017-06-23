@@ -56,7 +56,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(MergeTable mergeTable)
         {
-            throw new NotImplementedException();
+            SeparatedMergeTableHandler h = new SeparatedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(mergeTable);
         }
 
         internal override void Visit(AddColum addColum)
