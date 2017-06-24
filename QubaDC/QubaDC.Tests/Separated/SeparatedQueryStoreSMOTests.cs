@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.Restrictions;
 using QubaDC.Separated;
 using QubaDC.SMO;
 using QubaDC.Tests.CustomAsserts;
@@ -186,6 +187,69 @@ namespace QubaDC.Tests.Separated
             s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();      
             var result3 = QBDC.QueryStore.ExecuteSelect(s2);
   
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
+
+            this.Succcess = true;
+        }
+
+        [Fact]
+        public void PartitionTableWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            QBDC.CRUDHandler.HandleInsert(c2);
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+            PartitionTable ct = new PartitionTable()
+            {
+                BaseSchema = t.Schema,
+                 BaseTableName = t.TableName,
+                  FalseConditionSchema = t.Schema,
+                   FalseConditionTableName = "FalseTable",
+                    TrueConditionSchema = t.Schema,
+                     TrueConditionTableName = "TrueTable",
+                      Restriction = new OperatorRestriction()
+                      {
+                           LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "1", TableReference = t.TableName },
+                            Op = RestrictionOperator.Equals,
+                             RHS = new  LiteralOperand() {  Literal = "1"}
+                      }
+            };
+
+            QBDC.SMOHandler.HandleSMO(ct);
+
+            var newSchema = QBDC.SchemaManager.GetCurrentSchema();
+
+            //check that new schema contains copied table            
+            //check that they have the same data
+
+            SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(3, newSchemaInfo.ID);
+            var xy = newSchemaInfo.Schema.FindTable(ct.CopiedSchema, ct.CopiedTableName);
+            Assert.True(newSchemaInfo.Schema.ContainsTable(ct.CopiedSchema, ct.CopiedTableName));
+
+            String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
+            Assert.Equal(3, triggersOnCopeidTable.Length);
+
+            //Check that they contain the same data
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
+
+            s2.FromTable = new FromTable() { TableSchema = ct.CopiedSchema, TableName = ct.CopiedTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            var result3 = QBDC.QueryStore.ExecuteSelect(s2);
+
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
 
             this.Succcess = true;
