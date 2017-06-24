@@ -237,6 +237,7 @@ namespace QubaDC.Tests.Separated
 
             SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             Assert.Equal(4, newSchemaInfo.ID);
+            Assert.Equal(1, newSchemaInfo.Schema.Tables.Count());
             var xy = newSchemaInfo.Schema.FindTable(mt.ResultSchema, mt.ResultTableName);
             Assert.True(newSchemaInfo.Schema.ContainsTable(mt.ResultSchema, mt.ResultTableName));
 

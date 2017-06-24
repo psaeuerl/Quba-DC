@@ -63,7 +63,8 @@ namespace QubaDC.Separated.SMO
                     Schema = mergeTable.ResultSchema
                 };
                 currentSchema.AddTable(mergedTableSchema, mergedHistTableSchema);
-
+                currentSchema.RemoveTable(firstTable.Table.ToTable());
+                currentSchema.RemoveTable(secondTable.Table.ToTable());
                 //Copy Table without Triggers
                 String copyTableSQL = SMORenderer.RenderCopyTable(firstTable.Table.Schema, firstTable.Table.Name, mergedTableSchema.Schema, mergedTableSchema.Name);
                 con.ExecuteNonQuerySQL(copyTableSQL, c);
@@ -97,6 +98,12 @@ namespace QubaDC.Separated.SMO
 
                 String insertFromSecondTable = SMORenderer.RenderInsertToTableFromSelect(secondTable.Table, mergedTableSchema);
                 con.ExecuteNonQuerySQL(insertFromSecondTable);
+
+
+                String DropFirstTable = SMORenderer.RenderDropTable(firstTable.Table.Schema, firstTable.Table.Name);
+                con.ExecuteNonQuerySQL(DropFirstTable);
+                String DropSecondTable = SMORenderer.RenderDropTable(secondTable.Table.Schema, secondTable.Table.Name);
+                con.ExecuteNonQuerySQL(DropSecondTable);
                 transaction.Commit();
             });
 

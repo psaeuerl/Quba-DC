@@ -35,7 +35,7 @@ namespace QubaDC.Separated.SMO
             con.DoTransaction((transaction, c) =>
             {
 
-                String dropTableSql = SMORenderer.RenderDropTable(dropTable);
+                String dropTableSql = SMORenderer.RenderDropTable(dropTable.Schema,dropTable.TableName);
 
 
                 SchemaInfo xy = this.schemaManager.GetCurrentSchema();

@@ -239,9 +239,9 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderDropTable(DropTable dropTable)
+        internal override string RenderDropTable(String Schema, String Table)
         {
-            return "DROP TABLE " + GetQuotedTable(dropTable.Schema, dropTable.TableName);
+            return "DROP TABLE " + GetQuotedTable(Schema, Table);
         }
 
         internal override string RenderCopyTable(String schema,String tablename,String newschema, String newname)

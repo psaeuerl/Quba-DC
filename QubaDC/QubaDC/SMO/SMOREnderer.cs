@@ -16,7 +16,7 @@ namespace QubaDC.SMO
         internal abstract string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable);
         internal abstract string RenderCreateUpdateTrigger(TableSchema createTable, TableSchema ctHistTable);
         internal abstract string RenderRenameTable(RenameTable renameTable);
-        internal abstract string RenderDropTable(DropTable dropTable);
+        internal abstract string RenderDropTable(String Schema, String Table);
 
         internal abstract string RenderCopyTable(String schema, String tablename, String newschema, String newname);
         internal abstract string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema);
