@@ -19,6 +19,7 @@ namespace QubaDC.SMO
         public String SecondTableName { get; set; }
 
         public String SecondSchema { get; set; }
+
         public override void Accept(SMOVisitor visitor)
         {
             visitor.Visit(this);
