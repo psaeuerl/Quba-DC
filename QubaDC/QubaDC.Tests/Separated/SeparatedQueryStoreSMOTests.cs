@@ -213,45 +213,47 @@ namespace QubaDC.Tests.Separated
             PartitionTable ct = new PartitionTable()
             {
                 BaseSchema = t.Schema,
-                 BaseTableName = t.TableName,
-                  FalseConditionSchema = t.Schema,
-                   FalseConditionTableName = "FalseTable",
-                    TrueConditionSchema = t.Schema,
-                     TrueConditionTableName = "TrueTable",
-                      Restriction = new OperatorRestriction()
-                      {
-                           LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "1", TableReference = t.TableName },
-                            Op = RestrictionOperator.Equals,
-                             RHS = new  LiteralOperand() {  Literal = "1"}
-                      }
+                BaseTableName = t.TableName,
+                FalseConditionSchema = t.Schema,
+                FalseConditionTableName = "FalseTable",
+                TrueConditionSchema = t.Schema,
+                TrueConditionTableName = "TrueTable",
+                Restriction = new OperatorRestriction()
+                {
+                    LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "ID", TableReference = t.TableName } },
+                    Op = RestrictionOperator.Equals,
+                    RHS = new LiteralOperand() { Literal = "1" }
+                }
             };
 
             QBDC.SMOHandler.HandleSMO(ct);
 
             var newSchema = QBDC.SchemaManager.GetCurrentSchema();
 
-            //check that new schema contains copied table            
+            //check that new schema contains two new tables table            
             //check that they have the same data
 
-            SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
-            Assert.Equal(3, newSchemaInfo.ID);
-            var xy = newSchemaInfo.Schema.FindTable(ct.CopiedSchema, ct.CopiedTableName);
-            Assert.True(newSchemaInfo.Schema.ContainsTable(ct.CopiedSchema, ct.CopiedTableName));
+            SchemaInfo schemainfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(3, schemainfo.ID);
+            Assert.True(schemainfo.Schema.ContainsTable(ct.FalseConditionSchema, ct.FalseConditionTableName));
+            Assert.True(schemainfo.Schema.ContainsTable(ct.TrueConditionSchema, ct.TrueConditionTableName));
 
-            String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
-            Assert.Equal(3, triggersOnCopeidTable.Length);
-
-            //Check that they contain the same data
+            //Check that they contain the right data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
 
-            s2.FromTable = new FromTable() { TableSchema = ct.CopiedSchema, TableName = ct.CopiedTableName, TableAlias = "ref" };
+            s2.FromTable = new FromTable() { TableSchema = ct.TrueConditionSchema, TableName = ct.TrueConditionTableName, TableAlias = "ref" };
             s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
             var result3 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(1, result3.Result.Rows.Count);
+            Assert.Equal(1, result3.Result.Select().First()[0]);
 
-            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
-
+            s2.FromTable = new FromTable() { TableSchema = ct.FalseConditionSchema, TableName = ct.FalseConditionTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            var result4 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(1, result4.Result.Rows.Count);
+            Assert.Equal(2, result4.Result.Select().First()[0]);
             this.Succcess = true;
         }
 

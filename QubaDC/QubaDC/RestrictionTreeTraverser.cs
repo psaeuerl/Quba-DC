@@ -12,6 +12,7 @@ namespace QubaDC
     {
         //public abstract T Visit<T>(Restriction r);
         internal abstract T Visit(AndRestriction andRestriction);
+        internal abstract T Visit(RestrictionRestrictionOperand restrictionRestrictionOperand);
         internal abstract T Visit(LiteralOperand literalOperand);
         internal abstract T Visit(ColumnOperand columnOperand);
         internal abstract T Visit(DateTimeRestrictionOperand dateTimeRestrictionOperand);

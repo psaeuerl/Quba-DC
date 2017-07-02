@@ -41,6 +41,8 @@ namespace QubaDC
             qs.TimeManager = globalTimeManager;
             qs.CRUDHandler = separatedCRUDHandler;
 
+            renderer.CRUDRenderer = r;
+
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;
             SMOHandler.SMORenderer = this.SMORenderer;

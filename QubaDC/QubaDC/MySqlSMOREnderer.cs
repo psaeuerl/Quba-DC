@@ -253,14 +253,18 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema)
+        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema, Restriction rc)
         {
-            String baseFormat = "INSERT {0} SELECT * FROM {1};";
+            String baseFormat = "INSERT {0} SELECT * FROM {1} {2};";
             String oldTable = GetQuotedTable(table);
             String target = GetQuotedTable(copiedTableSchema);
-            String result = String.Format(baseFormat, target, oldTable);
-            return result;
 
+            String restriction =  this.CRUDRenderer.RenderRestriction(rc);
+            if (!String.IsNullOrWhiteSpace(restriction))
+                restriction = "WHERE " + restriction;
+
+            String result = String.Format(baseFormat, target, oldTable,restriction);
+            return result;
         }
     }
 }

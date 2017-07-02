@@ -18,7 +18,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(PartitionTable partitionTable)
         {
-            throw new NotImplementedException();
+            SeperatedPartitionTableHandler h = new SeperatedPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(partitionTable);
         }
 
         internal override void Visit(DropTable dropTable)

@@ -92,6 +92,7 @@
     <Compile Include="Restrictions\LiteralOperand.cs" />
     <Compile Include="Restrictions\OperatorRestriction.cs" />
     <Compile Include="Restrictions\OrRestriction.cs" />
+    <Compile Include="Restrictions\RestrictionRestrictionOperand.cs" />
     <Compile Include="RestrictionTreeTraverser.cs" />
     <Compile Include="Restrictions\RestrictionOperator.cs" />
     <Compile Include="Restrictions\ValueRestrictionOperand.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
+    <Compile Include="Separated\SMO\SeperatedPartitionTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedMergeTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedCopyTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDropTableHandler.cs" />

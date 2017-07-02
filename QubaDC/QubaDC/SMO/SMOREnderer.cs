@@ -10,6 +10,8 @@ namespace QubaDC.SMO
 {
     public abstract class SMORenderer
     {
+        public CRUDRenderer CRUDRenderer { get; internal set; }
+
         public abstract String RenderCreateTable(CreateTable ct, Boolean RemoveAdditionalColumnInfos=false);
 
         public abstract string RenderCreateInsertTrigger(TableSchema createTable, TableSchema ctHistTable);
@@ -19,6 +21,6 @@ namespace QubaDC.SMO
         internal abstract string RenderDropTable(String Schema, String Table);
 
         internal abstract string RenderCopyTable(String schema, String tablename, String newschema, String newname);
-        internal abstract string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema);
+        internal abstract string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema,Restriction rc);
     }
 }

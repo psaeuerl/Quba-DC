@@ -85,5 +85,10 @@ namespace QubaDC
             String result = "(" + joined + ")";
             return result;
         }
+
+        internal override string Visit(RestrictionRestrictionOperand restrictionRestrictionOperand)
+        {
+            return restrictionRestrictionOperand.Restriciton.Accept<String>(this);
+        }
     }
 }

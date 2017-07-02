@@ -93,10 +93,10 @@ namespace QubaDC.Separated.SMO
 
 
                 //Insert data from old to new
-                String insertFromFirstTable = SMORenderer.RenderInsertToTableFromSelect(firstTable.Table, mergedTableSchema);
+                String insertFromFirstTable = SMORenderer.RenderInsertToTableFromSelect(firstTable.Table, mergedTableSchema,null);
                 con.ExecuteNonQuerySQL(insertFromFirstTable);
 
-                String insertFromSecondTable = SMORenderer.RenderInsertToTableFromSelect(secondTable.Table, mergedTableSchema);
+                String insertFromSecondTable = SMORenderer.RenderInsertToTableFromSelect(secondTable.Table, mergedTableSchema,null);
                 con.ExecuteNonQuerySQL(insertFromSecondTable);
 
 
