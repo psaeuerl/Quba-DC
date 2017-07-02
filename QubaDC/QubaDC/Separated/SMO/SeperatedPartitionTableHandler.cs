@@ -103,6 +103,12 @@ namespace QubaDC.Separated.SMO
                 String insertFalseFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, falseTableSchema, falseRestriction);
                 con.ExecuteNonQuerySQL(insertFalseFromTable);
 
+
+
+                String DropFirstTable = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name);
+                con.ExecuteNonQuerySQL(DropFirstTable);
+                currentSchema.RemoveTable(originalTable.Table.ToTable());
+
                 String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, partitionTable);
                 con.ExecuteNonQuerySQL(updateSchema, c);
                 transaction.Commit();

@@ -237,11 +237,10 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(3, schemainfo.ID);
             Assert.True(schemainfo.Schema.ContainsTable(ct.FalseConditionSchema, ct.FalseConditionTableName));
             Assert.True(schemainfo.Schema.ContainsTable(ct.TrueConditionSchema, ct.TrueConditionTableName));
-
+            Assert.False(schemainfo.Schema.ContainsTable(ct.BaseSchema, ct.BaseTableName));
             //Check that they contain the right data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
-            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
-            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
+
 
             s2.FromTable = new FromTable() { TableSchema = ct.TrueConditionSchema, TableName = ct.TrueConditionTableName, TableAlias = "ref" };
             s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
