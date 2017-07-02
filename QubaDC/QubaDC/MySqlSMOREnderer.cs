@@ -217,7 +217,7 @@ DELIMITER;";
         private object GetColumnWherePart(string[] baseColumns)
         {
             var columns = baseColumns.Select(x => Quote(x))
-              .Select(x => String.Format("{0} = OLD.{0}", x));
+              .Select(x => String.Format("{0} <=> OLD.{0}", x));
             var where = String.Join(" AND" + System.Environment.NewLine, columns);
             return where;
         }
@@ -265,6 +265,14 @@ DELIMITER;";
 
             String result = String.Format(baseFormat, target, oldTable,restriction);
             return result;
+        }
+
+        internal override string RenderDropColumns(string schema, string name, string[] columns)
+        {
+            String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + x));
+            String table = GetQuotedTable(schema, name);
+            String Drop = String.Format("ALTER {0} {1}", table, dropcolumns);
+            return Drop;
         }
     }
 }

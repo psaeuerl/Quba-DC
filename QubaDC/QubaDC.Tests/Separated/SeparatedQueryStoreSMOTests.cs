@@ -256,6 +256,68 @@ namespace QubaDC.Tests.Separated
             this.Succcess = true;
         }
 
+
+        [Fact]
+        public void DecomposeTableWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'","'someval'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'","'someval2'");
+            QBDC.CRUDHandler.HandleInsert(c2);
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+            DecomposeTable ct = new DecomposeTable()
+            {
+                BaseSchema = t.Schema,
+                BaseTableName = t.TableName,
+                FirstSchema = t.Schema,
+                FirstTableName = "firstTable",
+                SecondSchema = t.Schema,
+                SecondTableName = "secondTable",
+
+                FirstColumns = new String[] { "Schema" },
+                SecondColumns = new String[] { "Info" },
+                SharedColumns = new String[] { "ID" },
+            };
+
+            QBDC.SMOHandler.HandleSMO(ct);
+
+            var newSchema = QBDC.SchemaManager.GetCurrentSchema();
+
+            //check that new schema contains two new tables table            
+            //check that they have the same data
+
+            SchemaInfo schemainfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(3, schemainfo.ID);
+            Assert.True(schemainfo.Schema.ContainsTable(ct.FirstSchema, ct.FirstTableName));
+            Assert.True(schemainfo.Schema.ContainsTable(ct.SecondSchema, ct.SecondTableName));
+            Assert.False(schemainfo.Schema.ContainsTable(ct.BaseSchema, ct.BaseTableName));
+            //Check that they contain the right data
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+
+
+            s2.FromTable = new FromTable() { TableSchema = ct.FirstSchema, TableName = ct.FirstTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            var result3 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(2, result3.Result.Rows.Count);
+            Assert.Equal(2, result3.Result.Select().First().ItemArray.Count());
+
+            s2.FromTable = new FromTable() { TableSchema = ct.SecondSchema, TableName = ct.SecondTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            var result4 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(1, result4.Result.Rows.Count);
+            Assert.Equal(2, result4.Result.Select().First().ItemArray.Count());
+            this.Succcess = true;
+        }
         [Fact]
         public void MergeTableWorks()
         {

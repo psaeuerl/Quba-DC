@@ -26,20 +26,22 @@ namespace QubaDC.Tests.DataBuilder
                 Schema = schema,
                 Columns = new ColumnDefinition[] {
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
-                    new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false }
+                    new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false },
+                     new ColumnDefinition() {  ColumName = "Info",  DataType =" MediumText", Nullable = true }
+
                 },
                 PrimaryKey = new String[] { "ID" }
             };
         }
 
-        public static InsertOperation GetBasicTableInsert(string currentdatabase, string id, string value)
+        public static InsertOperation GetBasicTableInsert(string currentdatabase, string id, string value,string info="null")
         {
             CreateTable t = CreateTableBuilder.BuildBasicTable(currentdatabase);
             return new InsertOperation()
             {
                 ColumnNames = t.GetColumnNames(),
                 InsertTable = t.ToTable(),
-                ValueLiterals = new String[] {id, value}
+                ValueLiterals = new String[] {id, value,"null"}
             };
         }
 

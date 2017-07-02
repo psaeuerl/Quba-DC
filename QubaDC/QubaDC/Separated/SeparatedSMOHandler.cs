@@ -42,7 +42,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(DecomposeTable decomposeTable)
         {
-            throw new NotImplementedException();
+            SeparatedDecomposeTableHandler h = new SeparatedDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(decomposeTable);
         }
 
         internal override void Visit(JoinTable joinTable)
