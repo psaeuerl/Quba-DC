@@ -253,9 +253,12 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema, Restriction rc)
+        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns)
         {
-            String baseFormat = "INSERT {0} SELECT * FROM {1} {2};";
+            String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
+            String columnString = "*";
+            if (columns != null)
+                columnString = String.Join(",", columns.Select(x => Quote(x)));
             String oldTable = GetQuotedTable(table);
             String target = GetQuotedTable(copiedTableSchema);
 
@@ -263,15 +266,15 @@ DELIMITER;";
             if (!String.IsNullOrWhiteSpace(restriction))
                 restriction = "WHERE " + restriction;
 
-            String result = String.Format(baseFormat, target, oldTable,restriction);
+            String result = String.Format(baseFormat, target, oldTable,restriction, columnString);
             return result;
         }
 
         internal override string RenderDropColumns(string schema, string name, string[] columns)
         {
-            String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + x));
+            String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + Quote(x)));
             String table = GetQuotedTable(schema, name);
-            String Drop = String.Format("ALTER {0} {1}", table, dropcolumns);
+            String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
             return Drop;
         }
     }

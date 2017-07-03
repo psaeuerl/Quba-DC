@@ -95,12 +95,12 @@ namespace QubaDC.Separated.SMO
 
                 //Insert data from old to true
                 Restriction trueRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "TRUE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                String insertTrueFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, trueTableSchema, trueRestriction);
+                String insertTrueFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, trueTableSchema, trueRestriction,null);
                 con.ExecuteNonQuerySQL(insertTrueFromTable);
 
                 //Insert data from old to false
                 Restriction falseRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "FALSE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                String insertFalseFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, falseTableSchema, falseRestriction);
+                String insertFalseFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, falseTableSchema, falseRestriction,null);
                 con.ExecuteNonQuerySQL(insertFalseFromTable);
 
 

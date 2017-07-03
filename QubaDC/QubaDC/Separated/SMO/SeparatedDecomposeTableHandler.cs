@@ -47,7 +47,7 @@ namespace QubaDC.Separated.SMO
 
                 var firstTableSchema = new TableSchema()
                 {
-                    Columns = originalTable.Table.Columns.Where(x=>partitionTable.FirstColumns.Contains(x) || partitionTable.SharedColumns.Contains(x)).ToArray(),
+                    Columns = originalTable.Table.Columns.Where(x => partitionTable.FirstColumns.Contains(x) || partitionTable.SharedColumns.Contains(x)).ToArray(),
                     Name = partitionTable.FirstTableName,
                     Schema = partitionTable.FirstSchema
                 };
@@ -62,50 +62,37 @@ namespace QubaDC.Separated.SMO
                 var secondTableSchema = new TableSchema()
                 {
                     Columns = originalTable.Table.Columns.Where(x => partitionTable.SecondColumns.Contains(x) || partitionTable.SharedColumns.Contains(x)).ToArray(),
-                    Name = partitionTable.FirstTableName,
-                    Schema = partitionTable.FirstSchema
+                    Name = partitionTable.SecondTableName,
+                    Schema = partitionTable.SecondSchema
                 };
                 var secondTableHistSchema = new TableSchema()
                 {
                     Columns = secondTableSchema.Columns.Union(originalHistTable.Columns.Except(originalTable.Table.Columns)).ToArray(),
-                    Name = partitionTable.FirstTableName + "_" + xy.ID,
-                    Schema = partitionTable.FirstSchema
+                    Name = partitionTable.SecondTableName + "_" + xy.ID,
+                    Schema = partitionTable.SecondSchema
                 };
                 currentSchema.AddTable(secondTableSchema, secondTableHistSchema);
 
                 ////Copy Tables without Triggers
-                String copyTrueTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, firstTableSchema.Schema, firstTableSchema.Name);
-                con.ExecuteNonQuerySQL(copyTrueTable, c);
+                CreateCopiedTables(c, con, originalTable, originalHistTable, firstTableSchema, firstTableHistSchema);
 
-                String[] firstTableDropColumns = originalTable.Table.Columns.Except(firstTableSchema.Columns).ToArray();
-                String firstTableDropColumnsSQL = SMORenderer.RenderDropColumns(firstTableSchema.Schema, firstTableSchema.Name, firstTableDropColumns);
-                con.ExecuteNonQuerySQL(firstTableDropColumnsSQL, c);
-
-
-                ////Copy Hist Table without Triggers
-                String copyTrueHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, firstTableHistSchema.Schema, firstTableHistSchema.Name);
-                con.ExecuteNonQuerySQL(copyTrueHistTableSQL, c);
-
-                String[] secondTableDropColumns = originalTable.Table.Columns.Except(secondTableSchema.Columns).ToArray();
-                String secondTableDropColumnsSQL = SMORenderer.RenderDropColumns(secondTableSchema.Schema, secondTableSchema.Name, secondTableDropColumns);
-                con.ExecuteNonQuerySQL(secondTableDropColumnsSQL, c);
+                CreateCopiedTables(c, con, originalTable, originalHistTable, secondTableSchema, secondTableHistSchema);
 
 
 
 
 
-                CreateTriggers( c, con, currentSchema, firstTableSchema, firstTableHistSchema);
-                CreateTriggers( c, con, currentSchema, secondTableSchema, secondTableHistSchema);
+                CreateTriggers(c, con, currentSchema, firstTableSchema, firstTableHistSchema);
+                CreateTriggers(c, con, currentSchema, secondTableSchema, secondTableHistSchema);
 
 
-                //Insert data from old to true
-                String insertTrueFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, firstTableSchema, null);
+                //Insert data from old to true                
+                String insertTrueFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, firstTableSchema, null, firstTableSchema.Columns);
                 con.ExecuteNonQuerySQL(insertTrueFromTable);
 
-                ////Insert data from old to false
-                //Restriction falseRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "FALSE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                //String insertFalseFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, falseTableSchema, falseRestriction);
-                //con.ExecuteNonQuerySQL(insertFalseFromTable);
+                //Insert data from old to true                
+                String insertFromSecondTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, secondTableSchema, null, secondTableSchema.Columns);
+                con.ExecuteNonQuerySQL(insertFromSecondTable);
 
 
 
@@ -119,6 +106,23 @@ namespace QubaDC.Separated.SMO
             });
         
 
+        }
+
+        private void CreateCopiedTables(System.Data.Common.DbConnection c, MySQLDataConnection con, TableSchemaWithHistTable originalTable, TableSchema originalHistTable, TableSchema normalschema, TableSchema nomralHistSchema)
+        {
+            String copyTrueTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, normalschema.Schema, normalschema.Name);
+            con.ExecuteNonQuerySQL(copyTrueTable, c);
+
+            String[] firstTableDropColumns = originalTable.Table.Columns.Except(normalschema.Columns).ToArray();
+            String firstTableDropColumnsSQL = SMORenderer.RenderDropColumns(normalschema.Schema, normalschema.Name, firstTableDropColumns);
+            con.ExecuteNonQuerySQL(firstTableDropColumnsSQL, c);
+
+            String copyTrueHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, nomralHistSchema.Schema, nomralHistSchema.Name);
+            con.ExecuteNonQuerySQL(copyTrueHistTableSQL, c);
+
+            String[] firstHistTableDropColumns = originalHistTable.Columns.Except(nomralHistSchema.Columns).ToArray();
+            String firstHistTableDropColumnsSQL = SMORenderer.RenderDropColumns(nomralHistSchema.Schema, nomralHistSchema.Name, firstTableDropColumns);
+            con.ExecuteNonQuerySQL(firstHistTableDropColumnsSQL, c);
         }
 
         private void CreateTriggers(System.Data.Common.DbConnection c, MySQLDataConnection con, Schema currentSchema, TableSchema trueTableSchema, TableSchema trueTableHist)

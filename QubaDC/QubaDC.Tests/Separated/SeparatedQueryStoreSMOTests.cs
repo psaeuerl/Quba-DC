@@ -306,15 +306,15 @@ namespace QubaDC.Tests.Separated
 
 
             s2.FromTable = new FromTable() { TableSchema = ct.FirstSchema, TableName = ct.FirstTableName, TableAlias = "ref" };
-            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            s2.Columns = ct.SharedColumns.Union(ct.FirstColumns).Select(x => new ColumnReference() { ColumnName = x, TableReference = "ref" }).ToArray();
             var result3 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(2, result3.Result.Rows.Count);
             Assert.Equal(2, result3.Result.Select().First().ItemArray.Count());
 
             s2.FromTable = new FromTable() { TableSchema = ct.SecondSchema, TableName = ct.SecondTableName, TableAlias = "ref" };
-            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
+            s2.Columns = ct.SharedColumns.Union(ct.SecondColumns).Select(x => new ColumnReference() { ColumnName = x, TableReference = "ref" }).ToArray();
             var result4 = QBDC.QueryStore.ExecuteSelect(s2);
-            Assert.Equal(1, result4.Result.Rows.Count);
+            Assert.Equal(2, result4.Result.Rows.Count);
             Assert.Equal(2, result4.Result.Select().First().ItemArray.Count());
             this.Succcess = true;
         }

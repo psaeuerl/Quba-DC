@@ -91,7 +91,7 @@ VALUES
                 rewrittenSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 select.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 time,
-                hash.Replace("'", "\\'"),
+                hash == null? "null" : hash.Replace("'", "\\'"),
                 guid.ToString(),
                 hashselect.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "));
