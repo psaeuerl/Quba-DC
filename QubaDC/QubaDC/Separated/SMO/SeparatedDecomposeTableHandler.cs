@@ -87,11 +87,11 @@ namespace QubaDC.Separated.SMO
 
 
                 //Insert data from old to true                
-                String insertTrueFromTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, firstTableSchema, null, firstTableSchema.Columns);
+                String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, firstTableSchema, null, firstTableSchema.Columns);
                 con.ExecuteNonQuerySQL(insertTrueFromTable);
 
                 //Insert data from old to true                
-                String insertFromSecondTable = SMORenderer.RenderInsertToTableFromSelect(originalTable.Table, secondTableSchema, null, secondTableSchema.Columns);
+                String insertFromSecondTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, secondTableSchema, null, secondTableSchema.Columns);
                 con.ExecuteNonQuerySQL(insertFromSecondTable);
 
 

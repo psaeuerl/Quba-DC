@@ -253,7 +253,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderInsertToTableFromSelect(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns)
+        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns)
         {
             String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
             String columnString = "*";
@@ -276,6 +276,25 @@ DELIMITER;";
             String table = GetQuotedTable(schema, name);
             String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
             return Drop;
+        }
+
+        internal override string RenderCopyTable(string schema, string name, string select)
+        {
+            String baseFormat = "CREATE TABLE {0} AS {1}; ";
+            String newTable = GetQuotedTable(schema, name);
+            String result = String.Format(baseFormat, newTable, select);
+            return result;
+        }
+
+        internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
+        {
+            String baseFormat = "INSERT {0} {1};";
+            
+            String target = GetQuotedTable(joinedTableSchema);
+
+
+            String result = String.Format(baseFormat, target, select);
+            return result;
         }
     }
 }

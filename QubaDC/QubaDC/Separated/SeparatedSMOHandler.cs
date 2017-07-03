@@ -48,7 +48,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(JoinTable joinTable)
         {
-            throw new NotImplementedException();
+            SeparatedJoinTableHandler h = new SeparatedJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(joinTable);
         }
 
         internal override void Visit(RenameColumn renameColumn)

@@ -12,10 +12,16 @@ namespace QubaDC.Tests.DataBuilder
     public class CreateTableBuilder
     {
         public const String BasicTableName = "basictable";
+        public const String BasicTableForJoinName = "jointable";
         public static CreateTable BuildBasicTable(String schema)
         {
             return BuildBasicTable(schema, BasicTableName);
             
+        }
+        public static CreateTable BuildBasicTablForJoin(String schema)
+        {
+            return BuildBasicTablForJoin(schema, BasicTableForJoinName);
+
         }
 
         public static CreateTable BuildBasicTable(String schema,String name)
@@ -34,14 +40,39 @@ namespace QubaDC.Tests.DataBuilder
             };
         }
 
-        public static InsertOperation GetBasicTableInsert(string currentdatabase, string id, string value,string info="null")
+        public static CreateTable BuildBasicTablForJoin(String schema, String name)
+        {
+            return new CreateTable()
+            {
+                TableName = name,
+                Schema = schema,
+                Columns = new ColumnDefinition[] {
+                    new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
+                    new ColumnDefinition() {  ColumName = "Something",  DataType =" MediumText", Nullable = false },
+                },
+                PrimaryKey = new String[] { "ID" }
+            };
+        }
+
+        public static InsertOperation GetBasicTableInsert(string currentdatabase, string id, string value, string info = "null")
         {
             CreateTable t = CreateTableBuilder.BuildBasicTable(currentdatabase);
             return new InsertOperation()
             {
                 ColumnNames = t.GetColumnNames(),
                 InsertTable = t.ToTable(),
-                ValueLiterals = new String[] {id, value,"null"}
+                ValueLiterals = new String[] {id, value, info}
+            };
+        }
+
+        public static InsertOperation GetBasicTableForJoinInsert(string currentdatabase, string id, string something)
+        {
+            CreateTable t = CreateTableBuilder.BuildBasicTablForJoin(currentdatabase);
+            return new InsertOperation()
+            {
+                ColumnNames = t.GetColumnNames(),
+                InsertTable = t.ToTable(),
+                ValueLiterals = new String[] { id, something }
             };
         }
 

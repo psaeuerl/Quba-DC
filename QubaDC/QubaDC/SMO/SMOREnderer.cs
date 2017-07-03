@@ -12,6 +12,8 @@ namespace QubaDC.SMO
     {
         public CRUDRenderer CRUDRenderer { get; internal set; }
 
+        public CRUDVisitor CRUDHandler { get; internal set; }
+
         public abstract String RenderCreateTable(CreateTable ct, Boolean RemoveAdditionalColumnInfos=false);
 
         public abstract string RenderCreateInsertTrigger(TableSchema createTable, TableSchema ctHistTable);
@@ -23,6 +25,8 @@ namespace QubaDC.SMO
         internal abstract string RenderCopyTable(String schema, String tablename, String newschema, String newname);
 
         internal abstract string RenderDropColumns(string schema, string name, string[] columns);
-        internal abstract string RenderInsertToTableFromSelect(TableSchema table, TableSchema firstTableSchema, Restriction rc, string[] columns);
+        internal abstract string RenderInsertFromOneTableToOther(TableSchema table, TableSchema firstTableSchema, Restriction rc, string[] columns);
+        internal abstract string RenderCopyTable(string schema, string name, string v);
+        internal abstract string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select);
     }
 }

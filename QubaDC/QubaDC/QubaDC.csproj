@@ -105,6 +105,7 @@
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDecomposeTableHandler.cs" />
+    <Compile Include="Separated\SMO\SeparatedJoinTableHandler.cs" />
     <Compile Include="Separated\SMO\SeperatedPartitionTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedMergeTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedCopyTableHandler.cs" />

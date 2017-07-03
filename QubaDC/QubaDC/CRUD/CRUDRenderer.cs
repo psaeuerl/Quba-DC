@@ -28,6 +28,8 @@ namespace QubaDC.CRUD
                     return "LEFT JOIN";
                 case JoinType.RightJoin:
                     return "RIGHT JOIN";
+                case JoinType.NoJoin:
+                    return ", ";
                 default:
                     throw new NotImplementedException();
             }

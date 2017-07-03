@@ -42,6 +42,7 @@ namespace QubaDC
             qs.CRUDHandler = separatedCRUDHandler;
 
             renderer.CRUDRenderer = r;
+            renderer.CRUDHandler = separatedCRUDHandler;
 
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;

@@ -4,6 +4,7 @@
     {
         InnerJoin,
         LeftJoin,
-        RightJoin
+        RightJoin,
+        NoJoin
     }
 }
