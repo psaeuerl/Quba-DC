@@ -403,5 +403,57 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(1, result2.Result.Rows.Count);
             this.Succcess = true;
         }
+
+        [Fact]
+        public void DropColumnWorks()
+        {
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'schema1'");
+            QBDC.CRUDHandler.HandleInsert(c);
+
+
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'schema2'");
+            c2.InsertTable.TableName = t.TableName;
+            QBDC.CRUDHandler.HandleInsert(c2);
+
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+
+
+            DropColumn mt = new DropColumn()
+            {
+                Schema = t.Schema,
+                TableName = t.TableName,
+                Column = "Info"
+            };
+               
+
+            QBDC.SMOHandler.HandleSMO(mt);
+
+            var newSchema = QBDC.SchemaManager.GetCurrentSchema();
+
+            //////check that new schema contains copied table            
+            //////check that they have the same data
+
+            SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
+            Assert.Equal(3, newSchemaInfo.ID);
+            Assert.Equal(1, newSchemaInfo.Schema.Tables.Count());
+            Assert.Equal(2, newSchemaInfo.Schema.Tables.First().Table.Columns.Count());
+            
+
+           
+
+            ////////Check that they contain the same data
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+            s2.Columns = t.Columns.Where(x=>x.ColumName!=mt.Column).Select(x => new ColumnReference() { ColumnName = x.ColumName, TableReference = s2.FromTable.TableAlias }).ToArray();
+            //s2.FromTable.TableName = mt.ResultTableName;
+            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(2, result2.Result.Rows.Count);
+            this.Succcess = true;
+        }
     }
 }

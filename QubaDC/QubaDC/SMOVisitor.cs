@@ -24,6 +24,8 @@ namespace QubaDC
         internal abstract void Visit(DecomposeTable decomposeTable);
         internal abstract void Visit(CreateTable createTable);
         internal abstract void Visit(CopyTable copyTable);
+        internal abstract void Visit(DropColumn dropColumn);
+
 
         public void HandleSMO(SchemaModificationOperator op)
         {

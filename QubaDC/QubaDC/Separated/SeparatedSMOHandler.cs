@@ -67,5 +67,11 @@ namespace QubaDC.Separated
         {
             throw new NotImplementedException();
         }
+
+        internal override void Visit(DropColumn dropColumn)
+        {
+            SepearatedDropColumnHandler h = new SepearatedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(dropColumn);            
+        }
     }
 }
