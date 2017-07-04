@@ -23,6 +23,9 @@ namespace QubaDC.CRUD
     {
 
         public ColumnReference[] Columns { get; set; }
+
+        public LiteralColumn[] LiteralColumns { get; set; } = new LiteralColumn[] { };
+
         public FromTable FromTable { get; set; }
 
         public JoinedTable[] JoinedTables { get; set; } = new JoinedTable[] { };

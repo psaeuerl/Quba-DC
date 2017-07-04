@@ -30,9 +30,9 @@ FROM {1}
 {3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
             String columns = "";
             if (!RenderAsHash)
-                columns = RenderColumns(selectOperation.Columns);
+                columns = RenderColumns(selectOperation.Columns,selectOperation.LiteralColumns);
             else
-                columns = this.RenderAsHash(selectOperation.Columns);
+                columns = this.RenderAsHash(selectOperation.Columns,selectOperation.LiteralColumns);
             String fromPart = RenderFromPart(selectOperation);
             String wherePart = RenderWherePart(selectOperation.Restriction);
             String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
@@ -41,14 +41,27 @@ FROM {1}
 
         }
 
-        private string RenderAsHash(ColumnReference[] columns)
+        private string RenderAsHash(ColumnReference[] columns, LiteralColumn[] literalColumns)
         {
-            var cols = columns.Select(x => RenderColumn(x)).Select(x => "MD5(" + x + ")").ToArray();
+            var cols = columns.Select(x => RenderColumn(x)).Union(literalColumns.Select(x => RenderLiteralColumn(x))).Select(x => "MD5(" + x + ")").ToArray();
             var res = String.Join(", ", cols);
             String sel = String.Format("MD5( GROUP_CONCAT( CONCAT_WS('#',{0}) SEPARATOR '#' ) )", res);
             return sel;
         }
 
+        private string RenderColumns(ColumnReference[] columns, LiteralColumn[] literalColumns)
+        {
+            var cols = columns.Select(x => RenderColumn(x)).Union(literalColumns.Select(x => RenderLiteralColumn(x)));
+            var res = String.Join(", ", cols);
+            return res;
+    }
+
+        private string RenderLiteralColumn(LiteralColumn x)
+        {
+            return x.ColumnLiteral + " AS " + CRUDRenderer.Quote(x.ColumnName);
+        }
+
+      
         private string RenderOrderBy(ColumnSorting[] sortingColumns)
         {
             String[] sortings = sortingColumns.Select(x => RenderSorintg(x)).ToArray();
@@ -109,12 +122,7 @@ FROM {1}
                  " AS " + CRUDRenderer.Quote(fromTable.TableAlias));
         }
 
-        private string RenderColumns(ColumnReference[] columns)
-        {
-            var cols = columns.Select(x => RenderColumn(x));
-            var res = String.Join(", ", cols);
-            return res;
-        }
+
 
         private String RenderColumn(ColumnReference x)
         {

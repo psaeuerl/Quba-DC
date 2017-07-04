@@ -49,7 +49,7 @@ NOW(3)
 );";
             String argDb = this.Connection.DataBase;
             String argSchema = JsonSerializer.SerializeObject(schema);
-            String argSMO = JsonSerializer.SerializeObject(smo);
+            String argSMO = JsonSerializer.SerializeObject(smo).Replace("'", "\\'");
             //TODO => Use Parameterized Query
             String result = String.Format(InsertFormat, argDb, argSchema, argSMO);
             return result;

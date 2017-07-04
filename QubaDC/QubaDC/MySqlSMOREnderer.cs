@@ -90,10 +90,7 @@ DELIMITER;";
 );
 ";
             String[] columnDefinitions = ct.Columns.Select(x =>
-                '`' + x.ColumName + "` "
-                + x.DataType + " "
-                + (x.Nullable ? "NULL" : "NOT NULL") + " "
-                + (IncludeAdditionalInformation ? x.AdditionalInformation : ""))
+RenderColumnDefinition(IncludeAdditionalInformation, x))
             .ToArray();
             String PrimaryKey = "";
             if (ct.PrimaryKey != null)
@@ -107,6 +104,14 @@ DELIMITER;";
 
             String result = String.Format(stmt, ct.Schema, ct.TableName, String.Join("," + System.Environment.NewLine, columns), PrimaryKey);
             return result;
+        }
+
+        private static string RenderColumnDefinition(bool IncludeAdditionalInformation, ColumnDefinition x)
+        {
+            return '`' + x.ColumName + "` "
+                            + x.DataType + " "
+                            + (x.Nullable ? "NULL" : "NOT NULL") + " "
+                            + (IncludeAdditionalInformation ? x.AdditionalInformation : "");
         }
 
         internal override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
@@ -295,6 +300,14 @@ DELIMITER;";
 
             String result = String.Format(baseFormat, target, select);
             return result;
+        }
+
+        internal override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
+        {
+            String dropcolumns ="ADD  " + RenderColumnDefinition( true,column);
+            String table = GetQuotedTable(copiedTableSchema.Schema, copiedTableSchema.Name);
+            String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
+            return Drop;
         }
     }
 }

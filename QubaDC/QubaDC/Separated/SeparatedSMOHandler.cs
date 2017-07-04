@@ -65,7 +65,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(AddColum addColum)
         {
-            throw new NotImplementedException();
+            SeparatedAddColumnHandler h = new SeparatedAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(addColum);
         }
 
         internal override void Visit(DropColumn dropColumn)

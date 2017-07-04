@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CRUD\LiteralColumn.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
+    <Compile Include="Separated\SMO\SeparatedAddColumnHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDropColumnHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDecomposeTableHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedJoinTableHandler.cs" />
