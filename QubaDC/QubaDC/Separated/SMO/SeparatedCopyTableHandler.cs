@@ -48,13 +48,15 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns,
                     Name = copyTable.CopiedTableName,
-                    Schema = copyTable.CopiedSchema
+                    Schema = copyTable.CopiedSchema,
+                     ColumnDefinitions = originalTable.Table.ColumnDefinitions,
                 };
                 var copiedHistSchema = new TableSchema()
                 {
                     Columns = originalHistTable.Columns,
                     Name = copyTable.CopiedTableName + "_" + xy.ID,
-                    Schema = copyTable.CopiedSchema
+                    Schema = copyTable.CopiedSchema,
+                     ColumnDefinitions = originalHistTable.ColumnDefinitions
                 };
                 currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
 

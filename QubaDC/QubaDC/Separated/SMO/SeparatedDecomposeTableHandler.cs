@@ -49,14 +49,16 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns.Where(x => partitionTable.FirstColumns.Contains(x) || partitionTable.SharedColumns.Contains(x)).ToArray(),
                     Name = partitionTable.FirstTableName,
-                    Schema = partitionTable.FirstSchema
+                    Schema = partitionTable.FirstSchema,                     
                 };
+                firstTableSchema.ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => firstTableSchema.Columns.Contains(x.ColumName)).ToArray();
                 var firstTableHistSchema = new TableSchema()
                 {
                     Columns = firstTableSchema.Columns.Union(originalHistTable.Columns.Except(originalTable.Table.Columns)).ToArray(),
                     Name = partitionTable.FirstTableName + "_" + xy.ID,
                     Schema = partitionTable.FirstSchema
                 };
+                firstTableHistSchema.ColumnDefinitions = originalHistTable.ColumnDefinitions.Where(x => firstTableHistSchema.Columns.Contains(x.ColumName)).ToArray();
                 currentSchema.AddTable(firstTableSchema, firstTableHistSchema);
 
                 var secondTableSchema = new TableSchema()
@@ -65,12 +67,14 @@ namespace QubaDC.Separated.SMO
                     Name = partitionTable.SecondTableName,
                     Schema = partitionTable.SecondSchema
                 };
+                secondTableSchema.ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => secondTableSchema.Columns.Contains(x.ColumName)).ToArray();
                 var secondTableHistSchema = new TableSchema()
                 {
                     Columns = secondTableSchema.Columns.Union(originalHistTable.Columns.Except(originalTable.Table.Columns)).ToArray(),
                     Name = partitionTable.SecondTableName + "_" + xy.ID,
                     Schema = partitionTable.SecondSchema
                 };
+                secondTableHistSchema.ColumnDefinitions = originalHistTable.ColumnDefinitions.Where(x => secondTableHistSchema.Columns.Contains(x.ColumName)).ToArray();
                 currentSchema.AddTable(secondTableSchema, secondTableHistSchema);
 
                 ////Copy Tables without Triggers

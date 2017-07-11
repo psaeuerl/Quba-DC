@@ -50,16 +50,22 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns.Where(x => x != dropColumn.Column).ToArray(),
                     Name = originalTable.Table.Name,
-                    Schema = originalTable.Table.Schema
+                    Schema = originalTable.Table.Schema,
+                     ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
                 };
                 var copiedHistSchema = new TableSchema()
                 {
                     Columns = originalHistTable.Columns.Where(x => x != dropColumn.Column).ToArray(),
                     Name = originalTable.Table.Name + "_" + xy.ID,
-                    Schema = originalTable.Table.Schema
+                    Schema = originalTable.Table.Schema,
+                    ColumnDefinitions = originalHistTable.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
+
                 };
                 Guard.StateTrue(copiedTableSchema.Columns.Count() + 1 == originalTable.Table.Columns.Count(), "Could not find column: " + dropColumn.Column);
                 Guard.StateTrue(copiedHistSchema.Columns.Count() + 1 == originalHistTable.Columns.Count(), "Could not find column: " + dropColumn.Column);
+                Guard.StateTrue(copiedTableSchema.ColumnDefinitions.Count() + 1 == originalTable.Table.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
+                Guard.StateTrue(copiedHistSchema.ColumnDefinitions.Count() + 1 == originalHistTable.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
+
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
                 currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
 

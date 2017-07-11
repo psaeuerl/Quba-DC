@@ -105,6 +105,7 @@
     <Compile Include="Separated\CRUD\SeparatedSelectHandler.cs" />
     <Compile Include="Separated\SeparatedConstants.cs" />
     <Compile Include="Separated\SeparatedQSSelectHandler.cs" />
+    <Compile Include="Separated\SMO\SeparatedRenameColumnHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedAddColumnHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDropColumnHandler.cs" />
     <Compile Include="Separated\SMO\SeparatedDecomposeTableHandler.cs" />

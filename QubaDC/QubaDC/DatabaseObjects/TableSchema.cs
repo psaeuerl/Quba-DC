@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
+using QubaDC.SMO;
 
 namespace QubaDC.DatabaseObjects
 {
@@ -13,6 +14,8 @@ namespace QubaDC.DatabaseObjects
         public String Schema { get; set; }
 
         public String[] Columns { get; set; }
+
+        public ColumnDefinition[] ColumnDefinitions { get; set; }
 
         public TableSchema()
         {

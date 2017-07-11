@@ -54,13 +54,15 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = firstTable.Table.Columns,
                     Name = mergeTable.ResultTableName,
-                    Schema = mergeTable.ResultSchema
+                    Schema = mergeTable.ResultSchema,
+                    ColumnDefinitions = firstTable.Table.ColumnDefinitions
                 };
                 var mergedHistTableSchema = new TableSchema()
                 {
                     Columns = firstHistTable.Columns,
                     Name = mergeTable.ResultTableName + "_" + xy.ID,
-                    Schema = mergeTable.ResultSchema
+                    Schema = mergeTable.ResultSchema,
+                    ColumnDefinitions = firstHistTable.ColumnDefinitions
                 };
                 currentSchema.AddTable(mergedTableSchema, mergedHistTableSchema);
                 currentSchema.RemoveTable(firstTable.Table.ToTable());

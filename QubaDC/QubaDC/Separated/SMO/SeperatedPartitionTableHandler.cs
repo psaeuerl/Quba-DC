@@ -49,13 +49,17 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns,
                     Name = partitionTable.TrueConditionTableName,
-                    Schema = partitionTable.TrueConditionSchema
+                    Schema = partitionTable.TrueConditionSchema,
+                    ColumnDefinitions = originalTable.Table.ColumnDefinitions
+
                 };
                 var trueTableHist = new TableSchema()
                 {
                     Columns = originalHistTable.Columns,
                     Name = partitionTable.TrueConditionTableName + "_" + xy.ID,
-                    Schema = partitionTable.TrueConditionSchema
+                    Schema = partitionTable.TrueConditionSchema,
+                    ColumnDefinitions = originalHistTable.ColumnDefinitions
+
                 };
                 currentSchema.AddTable(trueTableSchema, trueTableHist);
 
@@ -63,13 +67,17 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns,
                     Name = partitionTable.FalseConditionTableName,
-                    Schema = partitionTable.FalseConditionSchema
+                    Schema = partitionTable.FalseConditionSchema,
+                    ColumnDefinitions = originalTable.Table.ColumnDefinitions
+
                 };
                 var falseTableSchemaHist = new TableSchema()
                 {
                     Columns = originalHistTable.Columns,
                     Name = partitionTable.FalseConditionTableName + "_" + xy.ID,
-                    Schema = partitionTable.FalseConditionSchema
+                    Schema = partitionTable.FalseConditionSchema,
+                    ColumnDefinitions = originalHistTable.ColumnDefinitions
+
                 };
                 currentSchema.AddTable(falseTableSchema, falseTableSchemaHist);
 

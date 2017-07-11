@@ -54,7 +54,8 @@ namespace QubaDC.Separated
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            throw new NotImplementedException();
+            SeparatedRenameColumnHandler h = new SeparatedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameColumn);
         }
 
         internal override void Visit(MergeTable mergeTable)

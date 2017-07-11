@@ -30,5 +30,9 @@ namespace QubaDC.SMO
         internal abstract string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select);
 
         internal abstract string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column);
+        internal abstract string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable);
+        internal abstract string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable);
+        internal abstract string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable);
+        internal abstract string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd);
     }
 }

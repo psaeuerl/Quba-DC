@@ -55,13 +55,15 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = firstTable.Table.Columns.Union(secondTable.Table.Columns).Distinct().ToArray(),
                     Name = jointable.ResultTableName,
-                    Schema = jointable.ResultSchema
+                    Schema = jointable.ResultSchema,
+                    ColumnDefinitions = firstTable.Table.ColumnDefinitions.Union(secondTable.Table.ColumnDefinitions).GroupBy(x=>x.ColumName).Select(x=>x.First()).ToArray()
                 };
                 var joinedTableHistSchema = new TableSchema()
                 {
                     Columns = firstTable.Table.Columns.Union(secondHistTable.Columns).Distinct().ToArray(),
                     Name = jointable.ResultTableName + "_" + xy.ID,
-                    Schema = jointable.ResultSchema
+                    Schema = jointable.ResultSchema,
+                     ColumnDefinitions = firstTable.Table.ColumnDefinitions.Union(secondHistTable.ColumnDefinitions).GroupBy(x => x.ColumName).Select(x => x.First()).ToArray()
                 };
                 currentSchema.AddTable(joinedTableSchema, joinedTableHistSchema);
                 currentSchema.RemoveTable(firstTable.Table.ToTable());

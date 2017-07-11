@@ -18,6 +18,8 @@ namespace QubaDC.DatabaseObjects
 
         public void AddTable(TableSchema table, TableSchema histequivalent)
         {
+            AssertTableColumns(table);
+            AssertTableColumns(histequivalent);
             this._Tables.Add(new TableSchemaWithHistTable()
             {
                 Table = table,
@@ -25,6 +27,16 @@ namespace QubaDC.DatabaseObjects
                 HistTableSchema = histequivalent.Schema
             });
             this._HistTables.Add(histequivalent);
+        }
+
+        private void AssertTableColumns(TableSchema table)
+        {
+            String[] columns = table.Columns.ToArray();
+            String[] columnDefColumns = table.ColumnDefinitions.Select(x => x.ColumName).ToArray();
+            var columnsExceptColumnDef = columns.Except(columnDefColumns).ToArray();
+            var columnsDefExceptColumns = columnDefColumns.Except(columns).ToArray();
+            Guard.StateTrue(columnsExceptColumnDef.Count() == 0, "Could not find ColumnDef: " + String.Join(",", columnsExceptColumnDef));
+            Guard.StateTrue(columnsDefExceptColumns.Count() == 0, "Could not find Column: " + String.Join(",", columnsDefExceptColumns));
         }
 
         public TableSchema FindHistTable(Table insertTable)

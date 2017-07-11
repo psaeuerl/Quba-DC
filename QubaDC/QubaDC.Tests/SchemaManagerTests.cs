@@ -77,7 +77,7 @@ namespace QubaDC.Tests
                 SchemaInfo schemaat = this.SchemaManager.GetSchemaActiveAt(schema.TimeOfCreation);
                 String schemaser = JsonSerializer.SerializeObject(schema);
                 String schemaatset = JsonSerializer.SerializeObject(schemaat);
-                Assert.Equal(schemaser, schemaatset);
+                Assert.Equal(schemaser, schemaatset);                
             }
         }
     }

@@ -77,7 +77,8 @@ namespace QubaDC.SMO
             {
                 Columns = this.Columns.Select(x => x.ColumName).ToArray(),
                 Name = TableName,
-                Schema = Schema
+                Schema = Schema,
+                 ColumnDefinitions = this.Columns.ToArray()
             };
         }
 

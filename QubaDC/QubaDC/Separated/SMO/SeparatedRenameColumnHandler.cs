@@ -12,11 +12,11 @@ using QubaDC.Restrictions;
 
 namespace QubaDC.Separated.SMO
 {
-    class SeparatedAddColumnHandler
+    class SeparatedRenameColumnHandler
     {
         private SchemaManager schemaManager;
 
-        public SeparatedAddColumnHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public SeparatedRenameColumnHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
@@ -26,7 +26,7 @@ namespace QubaDC.Separated.SMO
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
 
-        internal void Handle(AddColum dropColumn)
+        internal void Handle(RenameColumn renameColumn)
         {
             //What to do here?
             //a.) Copy table
@@ -38,53 +38,51 @@ namespace QubaDC.Separated.SMO
             var con = (MySQLDataConnection)DataConnection;
             con.DoTransaction((transaction, c) =>
             {
-
                 SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
                 Schema currentSchema = xy.Schema;
 
 
-                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(dropColumn.Schema, dropColumn.TableName);
+                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(renameColumn.Schema, renameColumn.TableName);
                 TableSchema originalHistTable = xy.Schema.FindHistTable(originalTable.Table.ToTable());
 
                 var copiedTableSchema = new TableSchema()
                 {
-                    Columns = originalTable.Table.Columns.Union(new String[] { dropColumn.Column.ColumName }).ToArray(),
+                    Columns = originalTable.Table.Columns.Select(x=> x == renameColumn.ColumnName ? renameColumn.RenameName : x).ToArray(),
                     Name = originalTable.Table.Name,
                     Schema = originalTable.Table.Schema,
-                     ColumnDefinitions = originalTable.Table.ColumnDefinitions.Union(new ColumnDefinition[] { dropColumn.Column }).ToArray(),
+                    ColumnDefinitions = originalTable.Table.ColumnDefinitions
                 };
+                copiedTableSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.ColumnName).ColumName = renameColumn.RenameName;
+
                 var copiedHistSchema = new TableSchema()
                 {
-                    Columns = copiedTableSchema.Columns.Union(originalHistTable.Columns.Except(copiedTableSchema.Columns)).ToArray(),
+                    Columns = originalHistTable.Columns.Select(x => x == renameColumn.ColumnName ? renameColumn.RenameName : x).ToArray(),
                     Name = originalTable.Table.Name + "_" + xy.ID,
                     Schema = originalTable.Table.Schema,
-                    ColumnDefinitions = copiedTableSchema.ColumnDefinitions.Union(originalHistTable.ColumnDefinitions
-                                            .Where(x => copiedTableSchema.Columns.Contains(x.ColumName) == false)).ToArray()
+                    ColumnDefinitions = originalHistTable.ColumnDefinitions
                 };
+                copiedHistSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.ColumnName).ColumName = renameColumn.RenameName;
 
-
-                Guard.StateTrue(copiedTableSchema.Columns.Count() == originalTable.Table.Columns.Count() + 1, "Could add new column: " + dropColumn.Column);
-                Guard.StateTrue(copiedHistSchema.Columns.Count() == originalHistTable.Columns.Count() + 1, "Could add new column: " + dropColumn.Column);
-                Guard.StateTrue(copiedTableSchema.ColumnDefinitions.Count() == originalTable.Table.ColumnDefinitions.Count() + 1, "Could add new column: " + dropColumn.Column);
-                Guard.StateTrue(copiedHistSchema.ColumnDefinitions.Count() == originalHistTable.ColumnDefinitions.Count() + 1, "Could add new column: " + dropColumn.Column);
+                //Guard.StateTrue(copiedTableSchema.Columns.Count() == originalTable.Table.Columns.Count() + 1, "Could add new column: " + dropColumn.Column);
+                //Guard.StateTrue(copiedHistSchema.Columns.Count() == originalHistTable.Columns.Count() + 1, "Could add new column: " + dropColumn.Column);
 
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
                 currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
 
-                String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
-                {
-                    NewSchema = originalTable.Table.Schema,
-                    NewTableName = originalTable.Table.Name + "_old",
-                    OldSchema = originalTable.Table.Schema,
-                    OldTableName = originalTable.Table.Name
-                });
 
-                con.ExecuteNonQuerySQL(renameTableSQL);
 
-                CopyTable(c, con, originalTable.Table, copiedTableSchema,true);
-                AlterTable(c,con,copiedTableSchema, dropColumn.Column);
-                CopyTable(c, con, originalHistTable, copiedHistSchema,false);
-                AlterTable(c, con, copiedHistSchema, dropColumn.Column);
+                String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema,originalHistTable);
+                String dropUpdaterigger = SMORenderer.RenderDropUpdaterigger(copiedTableSchema, originalHistTable);
+                String dropDeleteTrigger = SMORenderer.RenderDropDeleteTrigger(copiedTableSchema, originalHistTable);
+
+                con.ExecuteSQLScript(dropInsertTrigger, c);
+                con.ExecuteSQLScript(dropUpdaterigger, c);
+                con.ExecuteSQLScript(dropDeleteTrigger, c);
+
+                ColumnDefinition cd = copiedTableSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.RenameName);
+                String renameColumnSQL = SMORenderer.RenderRenameColumn(renameColumn,cd);
+
+                con.ExecuteNonQuerySQL(renameColumnSQL);
 
                 //INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
@@ -98,25 +96,10 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteSQLScript(deleteTrigger, c);
                 con.ExecuteSQLScript(UpdateTrigger, c);
 
-
-
-
-                ////Insert data from old to new
-                SelectOperation s = new SelectOperation()
-                {
-                    Columns = originalTable.Table.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
-                     LiteralColumns = new LiteralColumn[] { new LiteralColumn() {  ColumnLiteral = dropColumn.InitalValue, ColumnName = dropColumn.Column.ColumName} },
-                    FromTable = new FromTable() { TableAlias = "t1", TableName = originalTable.Table.Name + "_old", TableSchema = originalTable.Table.Schema }
-                };
-                String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
-                String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
-                con.ExecuteNonQuerySQL(insertFromTable);
-
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
+                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, renameColumn);
                 con.ExecuteNonQuerySQL(updateSchema, c);
 
-                String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
-                con.ExecuteNonQuerySQL(dropTableSql);
+
 
                 transaction.Commit();
             });

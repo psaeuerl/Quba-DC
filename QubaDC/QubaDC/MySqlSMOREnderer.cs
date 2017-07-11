@@ -309,5 +309,36 @@ DELIMITER;";
             String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
             return Drop;
         }
+
+        internal override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        {
+            String baseFormat = "Drop TRIGGER {2}.insert_{0}_to_{1}";
+            String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            return result;
+        }
+
+        internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        {
+            String baseFormat = "Drop TRIGGER {2}.update_{0}_to_{1}"; 
+             String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            return result;
+        }
+
+        internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        {
+            String baseFormat = "Drop TRIGGER {2}.delete_{0}_to_{1}";
+            String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            return result;
+        }
+
+        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd)
+        {
+            String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
+            String table = GetQuotedTable(renameColumn.Schema, renameColumn.TableName);
+            String baseColumn = Quote(renameColumn.ColumnName);
+            String type = RenderColumnDefinition(true, cd);
+            String result = String.Format(baseFormat, table, baseColumn,  type);
+            return result;
+        }
     }
 }
