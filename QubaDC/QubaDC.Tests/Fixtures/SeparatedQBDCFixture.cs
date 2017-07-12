@@ -18,9 +18,6 @@ namespace QubaDC.Tests
                 , new SeparatedQSSelectHandler()
                 );
             this.QBDCSystem = c;
-            //Create Empty Schema
-            this.CreateEmptyDatabase("SeperatedTests");
-            this.DataConnection.UseDatabase("SeperatedTests");
         }
 
 

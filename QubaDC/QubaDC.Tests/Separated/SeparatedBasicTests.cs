@@ -11,62 +11,28 @@ using Xunit;
 
 namespace QubaDC.Tests.Separated
 {
-    public class SeparatedBasicTests : IDisposable
+    public class SeparatedBasicTests : SystemTests.SystemBasicTests
     {
-        private string currentDatabase;
 
-        public SeparatedBasicTests()
+        public SeparatedBasicTests() : base()
         {
-            this.Fixture = new MySqlDBFixture();
-            MySQLDataConnection con = Fixture.DataConnection.Clone();
-            QubaDCSystem c = new MySQLQubaDCSystem(
-                        con,
-                         new SeparatedSMOHandler()
-                        , new SeparatedCRUDHandler()
-                                                 , new SeparatedQSSelectHandler()
+            SeparatedQBDCFixture f = new SeparatedQBDCFixture();
+            this.SeparatedFixture = f;
+            this.Fixture = f;
+            base.Init();
+        }
 
-                       );
-            this.QBDC = c;
+        public SeparatedQBDCFixture SeparatedFixture { get; private set; }
+
+        public override string BuildDataBaseName()
+        {
             //Create Empty Schema
-            this.currentDatabase = "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
-            Fixture.CreateEmptyDatabase(currentDatabase);
-            con.UseDatabase(currentDatabase);
-            this.Fixture = Fixture;
+            return "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
         }
 
-        public MySqlDBFixture Fixture { get; private set; }
-        public QubaDCSystem QBDC { get; private set; }
-
-        public void Dispose()
+        public override QubaDCSystem BuildSystem()
         {
-            this.Fixture.DropDatabaseIfExists(currentDatabase);
+            return SeparatedFixture.QBDCSystem;
         }
-
-        [Fact]
-        public void EnsureWeStartFromEmptyDB()
-        {
-            var allTables = Fixture.DataConnection.GetAllTables();
-            Assert.Equal(0, allTables.Count());
-            QBDC.Init();
-            var allTablesAfterInit = Fixture.DataConnection.GetAllTables();
-            Assert.Equal(3, allTablesAfterInit.Count());
-        }
-
-        [Fact]
-        public void CreateTableWorks()
-        {
-            QBDC.Init();
-            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
-            QBDC.SMOHandler.HandleSMO(t);
-            var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables();
-            Assert.Contains("basictable", allTablesAfterCreateTable.Select(x => x.Name));
-            Assert.Contains("basictable_1", allTablesAfterCreateTable.Select(x => x.Name));
-            var schemaInfo = QBDC.SchemaManager.GetCurrentSchema();
-            var schema = schemaInfo.Schema;
-            Assert.Equal(1, schema.HistTables.Count());
-            Assert.Equal(1, schema.Tables.Count());
-        }
-
-
     }
 }

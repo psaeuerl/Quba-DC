@@ -64,6 +64,7 @@
     <Compile Include="DataBuilder\CreateTableBuilder.cs" />
     <Compile Include="DataConnectionTests.cs" />
     <Compile Include="Fixtures\MySqlDBFixture.cs" />
+    <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -72,9 +73,9 @@
     <Compile Include="MySQLQueryStoreTests.cs" />
     <Compile Include="SchemaManagerTests.cs" />
     <Compile Include="SchemaSerializationTests.cs" />
-    <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreSMOTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
+    <Compile Include="SystemTests\SystemBasicTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />
     <Compile Include="xUnitExtension\CustomTestCollectionOrderer.cs" />
     <Compile Include="xUnitExtension\OrderAttribute.cs" />
