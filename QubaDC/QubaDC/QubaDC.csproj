@@ -53,6 +53,8 @@
     <Compile Include="Hybrid\HybridSMOHandler.cs" />
     <Compile Include="Hybrid\HybridCRUDHandler.cs" />
     <Compile Include="Hybrid\HybridQSSelectHandler.cs" />
+    <Compile Include="Hybrid\HybridConstants.cs" />
+    <Compile Include="Hybrid\SMO\HybridCreateTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />
@@ -146,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Hybrid\CRUD\" />
-    <Folder Include="Hybrid\SMO\" />
     <Folder Include="Integrated\" />
   </ItemGroup>
   <ItemGroup>

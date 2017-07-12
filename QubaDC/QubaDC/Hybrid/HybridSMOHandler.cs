@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QubaDC.SMO;
 using QubaDC.Separated.SMO;
+using QubaDC.Hybrid.SMO;
 
 namespace QubaDC.Hybrid
 {
@@ -93,7 +94,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(CreateTable createTable)
         {
-            throw new NotImplementedException();
+            HybridCreateTableHandler h = new HybridCreateTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(createTable);
         }
 
         internal override void Visit(DropColumn dropColumn)
