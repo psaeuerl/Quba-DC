@@ -50,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CRUD\LiteralColumn.cs" />
+    <Compile Include="Hybrid\HybridSMOHandler.cs" />
+    <Compile Include="Hybrid\HybridCRUDHandler.cs" />
+    <Compile Include="Hybrid\HybridQSSelectHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />
@@ -142,7 +145,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Hybrid\" />
+    <Folder Include="Hybrid\CRUD\" />
+    <Folder Include="Hybrid\SMO\" />
     <Folder Include="Integrated\" />
   </ItemGroup>
   <ItemGroup>
