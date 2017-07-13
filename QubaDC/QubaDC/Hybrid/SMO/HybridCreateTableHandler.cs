@@ -69,7 +69,7 @@ namespace QubaDC.Hybrid.SMO
                 //String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
 
                 ////Add Trigger
-                //con.ExecuteSQLScript(trigger, c);
+                con.ExecuteSQLScript(trigger, c);
                 //con.ExecuteSQLScript(deleteTrigger, c);
                 //con.ExecuteSQLScript(UpdateTrigger, c);
 

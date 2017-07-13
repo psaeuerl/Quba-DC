@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using QubaDC.CRUD;
 using QubaDC.Separated.CRUD;
 using System.Data;
+using QubaDC.Hybrid.CRUD;
 
 namespace QubaDC.Hybrid
 {
@@ -18,7 +19,8 @@ namespace QubaDC.Hybrid
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
-            throw new NotImplementedException();
+            HybridInsertHandler h = new HybridInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleInsert(insertOperation);
         }
 
         public override void HandleUpdateOperation(UpdateOperation c2)
@@ -28,7 +30,9 @@ namespace QubaDC.Hybrid
 
         public override string RenderSelectOperation(SelectOperation selectOperation)
         {
-            throw new NotImplementedException();
+            HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleSelect(selectOperation, false);
+            return select;
         }
 
         internal override string RenderHashSelect(SelectOperation newOperation)
@@ -45,8 +49,7 @@ namespace QubaDC.Hybrid
 
         //public override void HandleInsert(InsertOperation insertOperation)
         //{
-        //    SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-        //    h.HandleInsert(insertOperation);
+
         //}
 
         //public override void HandleDeletOperation(DeleteOperation deleteOperation)

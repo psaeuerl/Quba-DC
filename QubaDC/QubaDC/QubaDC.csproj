@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CRUD\LiteralColumn.cs" />
+    <Compile Include="Hybrid\CRUD\HybridInsertHandler.cs" />
+    <Compile Include="Hybrid\CRUD\HybridSelectHandler.cs" />
     <Compile Include="Hybrid\HybridSMOHandler.cs" />
     <Compile Include="Hybrid\HybridCRUDHandler.cs" />
     <Compile Include="Hybrid\HybridQSSelectHandler.cs" />
@@ -148,7 +150,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Hybrid\CRUD\" />
     <Folder Include="Integrated\" />
   </ItemGroup>
   <ItemGroup>
