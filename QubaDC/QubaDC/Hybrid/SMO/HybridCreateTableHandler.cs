@@ -37,8 +37,10 @@ namespace QubaDC.Hybrid.SMO
                 ////Create Table Hist
                 ////Create Trigger on normal
                 ColumnDefinition startTs = HybridConstants.GetStartColumn();
-                createTable.Columns = createTable.Columns.Union(new ColumnDefinition[] { HybridConstants.GetStartColumn() }).ToArray();
-                String createBaseTable = SMORenderer.RenderCreateTable(createTable);
+
+                CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
+                newCt.Columns = createTable.Columns.Union(new ColumnDefinition[] { HybridConstants.GetStartColumn() }).ToArray();
+                String createBaseTable = SMORenderer.RenderCreateTable(newCt);
                 ;
                 ////Create History Table
                 SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
@@ -49,7 +51,7 @@ namespace QubaDC.Hybrid.SMO
                     xy.ID = 0;
                 }
 
-                CreateTable ctHistTable = CreateHistTable(createTable, xy);
+                CreateTable ctHistTable = CreateHistTable(newCt, xy);
 
                 String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
 

@@ -81,7 +81,7 @@ namespace QubaDC
 
         public QueryStoreReexecuteResult ReExecuteSelect(Guid gUID)
         {
-            QueryStoreReexecuteResult res =SelectHandler.ReExecuteSelectFor(gUID, this,this.DataConnection);
+            QueryStoreReexecuteResult res = SelectHandler.ReExecuteSelectFor(gUID, this, this.DataConnection, CRUDHandler, SchemaManager);
             return res;
         }
 

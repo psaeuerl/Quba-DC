@@ -28,6 +28,8 @@ namespace QubaDC.Separated
             //We query the global update timestampt and get the max from it
             //Then we get which schema was active there and get the history tables for this one            
 
+            if (s.GetAllSelectedTables().Any(x => String.IsNullOrWhiteSpace(x.TableAlias)))
+                throw new InvalidOperationException("Table Alias needed on all tables in hybrid");
 
             //What to do here:
             //0.) Get last updated Timestamp
@@ -67,8 +69,6 @@ namespace QubaDC.Separated
 
             newOperation.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
 
-            //c.2) add the hash-column to it
-            newOperation.RenderHashColumn = true;
 
             //d.) render it and return
 
@@ -78,6 +78,10 @@ namespace QubaDC.Separated
             String originalrenderd = cRUDHandler.RenderSelectOperation(s);
 
             String RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
+
+
+            //Build Hash-Select
+
 
             String selectHash = cRUDHandler.RenderHashSelect(newOperation);
             String selectHashSerialized = cRUDHandler.RenderHashSelect(newOperation);
@@ -114,43 +118,114 @@ namespace QubaDC.Separated
             return execResult;
         }
 
-        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con)
+        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         {
-            throw new NotImplementedException();
+            String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
+            DataTable t = con.ExecuteQuery(selectQueryStoreROw);
+            if (t.Rows.Count != 1)
+                throw new InvalidOperationException("Expected to get 1 Row, got: " + t.Rows.Count + " Could not do rexecue for guid: " + gUID.ToString());
+            var row = t.Select().First();
+
+            String hash = row.Field<String>("Hash");
+            String query = row.Field<String>("QuerySerialized");
+            DateTime queryTime = row.Field<DateTime>("Timestamp");
+
+            SelectOperation originalSelect = JsonSerializer.DeserializeObject<SelectOperation>(query);
+            var SchemaInfo = schemaManager.GetSchemaActiveAt(queryTime);
+            List<Restriction> TimeStampRestrictions = new List<Restriction>();
+
+            foreach (var selectedTable in originalSelect.GetAllSelectedTables())
+            {
+                OperatorRestriction startTs = new OperatorRestriction()
+                {
+                    LHS = new ColumnOperand()
+                    {
+                        Column = new ColumnReference()
+                        {
+                            ColumnName = SeparatedConstants.StartTS,
+                            TableReference = selectedTable.TableAlias
+                        }
+                    },
+                    Op = RestrictionOperator.LET
+                    ,
+                    RHS = new DateTimeRestrictionOperand()
+                    {
+                        Value = queryTime
+                    },
+                };
+
+                OperatorRestriction endTsLt = new OperatorRestriction()
+                {
+                    LHS = new DateTimeRestrictionOperand()
+                    {
+                        Value = queryTime
+                    },
+                    Op = RestrictionOperator.LT
+    ,
+                    RHS = new ColumnOperand()
+                    {
+                        Column = new ColumnReference()
+                        {
+                            ColumnName = SeparatedConstants.EndTS,
+                            TableReference = selectedTable.TableAlias
+                        }
+                    },
+                };
+                OperatorRestriction endTSNull = new OperatorRestriction()
+                {
+                    LHS = new ColumnOperand()
+                    {
+                        Column = new ColumnReference()
+                        {
+                            ColumnName = SeparatedConstants.EndTS,
+                            TableReference = selectedTable.TableAlias
+                        }
+                    },
+                    Op = RestrictionOperator.IS
+,
+                    RHS = new LiteralOperand()
+                    {
+                        Literal = "NULL"
+                    }
+                };
+                var OrRestriction = new OrRestriction();
+                OrRestriction.Restrictions = new Restriction[] { endTsLt, endTSNull };
+                var AndRestriction = new AndRestriction();
+                AndRestriction.Restrictions = new Restriction[] { startTs, OrRestriction };
+                TimeStampRestrictions.Add(AndRestriction);
+            }
+            //c.) add timestamp parts to it
+            if (originalSelect.Restriction != null)
+                TimeStampRestrictions.Add(originalSelect.Restriction);
+
+            originalSelect.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
+
+
+            SchemaInfo s = schemaManager.GetSchemaActiveAt(queryTime);
+            String hybridSelect = cRUDHandler.RenderHybridSelectOperation(originalSelect, s);
+            String hybridHashSelect = cRUDHandler.RenderHybridHashSelect(originalSelect, s);
+
+
+            DataTable normaResult = null;
+            DataTable hashTable = null;
+            con.DoTransaction((trans, c) =>
+            {
+
+                hashTable = con.ExecuteQuery(hybridHashSelect, c);
+                String currentHash = hashTable.Select().First().Field<String>(0);
+                if (currentHash != hash)
+                    throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal, HashSelect: " + hybridHashSelect + System.Environment.NewLine + "Select: " + query);
+                normaResult = con.ExecuteQuery(hybridSelect, c);
+                trans.Commit();
+            });
+
+            return new QueryStoreReexecuteResult()
+            {
+                GUID = gUID,
+                Hash = hash,
+                Result = normaResult
+            };
         }
-     
-
-        //        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con)
-        //        {
-        //            String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
-        //            DataTable t = con.ExecuteQuery(selectQueryStoreROw);
-        //            if (t.Rows.Count != 1)
-        //                throw new InvalidOperationException("Expected to get 1 Row, got: " + t.Rows.Count + " Could not do rexecue for guid: " + gUID.ToString());
-        //            var row = t.Select().First();
-
-        //            String hash = row.Field<String>("Hash");
-        //            String query = row.Field<String>("ReWrittenQuerySerialized");
-        //            String querySerialized = row.Field<String>("HashSelectSerialized");
-
-        //            DataTable normaResult = null;
-        //            DataTable hashTable = null;
-        //            con.DoTransaction((trans, c) =>
-        //            {
-
-        //                hashTable = con.ExecuteQuery(querySerialized, c);
-        //                String currentHash = hashTable.Select().First().Field<String>(0);
-        //                if (currentHash != hash)
-        //                    throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal, HashSelect: " + querySerialized + System.Environment.NewLine + "Select: " + query);
-        //                normaResult = con.ExecuteQuery(query, c);
-        //                trans.Commit();
-        //            });
-
-        //            return new QueryStoreReexecuteResult()
-        //            {
-        //                GUID = gUID,
-        //                Hash = hash,
-        //                Result = normaResult
-        //            };
     }
 }
 

@@ -108,16 +108,14 @@ namespace QubaDC.Separated
 
             newOperation.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
 
-            //c.2) add the hash-column to it
-            newOperation.RenderHashColumn = true;
-
             //d.) render it and return
 
-            String select= cRUDHandler.RenderSelectOperation(newOperation);
+
 
             String originalSerialized = JsonSerializer.SerializeObject(s);
             String originalrenderd = cRUDHandler.RenderSelectOperation(s);
 
+            String select = cRUDHandler.RenderSelectOperation(newOperation);
             String RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
 
             String selectHash = cRUDHandler.RenderHashSelect(newOperation);
@@ -153,7 +151,7 @@ namespace QubaDC.Separated
             return execResult;
         }
 
-        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs,DataConnection con)
+        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs,DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         {
             String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
             DataTable t = con.ExecuteQuery(selectQueryStoreROw);

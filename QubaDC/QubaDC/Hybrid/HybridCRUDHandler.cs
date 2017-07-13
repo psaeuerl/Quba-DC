@@ -37,7 +37,23 @@ namespace QubaDC.Hybrid
 
         internal override string RenderHashSelect(SelectOperation newOperation)
         {
-            throw new NotImplementedException();
+            HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleSelect(newOperation, true);
+            return select;
+        }
+
+        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s)
+        {
+            HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleHybridSelect(newOperation, s, true);
+            return select;
+        }
+
+        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s)
+        {
+            HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleHybridSelect(originalSelect, s,false);
+            return select;
         }
 
         //public override String RenderSelectOperation(SelectOperation selectOperation)

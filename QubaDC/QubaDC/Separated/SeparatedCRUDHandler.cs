@@ -44,5 +44,15 @@ namespace QubaDC.Separated
             SeparatedUpdateHandler h = new SeparatedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             h.HandleUpdate(c2);
         }
+
+        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

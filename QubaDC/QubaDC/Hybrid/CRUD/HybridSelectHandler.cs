@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QubaDC.DatabaseObjects;
 
 namespace QubaDC.Hybrid.CRUD
 {
@@ -47,6 +48,76 @@ FROM {1}
             var res = String.Join(", ", cols);
             String sel = String.Format("MD5( GROUP_CONCAT( CONCAT_WS('#',{0}) SEPARATOR '#' ) )", res);
             return sel;
+        }
+
+        internal string HandleHybridSelect(SelectOperation selectOperation, SchemaInfo s, bool RenderAsHash)
+        {
+            String Format =
+@"SELECT
+{0}
+FROM {1}
+{2}
+{3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
+            String columns = "";
+            if (!RenderAsHash)
+                columns = RenderColumns(selectOperation.Columns, selectOperation.LiteralColumns);
+            else
+                columns = this.RenderAsHash(selectOperation.Columns, selectOperation.LiteralColumns);
+            String fromPart = RenderHybridFromPart(selectOperation,s);
+            String wherePart = RenderWherePart(selectOperation.Restriction);
+            String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
+            String select = String.Format(Format, columns, fromPart, wherePart, OrderBy);
+            return select;
+        }
+
+        private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo s)
+        {
+            var histTable = s.Schema.FindHistTable(selectOperation.FromTable);
+            String table = RenderHybridFromTable(selectOperation.FromTable,histTable);
+            var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(x,s));
+            var joined = String.Join(System.Environment.NewLine, parts);
+            var result = String.Join(System.Environment.NewLine, table, joined);
+            return table;
+        }
+
+        private object RenderHybridJoinedTable(JoinedTable x, SchemaInfo s)
+        {
+
+            String Format = "{0} {1} {2}";
+            //0 => condition
+            //1 => tablename
+            //2 => joinrestriction
+            String joinType = CRUDRenderer.RenderJoinType(x.Join);
+            FromTable t = new FromTable()
+            {
+                TableAlias = x.TableAlias,
+                TableName = x.TableName,
+                TableSchema = x.TableSchema
+            };
+            var histTable = s.Schema.FindHistTable(t);
+
+            String table = RenderHybridFromTable(t, histTable);
+
+            String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
+            String result = String.Format(Format, joinType, table, rest);
+            return result;
+        }
+
+        private string RenderHybridFromTable(FromTable fromTable, TableSchema histTableSchema)
+        {
+
+            string baseFormat = "(SELECT *, null as {0} FROM {1} UNION Select * from {2}) {3}";
+            String endTsColumn = CRUDRenderer.Quote(HybridConstants.EndTS);
+            String baseTable = CRUDRenderer.Quote(fromTable.TableSchema) + "."
+                                 + CRUDRenderer.Quote(fromTable.TableName);
+
+            string histTable = CRUDRenderer.Quote(histTableSchema.Schema) + "."
+                            + CRUDRenderer.Quote(histTableSchema.Name);
+            string alias = " AS " + CRUDRenderer.Quote(fromTable.TableAlias);
+
+
+            String result = String.Format(baseFormat, endTsColumn, baseTable, histTable, alias);
+            return result;            
         }
 
         private string RenderColumns(ColumnReference[] columns, LiteralColumn[] literalColumns)
