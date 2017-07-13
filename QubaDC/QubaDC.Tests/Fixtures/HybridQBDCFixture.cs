@@ -17,6 +17,7 @@ namespace QubaDC.Tests
                 new HybridSMOHandler()
                 , new HybridCRUDHandler()
                 , new HybridQSSelectHandler()
+                , new HybridMySqlSMORenderer()
                 );
             this.QBDCSystem = c;
         }

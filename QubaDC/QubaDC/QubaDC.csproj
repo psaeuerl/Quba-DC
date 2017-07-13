@@ -54,6 +54,7 @@
     <Compile Include="Hybrid\HybridCRUDHandler.cs" />
     <Compile Include="Hybrid\HybridQSSelectHandler.cs" />
     <Compile Include="Hybrid\HybridConstants.cs" />
+    <Compile Include="Hybrid\HybridMySqlSMORenderer.cs" />
     <Compile Include="Hybrid\SMO\HybridCreateTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="MySQLCrudRenderer.cs" />
     <Compile Include="MySQLDialectHelper.cs" />
     <Compile Include="MySQLGlobalUpdateTimeManager.cs" />
-    <Compile Include="MySqlSMORenderer.cs" />
+    <Compile Include="Separated\SeparatedMySqlSMORenderer.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />
     <Compile Include="MySqlQueryStore.cs" />

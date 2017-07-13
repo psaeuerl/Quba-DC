@@ -62,7 +62,7 @@ namespace QubaDC.Hybrid.SMO
                 con.ExecuteNonQuerySQL(createHistTable, c);
 
                 ////INsert Trigger 
-                //String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
                 ////Delete Trigger
                 //String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
                 ////Update Trigger

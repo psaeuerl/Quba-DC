@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QubaDC.SMO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,13 +10,14 @@ namespace QubaDC
     public class MySQLQubaDCSystem : QubaDCSystem
     {
         public MySQLQubaDCSystem(MySQLDataConnection con, SMOVisitor separatedSMOHandler
-            , CRUDVisitor separatedCRUDHandler , QueryStoreSelectHandler selecthandler
+            , CRUDVisitor separatedCRUDHandler, QueryStoreSelectHandler selecthandler
+            , SMORenderer renderer
             )
             : base(con, separatedSMOHandler, 
                   separatedCRUDHandler, 
                   new MySqlQueryStore(con, selecthandler),
                   new MySqlSchemaManager(con),
-                  new MySqlSMORenderer(),
+                  renderer,
                   new MySQLCrudRenderer(),
                   new MySQLGlobalUpdateTimeManager(con))
         {

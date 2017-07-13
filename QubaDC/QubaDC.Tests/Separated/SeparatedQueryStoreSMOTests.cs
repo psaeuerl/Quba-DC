@@ -25,8 +25,9 @@ namespace QubaDC.Tests.Separated
             QubaDCSystem c = new MySQLQubaDCSystem(
                         con,
                          new SeparatedSMOHandler()
-                         ,new SeparatedCRUDHandler()
+                         , new SeparatedCRUDHandler()
                          , new SeparatedQSSelectHandler()
+                          , new SeparatedMySqlSMORenderer()
                        );
             this.QBDC = c;
             //Create Empty Schema
@@ -42,7 +43,7 @@ namespace QubaDC.Tests.Separated
 
         public void Dispose()
         {
-            if(Succcess)
+            if (Succcess)
                 this.fixture.DropDatabaseIfExists(currentDatabase);
         }
 
@@ -60,7 +61,7 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c2);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
-            SelectOperation s =  SelectOperation.FromCreateTable(t);
+            SelectOperation s = SelectOperation.FromCreateTable(t);
             var result = QBDC.QueryStore.ExecuteSelect(s);
 
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
@@ -111,11 +112,11 @@ namespace QubaDC.Tests.Separated
 
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
 
-            
+
             DropTable dt = new DropTable()
             {
                 Schema = t.Schema,
-                TableName = t.TableName,             
+                TableName = t.TableName,
             };
             QBDC.SMOHandler.HandleSMO(dt);
 
@@ -183,10 +184,10 @@ namespace QubaDC.Tests.Separated
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result2.Hash);
 
-            s2.FromTable = new FromTable() { TableSchema = ct.CopiedSchema, TableName = ct.CopiedTableName, TableAlias="ref" };
-            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();      
+            s2.FromTable = new FromTable() { TableSchema = ct.CopiedSchema, TableName = ct.CopiedTableName, TableAlias = "ref" };
+            s2.Columns = s2.Columns.Select(x => new ColumnReference() { ColumnName = x.ColumnName, TableReference = "ref" }).ToArray();
             var result3 = QBDC.QueryStore.ExecuteSelect(s2);
-  
+
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
 
             this.Succcess = true;
@@ -255,7 +256,7 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(2, result4.Result.Select().First()[0]);
             this.Succcess = true;
         }
-       
+
         [Fact]
         public void MergeTableWorks()
         {
@@ -306,8 +307,8 @@ namespace QubaDC.Tests.Separated
             var xy = newSchemaInfo.Schema.FindTable(mt.ResultSchema, mt.ResultTableName);
             Assert.True(newSchemaInfo.Schema.ContainsTable(mt.ResultSchema, mt.ResultTableName));
 
-           String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(mt.ResultSchema, mt.ResultTableName);
-           Assert.Equal(3, triggersOnCopeidTable.Length);
+            String[] triggersOnCopeidTable = this.fixture.GetTriggersForTable(mt.ResultSchema, mt.ResultTableName);
+            Assert.Equal(3, triggersOnCopeidTable.Length);
 
             ////Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
@@ -340,7 +341,7 @@ namespace QubaDC.Tests.Separated
 
 
 
-            CreateTable t2 = CreateTableBuilder.BuildBasicTablForJoin(this.currentDatabase);            
+            CreateTable t2 = CreateTableBuilder.BuildBasicTablForJoin(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t2);
 
             InsertOperation t2i = CreateTableBuilder.GetBasicTableForJoinInsert(this.currentDatabase, "1", "'schema1'");
@@ -430,7 +431,7 @@ namespace QubaDC.Tests.Separated
                 TableName = t.TableName,
                 Column = "Info"
             };
-               
+
 
             QBDC.SMOHandler.HandleSMO(mt);
 
@@ -443,13 +444,13 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(3, newSchemaInfo.ID);
             Assert.Equal(1, newSchemaInfo.Schema.Tables.Count());
             Assert.Equal(2, newSchemaInfo.Schema.Tables.First().Table.Columns.Count());
-            
 
-           
+
+
 
             ////////Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
-            s2.Columns = t.Columns.Where(x=>x.ColumName!=mt.Column).Select(x => new ColumnReference() { ColumnName = x.ColumName, TableReference = s2.FromTable.TableAlias }).ToArray();
+            s2.Columns = t.Columns.Where(x => x.ColumName != mt.Column).Select(x => new ColumnReference() { ColumnName = x.ColumName, TableReference = s2.FromTable.TableAlias }).ToArray();
             //s2.FromTable.TableName = mt.ResultTableName;
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(2, result2.Result.Rows.Count);
@@ -481,7 +482,7 @@ namespace QubaDC.Tests.Separated
                 Schema = t.Schema,
                 TableName = t.TableName,
                 Column = new ColumnDefinition() { ColumName = "NewSchema", DataType = " MediumText", Nullable = false },
-                 InitalValue = "CONCAT('new',`Schema`)"
+                InitalValue = "CONCAT('new',`Schema`)"
             };
 
 
@@ -505,7 +506,7 @@ namespace QubaDC.Tests.Separated
             s2.Columns = newSchemaInfo.Schema.Tables.First().Table.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = s2.FromTable.TableAlias }).ToArray();
             //s2.FromTable.TableName = mt.ResultTableName;
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
-            Assert.Equal("new"+result2.Result.Rows[0][1], result2.Result.Rows[0][3]);
+            Assert.Equal("new" + result2.Result.Rows[0][1], result2.Result.Rows[0][3]);
             this.Succcess = true;
         }
 
@@ -591,11 +592,11 @@ namespace QubaDC.Tests.Separated
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
 
             RenameColumn rt = new RenameColumn()
-            {                
-                 Schema = t.Schema,
-                 TableName = t.TableName,
-                  ColumnName = t.Columns[2].ColumName,
-                   RenameName = "renamedColumn"
+            {
+                Schema = t.Schema,
+                TableName = t.TableName,
+                ColumnName = t.Columns[2].ColumName,
+                RenameName = "renamedColumn"
             };
             QBDC.SMOHandler.HandleSMO(rt);
 

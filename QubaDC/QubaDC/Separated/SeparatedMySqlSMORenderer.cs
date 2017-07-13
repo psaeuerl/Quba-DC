@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QubaDC
+namespace QubaDC.Separated
 {
-    public class MySqlSMORenderer : SMORenderer
+    public class SeparatedMySqlSMORenderer : SMORenderer
     {
         public override string RenderCreateInsertTrigger(TableSchema createTable, TableSchema ctHistTable)
         {

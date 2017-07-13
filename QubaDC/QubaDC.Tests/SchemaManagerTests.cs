@@ -27,8 +27,8 @@ namespace QubaDC.Tests
                         con,
                          new SeparatedSMOHandler()
                         , new SeparatedCRUDHandler()
-                                                 , new SeparatedQSSelectHandler()
-
+                        , new SeparatedQSSelectHandler()
+                        , new SeparatedMySqlSMORenderer()
                        );
             this.QBDC = c;
             //Create Empty Schema
