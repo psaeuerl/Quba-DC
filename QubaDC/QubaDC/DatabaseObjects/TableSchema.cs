@@ -22,13 +22,7 @@ namespace QubaDC.DatabaseObjects
             this.Name = String.Empty;
             this.Schema = String.Empty; ;
             this.Columns = new string[] { };
-        }
-
-        public TableSchema(String Schema, String name, params String[] columns)
-        {
-            this.Name = name;
-            this.Schema = Schema;
-            this.Columns = columns;
+            this.ColumnDefinitions = new ColumnDefinition[] { };
         }
 
         internal Table ToTable()
