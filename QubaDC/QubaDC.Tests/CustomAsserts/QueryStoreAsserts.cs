@@ -14,11 +14,13 @@ namespace QubaDC.Tests.CustomAsserts
         {
             Assert.Equal(result2.Hash, result.Hash);
 
+            result.Result.TableName = "h1";
             StringWriter wt = new StringWriter();
             result.Result.WriteXml(wt);
             wt.Flush();
             String r1Data = wt.ToString();
 
+            result2.Result.TableName = "h1";
             StringWriter wt2 = new StringWriter();
             result2.Result.WriteXml(wt2);
             wt2.Flush();
