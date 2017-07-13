@@ -66,6 +66,7 @@
     <Compile Include="Fixtures\MySqlDBFixture.cs" />
     <Compile Include="Fixtures\HybridQBDCFixture.cs" />
     <Compile Include="Hybrid\HybridBasicTests.cs" />
+    <Compile Include="Hybrid\HybridQueryStoreCRUDTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="SchemaSerializationTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreSMOTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
+    <Compile Include="SystemTests\SystemQueryStoreCRUDTests.cs" />
     <Compile Include="SystemTests\SystemBasicTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />
     <Compile Include="xUnitExtension\CustomTestCollectionOrderer.cs" />

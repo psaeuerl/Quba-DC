@@ -13,146 +13,167 @@ using Xunit;
 
 namespace QubaDC.Tests.Separated
 {
-    public class SeparatedQueryStoreCRUDTests : IDisposable
+    public class SeparatedQueryStoreCRUDTests : SystemQueryStoreCRUDTests
     {
-        private string currentDatabase;
-
-        public SeparatedQueryStoreCRUDTests()
+        public SeparatedQueryStoreCRUDTests() : base()
         {
-            this.fixture = new MySqlDBFixture();
-            MySQLDataConnection con = fixture.DataConnection.Clone();
-            QubaDCSystem c = new MySQLQubaDCSystem(
-                        con,
-                         new SeparatedSMOHandler()
-                         ,new SeparatedCRUDHandler()
-                         , new SeparatedQSSelectHandler()
-                       );
-            this.QBDC = c;
+            SeparatedQBDCFixture f = new SeparatedQBDCFixture();
+            this.SeparatedFixture = f;
+            this.Fixture = f;
+            base.Init();
+        }
+
+        public SeparatedQBDCFixture SeparatedFixture { get; private set; }
+
+        public override string BuildDataBaseName()
+        {
             //Create Empty Schema
-            this.currentDatabase = "SeparatedQueryStoreTests_" + Guid.NewGuid().ToString().Replace("-", "");
-            fixture.CreateEmptyDatabase(currentDatabase);
-            con.UseDatabase(currentDatabase);
-            this.fixture = fixture;
+            return "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
         }
 
-        public MySqlDBFixture fixture { get; private set; }
-        public QubaDCSystem QBDC { get; private set; }
-        public bool Succcess { get; private set; } = false;
-
-        public void Dispose()
+        public override QubaDCSystem BuildSystem()
         {
-            if(Succcess)
-                this.fixture.DropDatabaseIfExists(currentDatabase);
+            return SeparatedFixture.QBDCSystem;
+
         }
+        //private string currentDatabase;
 
-        [Fact]
-        public void ReexecutingAfterInsertWorks()
-        {
-            //Create Basic Table
-            QBDC.Init();
-            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
-            QBDC.SMOHandler.HandleSMO(t);
-            //Insert some data
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.HandleInsert(c);
-            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
-            QBDC.CRUDHandler.HandleInsert(c2);
-            ////Make a Request
-            var schema = QBDC.SchemaManager.GetCurrentSchema();
-            SelectOperation s =  SelectOperation.FromCreateTable(t);
-            var result = QBDC.QueryStore.ExecuteSelect(s);
+        //public SeparatedQueryStoreCRUDTests()
+        //{
+        //    this.fixture = new MySqlDBFixture();
+        //    MySQLDataConnection con = fixture.DataConnection.Clone();
+        //    QubaDCSystem c = new MySQLQubaDCSystem(
+        //                con,
+        //                 new SeparatedSMOHandler()
+        //                 ,new SeparatedCRUDHandler()
+        //                 , new SeparatedQSSelectHandler()
+        //               );
+        //    this.QBDC = c;
+        //    //Create Empty Schema
+        //    this.currentDatabase = "SeparatedQueryStoreTests_" + Guid.NewGuid().ToString().Replace("-", "");
+        //    fixture.CreateEmptyDatabase(currentDatabase);
+        //    con.UseDatabase(currentDatabase);
+        //    this.fixture = fixture;
+        //}
 
-            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+        //public MySqlDBFixture fixture { get; private set; }
+        //public QubaDCSystem QBDC { get; private set; }
+        //public bool Succcess { get; private set; } = false;
 
-            ////Insert 2-3 Rows
-            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'1asdf'");
-            QBDC.CRUDHandler.HandleInsert(c3);
+        //public void Dispose()
+        //{
+        //    if(Succcess)
+        //        this.fixture.DropDatabaseIfExists(currentDatabase);
+        //}
 
-            InsertOperation c4 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "4", "'2asdf'");
-            QBDC.CRUDHandler.HandleInsert(c4);
+        //[Fact]
+        //public void ReexecutingAfterInsertWorks()
+        //{
+        //    //Create Basic Table
+        //    QBDC.Init();
+        //    CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+        //    QBDC.SMOHandler.HandleSMO(t);
+        //    //Insert some data
+        //    InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+        //    QBDC.CRUDHandler.HandleInsert(c);
+        //    InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+        //    QBDC.CRUDHandler.HandleInsert(c2);
+        //    ////Make a Request
+        //    var schema = QBDC.SchemaManager.GetCurrentSchema();
+        //    SelectOperation s =  SelectOperation.FromCreateTable(t);
+        //    var result = QBDC.QueryStore.ExecuteSelect(s);
+
+        //    Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
+        //    ////Insert 2-3 Rows
+        //    InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'1asdf'");
+        //    QBDC.CRUDHandler.HandleInsert(c3);
+
+        //    InsertOperation c4 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "4", "'2asdf'");
+        //    QBDC.CRUDHandler.HandleInsert(c4);
 
 
-            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+        //    var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
 
-            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+        //    QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
-            //Check that reexecuting select produces different hash (ensures that delete  was executed)
+        //    //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
-            var resultAfterInsert = QBDC.QueryStore.ExecuteSelect(s);
+        //    var resultAfterInsert = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.NotEqual(resultAfterInsert.Hash, result.Hash);
-            this.Succcess = true;
-        }
+        //    Assert.NotEqual(resultAfterInsert.Hash, result.Hash);
+        //    this.Succcess = true;
+        //}
 
-        [Fact]
-        public void ReexecutingAfterDeleteWorks()
-        {
-            //Create Basic Table
-            QBDC.Init();
-            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
-            QBDC.SMOHandler.HandleSMO(t);
-            //Insert some data
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.HandleInsert(c);
-            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
-            QBDC.CRUDHandler.HandleInsert(c2);
-            ////Make a Request
-            var schema = QBDC.SchemaManager.GetCurrentSchema();
-            SelectOperation s = SelectOperation.FromCreateTable(t);
-            var result = QBDC.QueryStore.ExecuteSelect(s);
+        //[Fact]
+        //public void ReexecutingAfterDeleteWorks()
+        //{
+        //    //Create Basic Table
+        //    QBDC.Init();
+        //    CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+        //    QBDC.SMOHandler.HandleSMO(t);
+        //    //Insert some data
+        //    InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+        //    QBDC.CRUDHandler.HandleInsert(c);
+        //    InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+        //    QBDC.CRUDHandler.HandleInsert(c2);
+        //    ////Make a Request
+        //    var schema = QBDC.SchemaManager.GetCurrentSchema();
+        //    SelectOperation s = SelectOperation.FromCreateTable(t);
+        //    var result = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+        //    Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
 
-            //Delete one row
-            DeleteOperation c3 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.HandleDeletOperation(c3);
+        //    //Delete one row
+        //    DeleteOperation c3 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'asdf'");
+        //    QBDC.CRUDHandler.HandleDeletOperation(c3);
 
-            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
-            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+        //    var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+        //    QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
-            //Check that reexecuting select produces different hash (ensures that delete  was executed)
+        //    //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
-            var resultAfterDelete = QBDC.QueryStore.ExecuteSelect(s);
+        //    var resultAfterDelete = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
+        //    Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
 
-            this.Succcess = true;
-        }
+        //    this.Succcess = true;
+        //}
 
-        [Fact]
-        public void ReexecutingAfterUpdateWorks()
-        {
-            //Create Basic Table
-            QBDC.Init();
-            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
-            QBDC.SMOHandler.HandleSMO(t);
-            //Insert some data
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
-            QBDC.CRUDHandler.HandleInsert(c);
-            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
-            QBDC.CRUDHandler.HandleInsert(c2);
-            ////Make a Request
-            var schema = QBDC.SchemaManager.GetCurrentSchema();
-            SelectOperation s = SelectOperation.FromCreateTable(t);
-            var result = QBDC.QueryStore.ExecuteSelect(s);
+        //[Fact]
+        //public void ReexecutingAfterUpdateWorks()
+        //{
+        //    //Create Basic Table
+        //    QBDC.Init();
+        //    CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+        //    QBDC.SMOHandler.HandleSMO(t);
+        //    //Insert some data
+        //    InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+        //    QBDC.CRUDHandler.HandleInsert(c);
+        //    InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+        //    QBDC.CRUDHandler.HandleInsert(c2);
+        //    ////Make a Request
+        //    var schema = QBDC.SchemaManager.GetCurrentSchema();
+        //    SelectOperation s = SelectOperation.FromCreateTable(t);
+        //    var result = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+        //    Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
 
-            //Update one row
-            UpdateOperation c3 = CreateTableBuilder.GetBasicTableUpdate(this.currentDatabase, "1", "asdfxyz");
-            QBDC.CRUDHandler.HandleUpdateOperation(c3);
+        //    //Update one row
+        //    UpdateOperation c3 = CreateTableBuilder.GetBasicTableUpdate(this.currentDatabase, "1", "asdfxyz");
+        //    QBDC.CRUDHandler.HandleUpdateOperation(c3);
 
-            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
-            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+        //    var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+        //    QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
 
-            //Check that reexecuting select produces different hash (ensures that delete  was executed)
+        //    //Check that reexecuting select produces different hash (ensures that delete  was executed)
 
-            var resultAfterDelete = QBDC.QueryStore.ExecuteSelect(s);
+        //    var resultAfterDelete = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
+        //    Assert.NotEqual(resultAfterDelete.Hash, result.Hash);
 
-            this.Succcess = true;
-        }
+        //    this.Succcess = true;
+        //}
 
     }
 }
