@@ -60,6 +60,7 @@
     <Compile Include="Hybrid\HybridConstants.cs" />
     <Compile Include="Hybrid\HybridMySqlSMORenderer.cs" />
     <Compile Include="Hybrid\SMO\HybridCreateTableHandler.cs" />
+    <Compile Include="Hybrid\SMO\HybridDropTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />

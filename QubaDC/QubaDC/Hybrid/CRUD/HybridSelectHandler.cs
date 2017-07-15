@@ -50,7 +50,7 @@ FROM {1}
             return sel;
         }
 
-        internal string HandleHybridSelect(SelectOperation selectOperation, SchemaInfo s, bool RenderAsHash)
+        internal string HandleHybridSelect(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema,SchemaInfo currentSchema, bool RenderAsHash)
         {
 
             if (RenderAsHash)
@@ -62,7 +62,7 @@ FROM {1}
 FROM {1}
 "; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
 
-                String fromPart = RenderHybridFromPart(selectOperation, s);
+                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema);
                 String wherePart = RenderWherePart(selectOperation.Restriction);
                 String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
 
@@ -96,7 +96,7 @@ FROM {1}
                     columns = RenderColumns(selectOperation.Columns, selectOperation.LiteralColumns);
                 else
                     columns = this.RenderAsHash(selectOperation.Columns, selectOperation.LiteralColumns);
-                String fromPart = RenderHybridFromPart(selectOperation, s);
+                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema);
                 String wherePart = RenderWherePart(selectOperation.Restriction);
                 String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
                 String select = String.Format(Format, columns, fromPart, wherePart, OrderBy);
@@ -104,17 +104,18 @@ FROM {1}
             }
         }
 
-        private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo s)
+        private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema)
         {
-            var histTable = s.Schema.FindHistTable(selectOperation.FromTable);
-            String table = RenderHybridFromTable(selectOperation.FromTable,histTable);
-            var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(x,s));
+            var histTable = exeuctionTimeSchema.Schema.FindHistTable(selectOperation.FromTable);
+            Boolean currentSchemaContainsTable = currentSchema.Schema.ContainsTable(selectOperation.FromTable.TableSchema, selectOperation.FromTable.TableName);
+            String table = RenderHybridFromTable(selectOperation.FromTable,histTable,currentSchemaContainsTable);
+            var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(x,exeuctionTimeSchema, currentSchema));
             var joined = String.Join(System.Environment.NewLine, parts);
             var result = String.Join(System.Environment.NewLine, table, joined);
             return table;
         }
 
-        private object RenderHybridJoinedTable(JoinedTable x, SchemaInfo s)
+        private object RenderHybridJoinedTable(JoinedTable x, SchemaInfo s,SchemaInfo currentSchema)
         {
 
             String Format = "{0} {1} {2}";
@@ -130,28 +131,47 @@ FROM {1}
             };
             var histTable = s.Schema.FindHistTable(t);
 
-            String table = RenderHybridFromTable(t, histTable);
+            Boolean currentTableContained = currentSchema.Schema.ContainsTable(x.TableSchema, x.TableName);
+            String table = RenderHybridFromTable(t, histTable,currentTableContained);
 
             String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
             String result = String.Format(Format, joinType, table, rest);
             return result;
         }
 
-        private string RenderHybridFromTable(FromTable fromTable, TableSchema histTableSchema)
+        private string RenderHybridFromTable(FromTable fromTable, TableSchema histTableSchema, Boolean currentSchemaContainsTable )
         {
-
-            string baseFormat = "(SELECT *, null as {0} FROM {1} UNION Select * from {2}) {3}";
-            String endTsColumn = CRUDRenderer.Quote(HybridConstants.EndTS);
-            String baseTable = CRUDRenderer.Quote(fromTable.TableSchema) + "."
-                                 + CRUDRenderer.Quote(fromTable.TableName);
-
+            String baseFormat = "({0}) {1}";
+            String originalTableSelect = null;
+            if(currentSchemaContainsTable)
+            {
+                String baseSelect = "SELECT *, null as {0} FROM {1}";
+                String endTsColumn = CRUDRenderer.Quote(HybridConstants.EndTS);
+                String baseTable = CRUDRenderer.Quote(fromTable.TableSchema) + "."
+                                     + CRUDRenderer.Quote(fromTable.TableName);
+                originalTableSelect =  String.Format(baseSelect, endTsColumn, baseTable);
+            }
             string histTable = CRUDRenderer.Quote(histTableSchema.Schema) + "."
-                            + CRUDRenderer.Quote(histTableSchema.Name);
+                           + CRUDRenderer.Quote(histTableSchema.Name);
+            String histTableSelect = String.Format("Select * from {0}", histTable);
+            String innerSelects = String.IsNullOrWhiteSpace(originalTableSelect) ? histTableSelect : String.Join("UNION ", originalTableSelect, histTableSelect);            
             string alias = " AS " + CRUDRenderer.Quote(fromTable.TableAlias);
+            String result = String.Format(baseFormat, innerSelects, alias);
+            return result;
 
 
-            String result = String.Format(baseFormat, endTsColumn, baseTable, histTable, alias);
-            return result;            
+            //string baseFormat = "(SELECT *, null as {0} FROM {1} UNION Select * from {2}) {3}";
+            //String endTsColumn = CRUDRenderer.Quote(HybridConstants.EndTS);
+            //String baseTable = CRUDRenderer.Quote(fromTable.TableSchema) + "."
+            //                     + CRUDRenderer.Quote(fromTable.TableName);
+
+            //string histTable = CRUDRenderer.Quote(histTableSchema.Schema) + "."
+            //                + CRUDRenderer.Quote(histTableSchema.Name);
+            //string alias = " AS " + CRUDRenderer.Quote(fromTable.TableAlias);
+
+
+            //String result = String.Format(baseFormat, endTsColumn, baseTable, histTable, alias);
+            //return result;            
         }
 
         private string RenderColumns(ColumnReference[] columns, LiteralColumn[] literalColumns)

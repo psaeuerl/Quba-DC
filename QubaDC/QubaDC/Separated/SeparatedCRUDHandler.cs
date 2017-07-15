@@ -45,12 +45,12 @@ namespace QubaDC.Separated
             h.HandleUpdate(c2);
         }
 
-        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s)
+        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo executiontimeSchema, SchemaInfo currentSchema)
         {
             throw new NotImplementedException();
         }
 
-        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s)
+        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema)
         {
             throw new NotImplementedException();
         }

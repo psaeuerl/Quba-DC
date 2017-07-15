@@ -201,9 +201,10 @@ namespace QubaDC.Separated
             originalSelect.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
 
 
-            SchemaInfo s = schemaManager.GetSchemaActiveAt(queryTime);
-            String hybridSelect = cRUDHandler.RenderHybridSelectOperation(originalSelect, s);
-            String hybridHashSelect = cRUDHandler.RenderHybridHashSelect(originalSelect, s);
+            SchemaInfo schemaAtExecutionTime = schemaManager.GetSchemaActiveAt(queryTime);
+            SchemaInfo CurrentSchema = schemaManager.GetCurrentSchema();
+            String hybridSelect = cRUDHandler.RenderHybridSelectOperation(originalSelect, schemaAtExecutionTime,CurrentSchema);
+            String hybridHashSelect = cRUDHandler.RenderHybridHashSelect(originalSelect, schemaAtExecutionTime,CurrentSchema);
 
 
             DataTable normaResult = null;
