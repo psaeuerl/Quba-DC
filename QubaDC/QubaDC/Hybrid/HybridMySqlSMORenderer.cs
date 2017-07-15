@@ -104,7 +104,7 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             String format =
                 @"
             DELIMITER $$
-            CREATE TRIGGER {0}.delete_{1}_to_{2}
+            CREATE TRIGGER {0}.delete_on_{1}
             AFTER DELETE
             ON {7}
             FOR EACH ROW
@@ -152,7 +152,7 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             String format =
         @"
             DELIMITER $$
-            CREATE TRIGGER {0}.update_{1}_to_{2}
+            CREATE TRIGGER {0}.update_on_{1}
             BEFORE UPDATE
             ON {3}
             FOR EACH ROW
@@ -274,12 +274,13 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
 
         internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
         {
-            String baseFormat = "INSERT {0} {1};";
-            
+            String baseFormat = "INSERT INTO {0} ({2}) {1};";
+
+            String columns = String.Join(", ",joinedTableSchema.Columns.Select(x => this.CRUDRenderer.Quote(x)));
             String target = GetQuotedTable(joinedTableSchema);
 
 
-            String result = String.Format(baseFormat, target, select);
+            String result = String.Format(baseFormat, target, select, columns);
             return result;
         }
 
@@ -293,22 +294,22 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
 
         internal override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.insert_{0}_to_{1}";
-            String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            String baseFormat = "Drop TRIGGER {1}.insert_on_{0}";
+            String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
             return result;
         }
 
         internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.update_{0}_to_{1}"; 
-             String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            String baseFormat = "Drop TRIGGER {1}.update_on_{0}"; 
+             String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
             return result;
         }
 
         internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.delete_{0}_to_{1}";
-            String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
+            String baseFormat = "Drop TRIGGER {1}.delete_on_{0}";
+            String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
             return result;
         }
 
@@ -321,5 +322,8 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             String result = String.Format(baseFormat, table, baseColumn,  type);
             return result;
         }
+
+       
+    
     }
 }
