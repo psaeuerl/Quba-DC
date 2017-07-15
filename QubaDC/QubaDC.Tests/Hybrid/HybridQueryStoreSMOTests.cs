@@ -1,9 +1,9 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.Restrictions;
 using QubaDC.Separated;
 using QubaDC.SMO;
 using QubaDC.Tests.CustomAsserts;
 using QubaDC.Tests.DataBuilder;
-using QubaDC.Tests.Separated;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,11 +12,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace QubaDC.Tests.Hybrid
+namespace QubaDC.Tests.Separated
 {
-    public class HybridQueryStoreCRUDTests : SystemQueryStoreCRUDTests
+    public class HybridQueryStoreSMOTests :  SystemQueryStoreSMOTests
     {
-        public HybridQueryStoreCRUDTests() : base()
+
+        public HybridQueryStoreSMOTests() : base()
         {
             HybridQBDCFixture f = new HybridQBDCFixture();
             this.SeparatedFixture = f;
@@ -37,6 +38,5 @@ namespace QubaDC.Tests.Hybrid
             return SeparatedFixture.QBDCSystem;
 
         }
-  
     }
 }
