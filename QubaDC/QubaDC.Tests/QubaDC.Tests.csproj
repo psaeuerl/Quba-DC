@@ -78,6 +78,7 @@
     <Compile Include="SchemaSerializationTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreSMOTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
+    <Compile Include="SystemTests\SystemQueryStoreSMOTests.cs" />
     <Compile Include="SystemTests\SystemQueryStoreCRUDTests.cs" />
     <Compile Include="SystemTests\SystemBasicTests.cs" />
     <Compile Include="xUnitExtension\CustomTestCaseOrderer.cs" />

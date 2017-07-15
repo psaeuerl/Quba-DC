@@ -28,7 +28,7 @@ namespace QubaDC.Tests.Separated
         public override string BuildDataBaseName()
         {
             //Create Empty Schema
-            return "SeparatedTests" + Guid.NewGuid().ToString().Replace("-", "");
+            return "Hybrid" + Guid.NewGuid().ToString().Replace("-", "");
         }
 
         public override QubaDCSystem BuildSystem()
