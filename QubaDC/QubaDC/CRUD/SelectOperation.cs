@@ -57,5 +57,13 @@ namespace QubaDC.CRUD
             foreach (var x in this.JoinedTables)
                 yield return x;
         }
+
+        internal ColumnReference[] GetColumnsForTableReference(String tableAlias)
+        {
+            if (this.GetAllSelectedTables().All(x => x.TableAlias != tableAlias))
+                throw new InvalidOperationException("Tablealias: " + tableAlias + " does not exist in Selectoperation");
+            var result = this.Columns.Where(x => x.TableReference == tableAlias).ToArray();
+            return result;
+        }
     }
 }
