@@ -16,7 +16,6 @@ namespace QubaDC.Tests.Separated
 {
     public class SeparatedQueryStoreSMOTests :  SystemQueryStoreSMOTests
     {
-        private string currentDatabase;
 
         public SeparatedQueryStoreSMOTests() : base()
         {
