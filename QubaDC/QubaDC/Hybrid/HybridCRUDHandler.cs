@@ -14,7 +14,8 @@ namespace QubaDC.Hybrid
     {
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            throw new NotImplementedException();
+            HybridDeleteHandler h = new HybridDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleDelete(deleteOperation);
         }
 
         public override void HandleInsert(InsertOperation insertOperation)
@@ -25,7 +26,8 @@ namespace QubaDC.Hybrid
 
         public override void HandleUpdateOperation(UpdateOperation c2)
         {
-            throw new NotImplementedException();
+            HybridUpdateHandler h = new HybridUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleUpdate(c2);
         }
 
         public override string RenderSelectOperation(SelectOperation selectOperation)

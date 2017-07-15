@@ -101,101 +101,95 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
 
         internal override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
-            throw new NotImplementedException();
-            //            String format =
-            //                @"
-            //DELIMITER $$
-            //CREATE TRIGGER {0}.delete_{1}_to_{2}
-            //AFTER DELETE
-            //ON {5}
-            //FOR EACH ROW
-            //BEGIN
-            //	UPDATE {3}
-            //    SET endts = NOW(3)
-            //    WHERE
-            //    {4};
+            String format =
+                @"
+            DELIMITER $$
+            CREATE TRIGGER {0}.delete_{1}_to_{2}
+            AFTER DELETE
+            ON {7}
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO {3}
+                ({4})
+                VALUES
+                (
+                {5},
+                    NOW(3)
+                );
 
-            //  INSERT INTO {6}
-            //    (`Timestamp`, `Operation`)
-            //    VALUES
-            //    (
-            //      NOW(3),
-            //      CONCAT('Delete on table: ','{1}')
-            //    );
+              INSERT INTO {6}
+                (`Timestamp`, `Operation`)
+                VALUES
+                (
+                  NOW(3),
+                  CONCAT('Delete on table: ','{1}')
+                );
 
-            //END $$
-            //DELIMITER;";
-            //            //0 => source_table_name
-            //            //1 => targettable
-            //            //2 => source_table_identifier
-            //            //3 => targettable_identifier
-            //            //4 => targettable columns
-            //            //5 => NEW.`column`from sourcetabl
-            //            String trigger = String.Format(format
-            //                , Quote(ctHistTable.Schema)
-            //                , createTable.Name
-            //                , ctHistTable.Name
-            //                , GetQuotedTable(ctHistTable)
-            //               , GetColumnWherePart(createTable.Columns)
-            //               , GetQuotedTable(createTable)
-            //               , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
-
-            //               );
-
-            //            return trigger;
+            END $$
+            DELIMITER;";
+            //0 => source_table_name
+            //1 => targettable
+            //2 => source_table_identifier
+            //3 => targettable_identifier
+            //4 => targettable columns
+            //5 => NEW.`column`from sourcetabl
+            String trigger = String.Format(format
+                , createTable.Schema
+                , createTable.Name
+                , ctHistTable.Name
+                , GetQuotedTable(ctHistTable)
+                , GetQuotedColumns(null, ctHistTable.Columns)
+                , GetQuotedColumns("OLD", createTable.Columns.Union(new String[] { HybridConstants.StartTS }).ToArray())
+                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
+                                , GetQuotedTable(createTable)
+                );
+            return trigger;
         }
 
         internal override string RenderCreateUpdateTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
-            throw new NotImplementedException();
-            //            String format =
-            //        @"
-            //DELIMITER $$
-            //CREATE TRIGGER {0}.update_{1}_to_{2}
-            //AFTER UPDATE
-            //ON {5}
-            //FOR EACH ROW
-            //BEGIN
+            //throw new NotImplementedException();
+            String format =
+        @"
+            DELIMITER $$
+            CREATE TRIGGER {0}.update_{1}_to_{2}
+            BEFORE UPDATE
+            ON {3}
+            FOR EACH ROW
+            BEGIN
+                SET NEW.{4} = NOW(3);
 
-            //    UPDATE {3}
-            //    SET endts = NOW(3)
-            //    WHERE
-            //    {4};
+                INSERT INTO {5}
+                ({6})
+                VALUES
+                (
+                {7},
+                    NOW(3)
+                );
 
-            //    INSERT INTO {3}
-            //    ({8})
-            //    VALUES
-            //    (
-            //    {9},
-            //        NOW(3),
-            //        null
-            //    );
-
-            //    INSERT INTO {6}
-            //    (`Timestamp`, `Operation`)
-            //    VALUES
-            //    (
-            //      NOW(3),
-            //      CONCAT('Insert on table: ','{7}')
-            //    );
-            //END $$
-            //DELIMITER;";
+                INSERT INTO {8}
+                (`Timestamp`, `Operation`)
+                VALUES
+                (
+                  NOW(3),
+                  CONCAT('Insert on table: ','{1}')
+                );
+            END $$
+            DELIMITER;";
 
 
-            //            String trigger = String.Format(format
-            //                , Quote(ctHistTable.Schema)
-            //                , createTable.Name
-            //                , ctHistTable.Name
-            //                , GetQuotedTable(ctHistTable)
-            //                , GetColumnWherePart(createTable.Columns)
-            //                , GetQuotedTable(createTable)
-            //                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
-            //                                , GetQuotedTable(createTable)
-            //                , GetQuotedColumns(null, ctHistTable.Columns)
-            //                , GetQuotedColumns("NEW", createTable.Columns)
-
-            //               );
-            //            return trigger;
+            String trigger = String.Format(format                
+                , Quote(createTable.Schema)
+                , createTable.Name
+                , ctHistTable.Name
+                , Quote(createTable.Name)
+                , Quote(HybridConstants.StartTS)                
+                , GetQuotedTable(ctHistTable)
+                , GetQuotedColumns(null, ctHistTable.Columns)
+                , GetQuotedColumns("OLD", createTable.Columns.Union(new String[] { HybridConstants.StartTS }).ToArray())
+                , GetQuotedTable(ctHistTable.Schema, QubaDCSystem.GlobalUpdateTableName)
+               );
+            return trigger;
         }
 
         private object GetQuotedColumns(String ColumnIdentifier, string[] columns)
