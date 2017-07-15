@@ -86,6 +86,17 @@ namespace QubaDC.Separated.SMO
                 CopyTable(c, con, originalHistTable, copiedHistSchema,false);
                 AlterTable(c, con, copiedHistSchema, dropColumn.Column);
 
+
+                String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema, originalHistTable);
+                String dropUpdaterigger = SMORenderer.RenderDropUpdaterigger(copiedTableSchema, originalHistTable);
+                String dropDeleteTrigger = SMORenderer.RenderDropDeleteTrigger(copiedTableSchema, originalHistTable);
+
+                con.ExecuteSQLScript(dropInsertTrigger, c);
+                con.ExecuteSQLScript(dropUpdaterigger, c);
+                con.ExecuteSQLScript(dropDeleteTrigger, c);
+
+
+
                 //INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
                 //Delete Trigger

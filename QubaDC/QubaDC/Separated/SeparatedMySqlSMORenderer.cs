@@ -16,7 +16,7 @@ namespace QubaDC.Separated
             String format =
         @"
 DELIMITER $$
-CREATE TRIGGER {8}.insert_{0}_to_{1}
+CREATE TRIGGER {8}.insert_trigger_{0}
 AFTER INSERT
 ON {2}
 FOR EACH ROW
@@ -119,7 +119,7 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             String format =
                 @"
 DELIMITER $$
-CREATE TRIGGER {0}.delete_{1}_to_{2}
+CREATE TRIGGER {0}.delete_trigger_{1}
 AFTER DELETE
 ON {5}
 FOR EACH ROW
@@ -164,7 +164,7 @@ DELIMITER;";
             String format =
         @"
 DELIMITER $$
-CREATE TRIGGER {0}.update_{1}_to_{2}
+CREATE TRIGGER {0}.update_trigger_{1}
 AFTER UPDATE
 ON {5}
 FOR EACH ROW
@@ -312,21 +312,21 @@ DELIMITER;";
 
         internal override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.insert_{0}_to_{1}";
+            String baseFormat = "Drop TRIGGER {2}.insert_trigger_{0}";
             String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
             return result;
         }
 
         internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.update_{0}_to_{1}"; 
+            String baseFormat = "Drop TRIGGER {2}.update_trigger_{0}"; 
              String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
             return result;
         }
 
         internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
-            String baseFormat = "Drop TRIGGER {2}.delete_{0}_to_{1}";
+            String baseFormat = "Drop TRIGGER {2}.delete_trigger_{0}";
             String result = String.Format(baseFormat, copiedTableSchema.Name, ctHistTable.Name, Quote(ctHistTable.Schema));
             return result;
         }
