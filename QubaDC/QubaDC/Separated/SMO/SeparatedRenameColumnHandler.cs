@@ -69,20 +69,37 @@ namespace QubaDC.Separated.SMO
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
                 currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
 
+                String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
+                {
+                    NewSchema = originalTable.Table.Schema,
+                    NewTableName = originalTable.Table.Name + "_old",
+                    OldSchema = originalTable.Table.Schema,
+                    OldTableName = originalTable.Table.Name
+                });
+
+                con.ExecuteNonQuerySQL(renameTableSQL);
+
+                CopyTable(c, con, originalTable.Table, copiedTableSchema, true);
+                CopyTable(c, con, originalHistTable, copiedHistSchema, false);
 
 
-                String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema,originalHistTable);
+                ColumnDefinition cd = copiedTableSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.RenameName);
+                String renameColumnSQL = SMORenderer.RenderRenameColumn(renameColumn, cd, copiedTableSchema);
+
+                con.ExecuteNonQuerySQL(renameColumnSQL);
+
+                ColumnDefinition cdHist = copiedHistSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.RenameName);
+                String renameColumnSQLHist = SMORenderer.RenderRenameColumn(renameColumn, cdHist,copiedHistSchema);
+
+                con.ExecuteNonQuerySQL(renameColumnSQLHist);
+
+                String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema, originalHistTable);
                 String dropUpdaterigger = SMORenderer.RenderDropUpdaterigger(copiedTableSchema, originalHistTable);
                 String dropDeleteTrigger = SMORenderer.RenderDropDeleteTrigger(copiedTableSchema, originalHistTable);
 
                 con.ExecuteSQLScript(dropInsertTrigger, c);
                 con.ExecuteSQLScript(dropUpdaterigger, c);
                 con.ExecuteSQLScript(dropDeleteTrigger, c);
-
-                ColumnDefinition cd = copiedTableSchema.ColumnDefinitions.First(x => x.ColumName == renameColumn.RenameName);
-                String renameColumnSQL = SMORenderer.RenderRenameColumn(renameColumn,cd);
-
-                con.ExecuteNonQuerySQL(renameColumnSQL);
 
                 //INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
@@ -96,8 +113,21 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteSQLScript(deleteTrigger, c);
                 con.ExecuteSQLScript(UpdateTrigger, c);
 
+                ////Insert data from old to new
+                SelectOperation s = new SelectOperation()
+                {
+                    Columns = originalTable.Table.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
+                    FromTable = new FromTable() { TableAlias = "t1", TableName = originalTable.Table.Name + "_old", TableSchema = originalTable.Table.Schema }
+                };
+                String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
+                String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
+                con.ExecuteNonQuerySQL(insertFromTable);
+
                 String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, renameColumn);
                 con.ExecuteNonQuerySQL(updateSchema, c);
+
+                String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
+                con.ExecuteNonQuerySQL(dropTableSql);
 
 
 

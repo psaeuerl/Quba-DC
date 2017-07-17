@@ -313,10 +313,10 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             return result;
         }
 
-        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd)
+        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
         {
             String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
-            String table = GetQuotedTable(renameColumn.Schema, renameColumn.TableName);
+            String table = GetQuotedTable(schema.Schema, schema.Name);
             String baseColumn = Quote(renameColumn.ColumnName);
             String type = RenderColumnDefinition(true, cd);
             String result = String.Format(baseFormat, table, baseColumn,  type);

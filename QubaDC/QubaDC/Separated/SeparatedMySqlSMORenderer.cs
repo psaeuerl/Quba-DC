@@ -293,12 +293,12 @@ DELIMITER;";
 
         internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
         {
-            String baseFormat = "INSERT {0} {1};";
+            String baseFormat = "INSERT {0} ({2}) {1};";
             
             String target = GetQuotedTable(joinedTableSchema);
+            String columns = String.Join(", ", joinedTableSchema.Columns.Select(x => this.CRUDRenderer.Quote(x)));
 
-
-            String result = String.Format(baseFormat, target, select);
+            String result = String.Format(baseFormat, target, select,columns);
             return result;
         }
 
@@ -331,10 +331,10 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd)
+        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
         {
             String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
-            String table = GetQuotedTable(renameColumn.Schema, renameColumn.TableName);
+            String table = GetQuotedTable(schema.Schema, schema.Name);
             String baseColumn = Quote(renameColumn.ColumnName);
             String type = RenderColumnDefinition(true, cd);
             String result = String.Format(baseFormat, table, baseColumn,  type);
