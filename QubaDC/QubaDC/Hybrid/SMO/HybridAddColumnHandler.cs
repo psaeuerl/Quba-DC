@@ -85,27 +85,20 @@ namespace QubaDC.Separated.SMO
                 CopyTable(c, con, originalHistTable, copiedHistSchema,false,false);
                 AlterTable(c, con, copiedHistSchema, addColumn.Column);
 
+                //The way we change here is important!
+                //First replace the insert trigger
+                //Do the selectoperation!
+                //Then do the delte
+                //Then recreate the oterhs
+                //Otherwise, we get no data
+
                 String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema, originalHistTable);
-                String dropUpdaterigger = SMORenderer.RenderDropUpdaterigger(copiedTableSchema, originalHistTable);
-                String dropDeleteTrigger = SMORenderer.RenderDropDeleteTrigger(copiedTableSchema, originalHistTable);
 
                 con.ExecuteSQLScript(dropInsertTrigger, c);
-                con.ExecuteSQLScript(dropUpdaterigger, c);
-                con.ExecuteSQLScript(dropDeleteTrigger, c);
-
-
-
                 //INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
-                //Delete Trigger
-                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(copiedTableSchema, copiedHistSchema);
-                //Update Trigger
-                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(copiedTableSchema, copiedHistSchema);
-
                 ////Add Trigger
                 con.ExecuteSQLScript(trigger, c);
-                con.ExecuteSQLScript(deleteTrigger, c);
-                con.ExecuteSQLScript(UpdateTrigger, c);
 
 
 
@@ -124,8 +117,23 @@ namespace QubaDC.Separated.SMO
                 String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, addColumn);
                 con.ExecuteNonQuerySQL(updateSchema, c);
 
+                //Before we drop the old table, we delete everything in there, moving the data to the hist table!
+                String delete = this.SMORenderer.CRUDRenderer.RenderDelete(new Table() { TableName = originalTable.Table.Name + "_old", TableSchema = originalTable.Table.Schema }, null);
+                con.ExecuteNonQuerySQL(delete);
+
                 String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
                 con.ExecuteNonQuerySQL(dropTableSql);
+
+
+
+                //Delete Trigger
+                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(copiedTableSchema, copiedHistSchema);
+                //Update Trigger
+                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(copiedTableSchema, copiedHistSchema);
+
+
+                con.ExecuteSQLScript(deleteTrigger, c);
+                con.ExecuteSQLScript(UpdateTrigger, c);
 
                 transaction.Commit();
             });
