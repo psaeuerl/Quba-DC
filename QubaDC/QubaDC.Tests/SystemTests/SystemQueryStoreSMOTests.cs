@@ -412,17 +412,19 @@ namespace QubaDC.Tests.Separated
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
             //Insert some data
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'schema1'");
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
             QBDC.CRUDHandler.HandleInsert(c);
 
 
-            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'schema2'");
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
-
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
 
             DropColumn mt = new DropColumn()
             {
@@ -445,6 +447,9 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(2, newSchemaInfo.Schema.Tables.First().Table.Columns.Count());
 
 
+            //check that new schema contains renamed table
+            var reExecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reExecuteResult);
 
 
             ////////Check that they contain the same data
@@ -464,16 +469,22 @@ namespace QubaDC.Tests.Separated
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
             //Insert some data
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'schema1'");
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
             QBDC.CRUDHandler.HandleInsert(c);
 
 
-            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'schema2'");
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
+
+
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
 
 
             AddColum mt = new AddColum()
@@ -497,15 +508,22 @@ namespace QubaDC.Tests.Separated
             Assert.Equal(1, newSchemaInfo.Schema.Tables.Count());
             Assert.Equal(4, newSchemaInfo.Schema.Tables.First().Table.Columns.Count());
 
-
+            //check that new schema contains renamed table
+            var reExecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reExecuteResult);
 
 
             ////////Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
             s2.Columns = newSchemaInfo.Schema.Tables.First().Table.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = s2.FromTable.TableAlias }).ToArray();
             //s2.FromTable.TableName = mt.ResultTableName;
-            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
-            Assert.Equal("new" + result2.Result.Rows[0][1], result2.Result.Rows[0][3]);
+            var newResult = QBDC.QueryStore.ExecuteSelect(s2);
+
+            Assert.Equal("new" + result.Result.Rows[0][1], newResult.Result.Rows[0][3]);
+
+
+
+
             this.Succcess = true;
         }
 
@@ -613,6 +631,13 @@ namespace QubaDC.Tests.Separated
             Assert.True(table.Table.Columns.Contains(rt.RenameName));
             Assert.False(table.Table.Columns.Contains(rt.ColumnName));
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+
+            SelectOperation s2 = SelectOperation.FromCreateTable(t);
+            s2.Columns.First(x => x.ColumnName == rt.ColumnName).ColumnName = rt.RenameName;
+            var resultAfterRenam = QBDC.QueryStore.ExecuteSelect(s2);
+
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+
             this.Succcess = true;
         }
     }
