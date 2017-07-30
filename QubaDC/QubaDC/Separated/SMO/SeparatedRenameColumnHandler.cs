@@ -121,13 +121,15 @@ namespace QubaDC.Separated.SMO
                 };
                 String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
-                con.ExecuteNonQuerySQL(insertFromTable);
+                con.ExecuteNonQuerySQL(insertFromTable,c);
+                
+                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, renameColumn);
+                //con.ExecuteNonQuerySQL(updateSchema, c);
+                this.schemaManager.StoreSchema(currentSchema, renameColumn, con, c);
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, renameColumn);
-                con.ExecuteNonQuerySQL(updateSchema, c);
 
                 String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
-                con.ExecuteNonQuerySQL(dropTableSql);
+                con.ExecuteNonQuerySQL(dropTableSql,c);
 
 
 

@@ -17,12 +17,15 @@ namespace QubaDC.DatabaseObjects
 
         public ColumnDefinition[] ColumnDefinitions { get; set; }
 
+        public long CreationId { get; set; }
+
         public TableSchema()
         {
             this.Name = String.Empty;
             this.Schema = String.Empty; ;
             this.Columns = new string[] { };
             this.ColumnDefinitions = new ColumnDefinition[] { };
+            this.CreationId = -1;
         }
 
         internal Table ToTable()

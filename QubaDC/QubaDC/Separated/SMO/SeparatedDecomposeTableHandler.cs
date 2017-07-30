@@ -104,8 +104,9 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteNonQuerySQL(DropFirstTable);
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, partitionTable);
-                con.ExecuteNonQuerySQL(updateSchema, c);
+
+                this.schemaManager.StoreSchema(currentSchema, partitionTable, con, c);
+
                 transaction.Commit();
             });
         

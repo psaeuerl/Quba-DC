@@ -123,8 +123,8 @@ namespace QubaDC.Separated.SMO
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
                 con.ExecuteNonQuerySQL(insertFromTable);
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
-                con.ExecuteNonQuerySQL(updateSchema, c);
+
+                this.schemaManager.StoreSchema(currentSchema, dropColumn, con, c);
 
                 String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
                 con.ExecuteNonQuerySQL(dropTableSql);

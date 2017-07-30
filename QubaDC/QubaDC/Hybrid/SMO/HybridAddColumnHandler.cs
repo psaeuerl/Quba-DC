@@ -113,9 +113,8 @@ namespace QubaDC.Separated.SMO
                 String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
                 con.ExecuteNonQuerySQL(insertFromTable);
+                this.schemaManager.StoreSchema(currentSchema, addColumn, con, c);
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, addColumn);
-                con.ExecuteNonQuerySQL(updateSchema, c);
 
                 //Before we drop the old table, we delete everything in there, moving the data to the hist table!
                 String delete = this.SMORenderer.CRUDRenderer.RenderDelete(new Table() { TableName = originalTable.Table.Name + "_old", TableSchema = originalTable.Table.Schema }, null);

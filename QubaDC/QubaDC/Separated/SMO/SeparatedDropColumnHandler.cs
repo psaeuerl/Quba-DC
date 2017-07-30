@@ -105,9 +105,10 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteSQLScript(deleteTrigger, c);
                 con.ExecuteSQLScript(UpdateTrigger, c);
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
+                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
 
-                con.ExecuteNonQuerySQL(updateSchema, c);
+                //con.ExecuteNonQuerySQL(updateSchema, c);
+                this.schemaManager.StoreSchema(currentSchema, dropColumn, con, c);
 
 
                 //Insert data from old to new

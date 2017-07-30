@@ -44,13 +44,13 @@ namespace QubaDC.Separated.SMO
 
                 x.RemoveTable(oldTable);
 
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, dropTable);
 
                 //Renameing Table
                 con.ExecuteQuery(dropTableSql, c);
 
                 //Storing Schema
-                con.ExecuteNonQuerySQL(updateSchema, c);
+                this.schemaManager.StoreSchema(x, dropTable, con, c);
+
                 transaction.Commit();
 
             });

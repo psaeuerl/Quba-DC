@@ -53,7 +53,8 @@ namespace QubaDC.Separated.SMO
 
                 //Manage Schema Statement
                 x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
+
+
 
                 //Add tables
                 con.ExecuteNonQuerySQL(createBaseTable, c);
@@ -71,8 +72,9 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteSQLScript(deleteTrigger, c);
                 con.ExecuteSQLScript(UpdateTrigger, c);
 
-                //Store Schema
-                con.ExecuteNonQuerySQL(updateSchema, c);
+                //Store Schema                
+                this.schemaManager.StoreSchema(x, createTable, con, c);
+
                 transaction.Commit();
             });
         }

@@ -100,9 +100,11 @@ namespace QubaDC.Separated.SMO
                 con.ExecuteNonQuerySQL(DropFirstTable);
                 String DropSecondTable = SMORenderer.RenderDropTable(secondTable.Table.Schema, secondTable.Table.Name);
                 con.ExecuteNonQuerySQL(DropSecondTable);
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, jointable);
+                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, jointable);
 
-                con.ExecuteNonQuerySQL(updateSchema, c);
+                //con.ExecuteNonQuerySQL(updateSchema, c);
+                this.schemaManager.StoreSchema(currentSchema, jointable, con, c);
+
                 transaction.Commit();
             });
 

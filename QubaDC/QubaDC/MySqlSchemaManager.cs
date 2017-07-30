@@ -35,7 +35,7 @@ namespace QubaDC
         }
 
 
-        public override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
+        protected override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
         {
             String InsertFormat =
              @"INSERT INTO `{0}`.`qubadcsmotable`

@@ -50,13 +50,12 @@ namespace QubaDC.Separated.SMO
                 table.Table.Name = renameTable.NewTableName;
                 table.Table.Schema = renameTable.NewSchema;
                 x.AddTable(table.Table,tableHist);
-                String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, renameTable);
 
                 //Renameing Table
                 con.ExecuteQuery(renameTableSQL, c);
 
-                //Storing Schema
-                con.ExecuteNonQuerySQL(updateSchema, c);
+                this.schemaManager.StoreSchema(x, renameTable, con, c);
+
                 transaction.Commit();
 
             });

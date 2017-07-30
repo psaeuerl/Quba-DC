@@ -87,8 +87,8 @@ namespace QubaDC
 
                     String trigger = this.SchemaManager.GetInsertToGlobalUpdateTrigger();
                     this.DataConnection.ExecuteSQLScript(trigger, c);
-                    String insert = this.SchemaManager.GetInsertSchemaStatement(new Schema(), null);
-                    this.DataConnection.ExecuteNonQuerySQL(insert, c);
+                    this.SchemaManager.StoreSchema(new Schema(), null, this.DataConnection, c);
+
                     transaction.Commit();
                 }
             });

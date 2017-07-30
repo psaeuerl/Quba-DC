@@ -640,5 +640,94 @@ namespace QubaDC.Tests.Separated
 
             this.Succcess = true;
         }
+
+        [Fact]
+        public void RenamingOneColumnToAnotherAndBackWorks()
+        {
+            //TODO:
+            //Create Table x(a,b)
+            //Drop column b
+            //Rename a to b
+            //See that all works!
+            Assert.False(true);
+        }
+
+        [Fact]
+        public void RenamingTableToAnotherWorks()
+        {
+            //TODO:
+            //Create Table x(a,b)
+            //Drop column b
+            //Rename a to b
+            //See that all works!
+            Assert.False(true);
+        }
+
+        [Fact]
+        public void CreateTableOfDroppedOneWorks()
+        {
+            //TODO:
+            //Create Table a
+            //Drop Table a
+            //Create Table a
+            //See that data/reexecution works
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            QBDC.CRUDHandler.HandleInsert(c);
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
+            QBDC.CRUDHandler.HandleInsert(c2);
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+            DropTable dt = new DropTable()
+            {
+                Schema = t.Schema,
+                TableName = t.TableName
+            };
+            QBDC.SMOHandler.HandleSMO(dt);
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+            
+
+            CreateTable t2 = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t2);
+            //Insert some data
+            InsertOperation c_t2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'xyz'");
+            QBDC.CRUDHandler.HandleInsert(c_t2);
+            InsertOperation c2_t2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "4", "'qpz'");
+            QBDC.CRUDHandler.HandleInsert(c2_t2);
+            ////Make a Request
+            var schema_2 = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s_2 = SelectOperation.FromCreateTable(t);
+            var result_1 = QBDC.QueryStore.ExecuteSelect(s);
+            var result_2 = QBDC.QueryStore.ReExecuteSelect(result_1.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result_1, result_2);
+
+
+            var result3 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result3);
+
+            this.Succcess = true;
+
+        }
+
+        [Fact]
+        public void RenameTableToDroppedOneWorks()
+        {
+            //TODO:
+            //Create Table a
+            //Create Table a
+            //Drop Table a
+
+            //See that data/reexecution works
+            Assert.False(true);
+        }
     }
 }
