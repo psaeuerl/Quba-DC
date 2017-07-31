@@ -697,16 +697,22 @@ namespace QubaDC.Tests.Separated
             
 
             CreateTable t2 = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            t2.Columns.ToList().ForEach(x => x.ColumName = x.ColumName + "_new");
+            t2.PrimaryKey[0] = t2.Columns[0].ColumName;
             QBDC.SMOHandler.HandleSMO(t2);
             //Insert some data
             InsertOperation c_t2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'xyz'");
+            c_t2.ColumnNames = c_t2.ColumnNames.Select(x => x += "_new").ToArray();
             QBDC.CRUDHandler.HandleInsert(c_t2);
+
             InsertOperation c2_t2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "4", "'qpz'");
+            c2_t2.ColumnNames = c2_t2.ColumnNames.Select(x => x += "_new").ToArray();
             QBDC.CRUDHandler.HandleInsert(c2_t2);
             ////Make a Request
             var schema_2 = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s_2 = SelectOperation.FromCreateTable(t);
-            var result_1 = QBDC.QueryStore.ExecuteSelect(s);
+            s_2.Columns.ToList().ForEach(x => x.ColumnName = x.ColumnName + "_new");
+            var result_1 = QBDC.QueryStore.ExecuteSelect(s_2);
             var result_2 = QBDC.QueryStore.ReExecuteSelect(result_1.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result_1, result_2);
 

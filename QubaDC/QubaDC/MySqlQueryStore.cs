@@ -54,12 +54,13 @@ WHERE `querystore`.`GUID` = '{2}';
   `HashSelectSerialized` MEDIUMTEXT NOT NULL,
   `HashSelect` MEDIUMTEXT NOT NULL,
   `GUID` VARCHAR(50) NOT NULL,
+  `AdditionalInformation` MEDIUMTEXT NULL,
   PRIMARY KEY (`ID`));";
             return Statemnet;
 
         }
 
-        internal override string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid, String hashselect, String hashselectserialized)
+        internal override string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, string time, string hash, Guid guid, String hashselect, String hashselectserialized, String additionalinformation)
         {
             String insert = @"INSERT INTO `{0}`.`{1}`
 (
@@ -71,7 +72,8 @@ WHERE `querystore`.`GUID` = '{2}';
 `Hash`,
 `HashSelect`,
 `HashSelectSerialized`,
-`GUID`)
+`GUID`,
+`AdditionalInformation`)
 VALUES
 ('{2}'
 ,'{3}'
@@ -81,7 +83,8 @@ VALUES
 ,'{7}'
 ,'{10}'
 ,'{9}'
-,'{8}');";
+,'{8}'
+,{11});";
 
             String result = String.Format(insert,
                 this.TypedConnection.DataBase,
@@ -94,7 +97,9 @@ VALUES
                 hash == null? "null" : hash.Replace("'", "\\'"),
                 guid.ToString(),
                 hashselect.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
-                hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "));
+                hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
+                additionalinformation == null ? "null" : "'"+additionalinformation+"'")
+                ;
             return result;
         }
 

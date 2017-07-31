@@ -21,7 +21,8 @@ namespace QubaDC
             "Timestamp",
             "HashSelect",
             "HashSelectSerialized",
-            "Hash"
+            "Hash",
+            "AdditionalInformation"
         };
 
         private DataConnection DataConnection;
@@ -94,7 +95,7 @@ namespace QubaDC
             s.SortingColumns = sortings.ToArray();
         }
 
-        internal abstract string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, String time, string hash, Guid guid,string hashquery, string hashqueryserialized);
+        internal abstract string RenderInsert(string originalrenderd, string originalSerialized, string rewrittenSerialized, string select, String time, string hash, Guid guid,string hashquery, string hashqueryserialized, string AdditionalInformation);
         internal abstract string RenderSelectForQueryStore(Guid gUID);
     }
 }

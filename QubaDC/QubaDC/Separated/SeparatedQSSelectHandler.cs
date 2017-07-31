@@ -132,7 +132,7 @@ namespace QubaDC.Separated
                 normResult = con.ExecuteQuery(select, c);
                 hashTable = con.ExecuteQuery(selectHash, c);
                 hash = hashTable.Select().First().Field<String>(0);
-                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid,selectHash, selectHashSerialized);
+                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid,selectHash, selectHashSerialized,null);
                long? id = con.ExecuteInsert(insert, c);
                 System.Diagnostics.Debug.WriteLine(id.Value);
                 trans.Commit();
