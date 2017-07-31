@@ -20,7 +20,6 @@ namespace QubaDC
         public void StoreSchema(Schema schema,SchemaModificationOperator smo, DataConnection con, DbConnection c)
         {
             var curSchema = GetCurrentSchema();
-            schema.Tables.Where(x => x.Table.CreationId == -1).ToList().ForEach(x => x.Table.CreationId = curSchema.ID.Value + 1);
             String stmt = GetInsertSchemaStatement(schema, smo);
             con.ExecuteInsert(stmt, c);
         }

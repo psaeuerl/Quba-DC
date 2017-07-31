@@ -17,7 +17,7 @@ namespace QubaDC.DatabaseObjects
 
         public ColumnDefinition[] ColumnDefinitions { get; set; }
 
-        public long CreationId { get; set; }
+        public Guid? AddTimeSetGuid { get; set; }
 
         public TableSchema()
         {
@@ -25,7 +25,7 @@ namespace QubaDC.DatabaseObjects
             this.Schema = String.Empty; ;
             this.Columns = new string[] { };
             this.ColumnDefinitions = new ColumnDefinition[] { };
-            this.CreationId = -1;
+            this.AddTimeSetGuid = null;
         }
 
         internal Table ToTable()

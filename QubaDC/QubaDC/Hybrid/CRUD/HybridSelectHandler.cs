@@ -50,7 +50,7 @@ FROM {1}
             return sel;
         }
 
-        internal string HandleHybridSelect(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema,SchemaInfo currentSchema, bool RenderAsHash)
+        internal string HandleHybridSelect(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema,SchemaInfo currentSchema, bool RenderAsHash, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
 
             if (RenderAsHash)
@@ -62,7 +62,7 @@ FROM {1}
 FROM {1}
 "; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
                 
-                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema);
+                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping);
                 String wherePart = RenderWherePart(selectOperation.Restriction);
                 String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
 
@@ -96,7 +96,7 @@ FROM {1}
                     columns = RenderColumns(selectOperation.Columns, selectOperation.LiteralColumns);
                 else
                     columns = this.RenderAsHash(selectOperation.Columns, selectOperation.LiteralColumns);
-                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema);
+                String fromPart = RenderHybridFromPart(selectOperation, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping);
                 String wherePart = RenderWherePart(selectOperation.Restriction);
                 String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
                 String select = String.Format(Format, columns, fromPart, wherePart, OrderBy);
@@ -104,20 +104,23 @@ FROM {1}
             }
         }
 
-        private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema)
+        private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             var histTable = exeuctionTimeSchema.Schema.FindHistTable(selectOperation.FromTable);
-            Boolean currentSchemaContainsTable = currentSchema.Schema.ContainsTable(selectOperation.FromTable.TableSchema, selectOperation.FromTable.TableName);
+            var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
+            Boolean currentSchemaContainsTable = false;
+            if (expectedGuid.HasValue)
+                currentSchemaContainsTable = currentSchema.Schema.Tables.Any(x => x.Table.AddTimeSetGuid == expectedGuid.Value);
 
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(selectOperation.FromTable.TableAlias);
             String table = RenderHybridFromTable(selectOperation.FromTable, columns,histTable, currentSchemaContainsTable);
-            var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(selectOperation,x, exeuctionTimeSchema, currentSchema));
+            var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(selectOperation,x, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping));
             var joined = String.Join(System.Environment.NewLine, parts);
             var result = String.Join(System.Environment.NewLine, table, joined);
             return table;
         }
 
-        private object RenderHybridJoinedTable(SelectOperation selectOperation, JoinedTable x, SchemaInfo s,SchemaInfo currentSchema)
+        private object RenderHybridJoinedTable(SelectOperation selectOperation, JoinedTable x, SchemaInfo s,SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
 
             String Format = "{0} {1} {2}";
@@ -133,10 +136,13 @@ FROM {1}
             };
             var histTable = s.Schema.FindHistTable(t);
 
-            Boolean currentTableContained = currentSchema.Schema.ContainsTable(x.TableSchema, x.TableName);
+            var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
+            Boolean currentSchemaContainsTable = false;
+            if (expectedGuid.HasValue)
+                currentSchemaContainsTable = currentSchema.Schema.Tables.Any(y => y.Table.AddTimeSetGuid == expectedGuid.Value);
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(x.TableAlias);
 
-            String table = RenderHybridFromTable(t, columns, histTable,currentTableContained);
+            String table = RenderHybridFromTable(t, columns, histTable, currentSchemaContainsTable);
 
             String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
             String result = String.Format(Format, joinType, table, rest);

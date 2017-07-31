@@ -20,6 +20,7 @@ namespace QubaDC.DatabaseObjects
         {
             AssertTableColumns(table);
             AssertTableColumns(histequivalent);
+            table.AddTimeSetGuid = Guid.NewGuid();
             this._Tables.Add(new TableSchemaWithHistTable()
             {
                 Table = table,

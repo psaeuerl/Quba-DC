@@ -44,17 +44,17 @@ namespace QubaDC.Hybrid
             return select;
         }
 
-        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s,SchemaInfo s2)
+        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s,SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-            String select = h.HandleHybridSelect(newOperation, s, s2,true);
+            String select = h.HandleHybridSelect(newOperation, s, s2,true, TableRefToGuidMapping);
             return select;
         }
 
-        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2)
+        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-            String select = h.HandleHybridSelect(originalSelect, s,s2,false);
+            String select = h.HandleHybridSelect(originalSelect, s,s2,false, TableRefToGuidMapping);
             return select;
         }
 

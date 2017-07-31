@@ -27,7 +27,8 @@ namespace QubaDC
     `querystore`.`Hash`,
     `querystore`.`HashSelect`,
     `querystore`.`HashSelectSerialized`,
-    `querystore`.`GUID`
+    `querystore`.`GUID`,
+    `querystore`.`AdditionalInformation`
 FROM `{0}`.`{1}`
 WHERE `querystore`.`GUID` = '{2}';
 ";
