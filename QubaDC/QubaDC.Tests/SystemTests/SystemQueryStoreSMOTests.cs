@@ -649,19 +649,57 @@ namespace QubaDC.Tests.Separated
             //Drop column b
             //Rename a to b
             //See that all works!
-            Assert.False(true);
+            //Create Basic Table
+            QBDC.Init();
+            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
+            QBDC.SMOHandler.HandleSMO(t);
+            //Insert some data
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'","'someinfo'");
+            QBDC.CRUDHandler.HandleInsert(c);
+
+
+            InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'","'anotherinfo'");
+            c2.InsertTable.TableName = t.TableName;
+            QBDC.CRUDHandler.HandleInsert(c2);
+
+            ////Make a Request
+            var schema = QBDC.SchemaManager.GetCurrentSchema();
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            s.Columns = s.Columns.Where(x => x.ColumnName != "Schema").ToArray();
+            var result = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.Equal("c191fe8b5b35c9e8b64caeae6463852b", result.Hash);
+
+            DropColumn mt = new DropColumn()
+            {
+                Schema = t.Schema,
+                TableName = t.TableName,
+                Column = "Info"
+            };
+            QBDC.SMOHandler.HandleSMO(mt);
+
+            RenameColumn rc = new RenameColumn()
+            {
+                ColumnName = "Schema",
+                RenameName = "Info",
+                Schema = t.Schema,
+                TableName = t.TableName
+
+            };
+            QBDC.SMOHandler.HandleSMO(rc);
+
+         
+            //check that new schema contains renamed table
+            var reExecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reExecuteResult);
+            ////////Check that they contain the same data
+
+            var result2 = QBDC.QueryStore.ExecuteSelect(s);
+            Assert.NotEqual(result2.Hash, result.Hash);
+            Assert.Equal(2, result2.Result.Rows.Count);
+            this.Succcess = true;
         }
 
-        [Fact]
-        public void RenamingTableToAnotherWorks()
-        {
-            //TODO:
-            //Create Table x(a,b)
-            //Drop column b
-            //Rename a to b
-            //See that all works!
-            Assert.False(true);
-        }
+
 
         [Fact]
         public void CreateTableOfDroppedOneWorks()
@@ -722,18 +760,6 @@ namespace QubaDC.Tests.Separated
 
             this.Succcess = true;
 
-        }
-
-        [Fact]
-        public void RenameTableToDroppedOneWorks()
-        {
-            //TODO:
-            //Create Table a
-            //Create Table a
-            //Drop Table a
-
-            //See that data/reexecution works
-            Assert.False(true);
         }
     }
 }
