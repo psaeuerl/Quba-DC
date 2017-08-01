@@ -57,7 +57,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            throw new NotImplementedException();
+            HybridRenameColumnHandler h = new HybridRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameColumn);            
         }
 
         internal override void Visit(MergeTable mergeTable)
