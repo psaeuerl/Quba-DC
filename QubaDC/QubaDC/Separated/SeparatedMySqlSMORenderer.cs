@@ -258,7 +258,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns)
+        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null)
         {
             String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
             String columnString = "*";

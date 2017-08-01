@@ -239,9 +239,9 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             return result;
         }
 
-        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns)
+        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null)
         {
-            String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
+            String baseFormat = "INSERT {0} {4} SELECT {3} FROM {1} {2};";
             String columnString = "*";
             if (columns != null)
                 columnString = String.Join(",", columns.Select(x => Quote(x)));
@@ -252,7 +252,12 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             if (!String.IsNullOrWhiteSpace(restriction))
                 restriction = "WHERE " + restriction;
 
-            String result = String.Format(baseFormat, target, oldTable,restriction, columnString);
+            String insColumn = "";
+            if(insertcolumns != null)
+            {
+                insColumn = "(" + String.Join(", ", insertcolumns.Select(x => this.Quote(x))) + ")";
+            }
+            String result = String.Format(baseFormat, target, oldTable,restriction, columnString, insColumn);
             return result;
         }
 

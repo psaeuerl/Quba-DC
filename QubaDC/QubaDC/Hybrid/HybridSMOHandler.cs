@@ -42,7 +42,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(CopyTable copyTable)
         {
-            throw new NotImplementedException();
+            HybridCopyTableHandler h = new HybridCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(copyTable);
         }
 
         internal override void Visit(DecomposeTable decomposeTable)
