@@ -14,7 +14,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(RenameTable renameTable)
         {
-            throw new NotImplementedException();
+            HybridRenameTableHandler h = new HybridRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameTable);            
         }
 
         internal override void Visit(PartitionTable partitionTable)

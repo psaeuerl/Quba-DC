@@ -108,12 +108,18 @@ FROM {1}
         {
             var histTable = exeuctionTimeSchema.Schema.FindHistTable(selectOperation.FromTable);
             var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
+
             Boolean currentSchemaContainsTable = false;
+            TableSchemaWithHistTable current = null;
             if (expectedGuid.HasValue)
+            {
                 currentSchemaContainsTable = currentSchema.Schema.Tables.Any(x => x.Table.AddTimeSetGuid == expectedGuid.Value);
+                if(currentSchemaContainsTable)
+                    current = currentSchema.Schema.Tables.First(x => x.Table.AddTimeSetGuid == expectedGuid.Value);
+            }
 
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(selectOperation.FromTable.TableAlias);
-            String table = RenderHybridFromTable(selectOperation.FromTable, columns,histTable, currentSchemaContainsTable);
+            String table = RenderHybridFromTable(selectOperation.FromTable, columns,histTable, currentSchemaContainsTable, current);
             var parts = selectOperation.JoinedTables.Select(x => RenderHybridJoinedTable(selectOperation,x, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping));
             var joined = String.Join(System.Environment.NewLine, parts);
             var result = String.Join(System.Environment.NewLine, table, joined);
@@ -138,18 +144,22 @@ FROM {1}
 
             var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
             Boolean currentSchemaContainsTable = false;
+            TableSchemaWithHistTable current = null;
             if (expectedGuid.HasValue)
+            {
                 currentSchemaContainsTable = currentSchema.Schema.Tables.Any(y => y.Table.AddTimeSetGuid == expectedGuid.Value);
+                current = currentSchema.Schema.Tables.First(y => y.Table.AddTimeSetGuid == expectedGuid.Value);
+            }
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(x.TableAlias);
 
-            String table = RenderHybridFromTable(t, columns, histTable, currentSchemaContainsTable);
+            String table = RenderHybridFromTable(t, columns, histTable, currentSchemaContainsTable, current);
 
             String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
             String result = String.Format(Format, joinType, table, rest);
             return result;
         }
 
-        private string RenderHybridFromTable(FromTable fromTable, ColumnReference[] columns, TableSchema histTableSchema, Boolean currentSchemaContainsTable )
+        private string RenderHybridFromTable(FromTable fromTable, ColumnReference[] columns, TableSchema histTableSchema, Boolean currentSchemaContainsTable, TableSchemaWithHistTable currentSchema)
         {
             String baseFormat = "({0}) {1}";
             String originalTableSelect = null;
@@ -158,8 +168,8 @@ FROM {1}
                 String baseSelect = "SELECT {2},{3}, null as {0} FROM {1}";
 
                 String endTsColumn = CRUDRenderer.Quote(HybridConstants.EndTS);
-                String baseTable = CRUDRenderer.Quote(fromTable.TableSchema) + "."
-                                     + CRUDRenderer.Quote(fromTable.TableName);
+                String baseTable = CRUDRenderer.Quote(currentSchema.Table.Schema) + "."
+                                     + CRUDRenderer.Quote(currentSchema.Table.Name);
                 String[] columnsSerialized = columns.Select(x => CRUDRenderer.Quote(x.ColumnName)).ToArray();
                 String cols = String.Join(", ", columnsSerialized);
                 String startts = CRUDRenderer.Quote(HybridConstants.StartTS);
