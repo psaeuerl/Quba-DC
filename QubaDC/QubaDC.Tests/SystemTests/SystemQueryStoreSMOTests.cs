@@ -278,10 +278,10 @@ namespace QubaDC.Tests.Separated
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
-            //SelectOperation s = SelectOperation.FromCreateTable(t);
-            //var result = QBDC.QueryStore.ExecuteSelect(s);
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
 
-            //Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
+            Assert.Equal("e55cd7cf83b7c2c31092f4577aab89e3", result.Hash);
 
             MergeTable mt = new MergeTable()
             {
@@ -319,6 +319,10 @@ namespace QubaDC.Tests.Separated
             var selectFromMergedTable = QBDC.CRUDHandler.RenderSelectOperation(s2);
             var resulttable = QBDC.DataConnection.ExecuteQuery(selectFromMergedTable);
             Assert.Equal(2, resulttable.Rows.Count);
+
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+
             this.Succcess = true;
         }
 
