@@ -50,7 +50,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(DecomposeTable decomposeTable)
         {
-            throw new NotImplementedException();
+            HybridDecomposeTableHandler h = new HybridDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(decomposeTable);
         }
 
         internal override void Visit(JoinTable joinTable)

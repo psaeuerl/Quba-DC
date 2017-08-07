@@ -527,10 +527,8 @@ namespace QubaDC.Tests.Separated
             var newResult = QBDC.QueryStore.ExecuteSelect(s2);
 
             Assert.Equal("new" + result.Result.Rows[0][1], newResult.Result.Rows[0][3]);
-
-
-
-
+            var result2 = QBDC.QueryStore.ExecuteSelect(s2);
+            Assert.Equal(2, result2.Result.Rows.Count);
             this.Succcess = true;
         }
 
@@ -593,6 +591,9 @@ namespace QubaDC.Tests.Separated
             var result4 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(2, result4.Result.Rows.Count);
             Assert.Equal(2, result4.Result.Select().First().ItemArray.Count());
+
+            var r3 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, r3);
             this.Succcess = true;
         }
 
