@@ -360,6 +360,7 @@ namespace QubaDC.Tests.Separated
             var schema = QBDC.SchemaManager.GetCurrentSchema();
 
 
+            Assert.False(true, "Insert selects that get reexecuted");
             JoinTable mt = new JoinTable()
             {
                 ResultSchema = t.Schema,
