@@ -253,6 +253,9 @@ namespace QubaDC.Tests.Separated
             var result4 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(1, result4.Result.Rows.Count);
             Assert.Equal(2, result4.Result.Select().First()[0]);
+
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
             this.Succcess = true;
         }
 

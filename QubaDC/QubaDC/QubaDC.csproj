@@ -67,6 +67,7 @@
     <Compile Include="Hybrid\SMO\HybridCopyTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridRenameTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridMergeTableHandler.cs" />
+    <Compile Include="Hybrid\SMO\HybridPartitionTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />

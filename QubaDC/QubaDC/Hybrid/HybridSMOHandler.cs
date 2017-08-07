@@ -20,7 +20,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(PartitionTable partitionTable)
         {
-            throw new NotImplementedException();
+            HybridPartitionTableHandler h = new HybridPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(partitionTable);
         }
 
         internal override void Visit(DropTable dropTable)
