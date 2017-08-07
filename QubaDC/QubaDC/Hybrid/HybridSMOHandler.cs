@@ -56,7 +56,8 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(JoinTable joinTable)
         {
-            throw new NotImplementedException();
+            HybridJoinTableHandler h = new HybridJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(joinTable);
         }
 
         internal override void Visit(RenameColumn renameColumn)
