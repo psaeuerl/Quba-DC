@@ -26,7 +26,7 @@ namespace QubaDC.Hybrid.SMO
 
         internal void Handle(CreateTable createTable)
         {
-            Guard.StateTrue(createTable.PrimaryKey.Length > 0, "Primary Key Requiered");
+            //Guard.StateTrue(createTable.PrimaryKey.Length > 0, "Primary Key Requiered");
 
             var con = (MySQLDataConnection)DataConnection;
             ;

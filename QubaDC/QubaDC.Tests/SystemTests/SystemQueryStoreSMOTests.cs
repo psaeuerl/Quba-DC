@@ -121,7 +121,7 @@ namespace QubaDC.Tests.Separated
 
             var newSchema = QBDC.SchemaManager.GetCurrentSchema();
 
-            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+
 
             //check that new schema contains renamed table
             //check that new schema does not contain original table
@@ -129,7 +129,7 @@ namespace QubaDC.Tests.Separated
             SchemaInfo newSchemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             Assert.Equal(3, newSchemaInfo.ID);
             Assert.False(newSchemaInfo.Schema.ContainsTable(dt.Schema, dt.TableName));
-
+            var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
             this.Succcess = true;
         }
@@ -359,8 +359,9 @@ namespace QubaDC.Tests.Separated
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
 
+            SelectOperation s = SelectOperation.FromCreateTable(t);
+            var result = QBDC.QueryStore.ExecuteSelect(s);
 
-            Assert.False(true, "Insert selects that get reexecuted");
             JoinTable mt = new JoinTable()
             {
                 ResultSchema = t.Schema,
@@ -409,6 +410,9 @@ namespace QubaDC.Tests.Separated
             s2.FromTable.TableName = mt.ResultTableName;
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(1, result2.Result.Rows.Count);
+
+            var reexecute = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reexecute);
             this.Succcess = true;
         }
 
@@ -745,7 +749,6 @@ namespace QubaDC.Tests.Separated
 
             CreateTable t2 = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             t2.Columns.ToList().ForEach(x => x.ColumName = x.ColumName + "_new");
-            t2.PrimaryKey[0] = t2.Columns[0].ColumName;
             QBDC.SMOHandler.HandleSMO(t2);
             //Insert some data
             InsertOperation c_t2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'xyz'");

@@ -36,7 +36,7 @@ namespace QubaDC.Tests.DataBuilder
                      new ColumnDefinition() {  ColumName = "Info",  DataType =" MediumText", Nullable = true }
 
                 },
-                PrimaryKey = new String[] { "ID" }
+                PrimaryKey = new String[] { }//new String[] { "ID" }
             };
         }
 
@@ -50,7 +50,7 @@ namespace QubaDC.Tests.DataBuilder
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
                     new ColumnDefinition() {  ColumName = "Something",  DataType =" MediumText", Nullable = false },
                 },
-                PrimaryKey = new String[] { "ID" }
+                PrimaryKey = new String[] { }//new String[] { "ID" }
             };
         }
 

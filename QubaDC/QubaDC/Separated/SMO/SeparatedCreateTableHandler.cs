@@ -26,8 +26,6 @@ namespace QubaDC.Separated.SMO
 
         internal void Handle(CreateTable createTable)
         {
-            Guard.StateTrue(createTable.PrimaryKey.Length > 0, "Primary Key Requiered");
-
             var con = (MySQLDataConnection)DataConnection;
             con.DoTransaction((transaction, c) =>
             {

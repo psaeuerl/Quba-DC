@@ -93,7 +93,7 @@ DELIMITER;";
 RenderColumnDefinition(IncludeAdditionalInformation, x))
             .ToArray();
             String PrimaryKey = "";
-            if (ct.PrimaryKey != null)
+            if (ct.PrimaryKey != null && ct.PrimaryKey.Length > 0)
             {
                 String PKFormat = ", PRIMARY KEY({0})";
                 var cols = ct.PrimaryKey.Select(x => "`" + x + "`");
