@@ -189,6 +189,8 @@ namespace QubaDC.Tests.Separated
 
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result3.Hash);
 
+            var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
             this.Succcess = true;
         }
 
@@ -470,6 +472,9 @@ namespace QubaDC.Tests.Separated
             //s2.FromTable.TableName = mt.ResultTableName;
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(2, result2.Result.Rows.Count);
+
+            var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
             this.Succcess = true;
         }
 
@@ -534,6 +539,9 @@ namespace QubaDC.Tests.Separated
             Assert.Equal("new" + result.Result.Rows[0][1], newResult.Result.Rows[0][3]);
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
             Assert.Equal(2, result2.Result.Rows.Count);
+
+            var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
             this.Succcess = true;
         }
 
@@ -650,7 +658,8 @@ namespace QubaDC.Tests.Separated
             var resultAfterRenam = QBDC.QueryStore.ExecuteSelect(s2);
 
             Assert.Equal("98dec3754faa19997a14b0b27308bb63", result.Hash);
-
+            var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
+            QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
             this.Succcess = true;
         }
 
