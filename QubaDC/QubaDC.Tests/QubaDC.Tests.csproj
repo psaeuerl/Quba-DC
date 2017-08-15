@@ -69,6 +69,7 @@
     <Compile Include="Hybrid\HybridBasicTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreCRUDTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreSMOTests.cs" />
+    <Compile Include="Integrated\IntegratedQueryStoreCRUDTests.cs" />
     <Compile Include="Integrated\IntegratedBasicTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />

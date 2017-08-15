@@ -7,6 +7,7 @@ using QubaDC.CRUD;
 using QubaDC.Separated.CRUD;
 using System.Data;
 using QubaDC.Hybrid.CRUD;
+using QubaDC.Integrated.CRUD;
 
 namespace QubaDC.Integrated
 {
@@ -18,23 +19,10 @@ namespace QubaDC.Integrated
         //    h.HandleDelete(deleteOperation);
         //}
 
-        //public override void HandleInsert(InsertOperation insertOperation)
-        //{
-        //    HybridInsertHandler h = new HybridInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-        //    h.HandleInsert(insertOperation);
-        //}
-
         //public override void HandleUpdateOperation(UpdateOperation c2)
         //{
         //    HybridUpdateHandler h = new HybridUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
         //    h.HandleUpdate(c2);
-        //}
-
-        //public override string RenderSelectOperation(SelectOperation selectOperation)
-        //{
-        //    HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-        //    String select = h.HandleSelect(selectOperation, false);
-        //    return select;
         //}
 
         //internal override string RenderHashSelect(SelectOperation newOperation)
@@ -96,7 +84,8 @@ namespace QubaDC.Integrated
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
-            throw new NotImplementedException();
+            IntegratedInsertHandler h = new IntegratedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            h.HandleInsert(insertOperation);
         }
 
         public override void HandleUpdateOperation(UpdateOperation c2)
@@ -106,12 +95,16 @@ namespace QubaDC.Integrated
 
         public override string RenderSelectOperation(SelectOperation selectOperation)
         {
-            throw new NotImplementedException();
+            IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleSelect(selectOperation, false);
+            return select;
         }
 
         internal override string RenderHashSelect(SelectOperation newOperation)
         {
-            throw new NotImplementedException();
+            IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String select = h.HandleSelect(newOperation, true);
+            return select;
         }
 
         internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)

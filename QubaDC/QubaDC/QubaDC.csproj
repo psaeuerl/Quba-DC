@@ -70,6 +70,8 @@
     <Compile Include="Hybrid\SMO\HybridPartitionTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridDecomposeTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridJoinTableHandler.cs" />
+    <Compile Include="Integrated\CRUD\IntegratedInsertHandler.cs" />
+    <Compile Include="Integrated\CRUD\IntegratedSelectHandler.cs" />
     <Compile Include="Integrated\IntegratedCRUDHandler.cs" />
     <Compile Include="Integrated\IntegratedMySqlSMORenderer.cs" />
     <Compile Include="Integrated\IntegratedQSSelectHandler.cs" />
@@ -167,9 +169,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Integrated\CRUD\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Separated\Notes.txt" />
   </ItemGroup>
