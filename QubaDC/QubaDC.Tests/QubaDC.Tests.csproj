@@ -63,11 +63,13 @@
     <Compile Include="CustomAsserts\QueryStoreAsserts.cs" />
     <Compile Include="DataBuilder\CreateTableBuilder.cs" />
     <Compile Include="DataConnectionTests.cs" />
+    <Compile Include="Fixtures\IntegratedQBDCFixture.cs" />
     <Compile Include="Fixtures\MySqlDBFixture.cs" />
     <Compile Include="Fixtures\HybridQBDCFixture.cs" />
     <Compile Include="Hybrid\HybridBasicTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreCRUDTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreSMOTests.cs" />
+    <Compile Include="Integrated\IntegratedBasicTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
