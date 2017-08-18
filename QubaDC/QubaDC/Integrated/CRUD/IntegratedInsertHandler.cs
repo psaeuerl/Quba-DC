@@ -22,7 +22,6 @@ namespace QubaDC.Integrated.CRUD
 
         internal void HandleInsert(InsertOperation insertOperation)
         {
-            //Actually, just insert the statement
             String insertIntoBaseTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
             this.DataConnection.ExecuteQuery(insertIntoBaseTable);
             

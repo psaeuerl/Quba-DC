@@ -10,7 +10,7 @@ namespace QubaDC
     public class MySQLCrudRenderer : CRUDRenderer
     {
         public override string RenderInsert(Table insertTable, string[] columnNames, string[] valueLiterals)
-        {
+        {            
             String InsertFormat = "INSERT INTO {0} ({3}{1}) VALUES ({3}{2})";
             String table = PrepareTable(insertTable);
             String columns = PrepareColumn(columnNames);
@@ -89,6 +89,17 @@ namespace QubaDC
             String baseUpdate = "UPDATE {0} SET {1} {2}";
             String updateResult = String.Format(baseUpdate, tableRef, settingvalues,restPart);
             return updateResult;
+        }
+
+        public override string RenderInsertSelect(Table insertTable, string[] columnnames, string select)
+        {
+           // String InsertFormat = "INSERT INTO {0} ({3}{1})  {2}";
+            String InsertFormat = "INSERT INTO {0}   {2}";
+            String table = PrepareTable(insertTable);
+            String columns = PrepareColumn(columnnames);
+            String values = select;
+            String result = String.Format(InsertFormat, table, columns, values, System.Environment.NewLine);
+            return result;
         }
     }
 }

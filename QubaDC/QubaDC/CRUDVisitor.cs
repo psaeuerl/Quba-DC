@@ -14,6 +14,11 @@ namespace QubaDC
         public DataConnection DataConnection { get; set; }
         public SchemaManager SchemaManager { get; set; }
 
+        /// <summary>
+        /// Needed by Integrated Update
+        /// </summary>
+        public GlobalUpdateTimeManager GlobalUpdateTimeManager { get; set; }
+
         public abstract void HandleDeletOperation(DeleteOperation deleteOperation);
 
         public abstract void HandleInsert(InsertOperation insertOperation);

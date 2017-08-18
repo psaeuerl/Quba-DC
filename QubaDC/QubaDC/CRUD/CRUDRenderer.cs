@@ -9,6 +9,7 @@ namespace QubaDC.CRUD
     public abstract class CRUDRenderer
     {
         public abstract string RenderInsert(Table insertTable, string[] columnNames, string[] valueLiterals);
+        public abstract string RenderInsertSelect(Table insertTable, string[] columnnames, string select);
 
         public abstract string SerializeDateTime(DateTime now);
         internal abstract string SerializeString(string v);

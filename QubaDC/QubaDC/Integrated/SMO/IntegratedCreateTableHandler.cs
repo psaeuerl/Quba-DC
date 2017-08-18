@@ -61,15 +61,13 @@ namespace QubaDC.Integrated.SMO
 
                 ////INsert Trigger 
                 String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                //Delete Trigger
-                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                ////Update Trigger
-                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                String updateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
 
                 ////Add Trigger
                 con.ExecuteSQLScript(trigger, c);
-                con.ExecuteSQLScript(deleteTrigger, c);
-                con.ExecuteSQLScript(UpdateTrigger, c);
+                con.ExecuteSQLScript(updateTrigger, c);
+
+
 
                 ////Store Schema
                 this.schemaManager.StoreSchema(x, createTable, con, c);
