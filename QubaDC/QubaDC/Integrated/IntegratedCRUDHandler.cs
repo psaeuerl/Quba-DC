@@ -16,7 +16,7 @@ namespace QubaDC.Integrated
 
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            IntegratedDeleteHandler h = new IntegratedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            IntegratedDeleteHandler h = new IntegratedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer, this.GlobalUpdateTimeManager);
             h.HandleDelete(deleteOperation);
         }
 
