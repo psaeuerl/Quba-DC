@@ -29,10 +29,18 @@ namespace QubaDC
             return stmt;
         }
 
-        private  string GetTableName()
+        public override string GetTableName()
         {
 
            return "`" + Connection.DataBase + @"`.`" + QubaDCSystem.GlobalUpdateTableName + @"`";
+        }
+        public override QubaDC.CRUD.Table GetTable()
+        {
+            return new CRUD.Table()
+            {
+                TableName = QubaDCSystem.GlobalUpdateTableName,
+                TableSchema = Connection.DataBase
+            };
         }
 
         public override GlobalUpdate GetLatestUpdate()
