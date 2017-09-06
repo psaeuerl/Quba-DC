@@ -1,0 +1,30 @@
+SET autocommit=0;
+SET SQL_SAFE_UPDATES = 0;
+LOCK TABLES Integrated_edabcb1673c84fd8b66b5dfa293947dc.basictable WRITE,`Integrated_edabcb1673c84fd8b66b5dfa293947dc`.`QubaDCGlobalUpdate` WRITE;
+SET @ct := NOW(3);
+
+CREATE TEMPORARY TABLE IF NOT EXISTS tmptable AS (SELECT
+`basictable`.`*`
+FROM `Integrated_edabcb1673c84fd8b66b5dfa293947dc`.`basictable` AS `basictable`
+WHERE ((`basictable`.`startts` <  @ct) AND (`basictable`.`endts` IS NULL) AND ((`basictable`.`ID` = 1)))
+);
+
+Update `Integrated_edabcb1673c84fd8b66b5dfa293947dc`.`basictable`
+set endts = @ct  WHERE ((`basictable`.`startts` <  @ct) AND (`basictable`.`endts` IS NULL) AND ((`basictable`.`ID` = 1)));
+
+
+INSERT INTO `integrated_edabcb1673c84fd8b66b5dfa293947dc`.`basictable`  SELECT * FROM tmptable;
+
+
+Update `Integrated_edabcb1673c84fd8b66b5dfa293947dc`.`basictable`
+set startts = @ct 
+WHERE ((`basictable`.`startts` <  @ct) AND (`basictable`.`endts` IS NULL) AND ((`basictable`.`ID` = 1)));
+
+INSERT INTO `integrated_edabcb1673c84fd8b66b5dfa293947dc`.`qubadcglobalupdate` (
+`operation`,
+`timestamp`) VALUES (
+'update on QubaDCGlobalUpdate',
+@ct);
+DROP TEMPORARY TABLE tmptable;
+COMMIT;
+UNLOCK TABLES;
