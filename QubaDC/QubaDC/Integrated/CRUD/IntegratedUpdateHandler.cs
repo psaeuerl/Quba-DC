@@ -25,80 +25,14 @@ namespace QubaDC.Integrated.CRUD
 
         internal void HandleUpdate(UpdateOperation updateOperation)
         {
-      
-
-            OperatorRestriction endTSNull = new OperatorRestriction()
+            Func<String[]> renderStaetement = () =>
             {
-                LHS = new ColumnOperand()
-                {
-                    Column = new ColumnReference()
-                    {
-                        ColumnName = IntegratedConstants.EndTS,
-                        TableReference = updateOperation.Table.TableName
-                    }
-                },
-                Op = RestrictionOperator.IS
-           ,
-                RHS = new LiteralOperand()
-                {
-                    Literal = "NULL"
-                }
-            };
-
-
-
-
-
-
-
-            //SelectOperation selectMaxTs = new SelectOperation()
-            //{
-            //    Columns = new ColumnReference[] { new ColumnReference() { ColumnName = "MAX(`startts`)" } },
-            //    FromTable = s.FromTable,
-            //    Restriction = s.Restriction
-            //};
-            //String query = selectHandler.HandleSelect(selectMaxTs, false);
-            //String max = query.Replace("``.`MAX(`startts`)`", "MAX(`startts`)");
-
-            //Acutal Idea:
-            //a.) it is safe to delete => Update End TS
-            //b.) it is safe to insert
-            //do it in two steps
-
-
-            DateTime currentTime = DateTime.Now;
-            //Delete => set Endts
-            this.DataConnection.DoTransaction((trans, con) =>
-            {
-                currentTime = this.GlobalUpdateTImeManager.GetLatestUpdate().DateTime;
-
-                //  DateTime t = System.DateTime.Now;
-              
-                var updateAndRestriction = new AndRestriction();
-                updateAndRestriction.Restrictions = new Restriction[] { endTSNull, updateOperation.Restriction };
-                UpdateOperation setEndTs = new UpdateOperation()
-                {
-                    ColumnNames = new String[] { IntegratedConstants.EndTS },
-                    Table = updateOperation.Table,
-                    ValueLiterals = new String[] { "NOW(3)" },
-                    Restriction = updateAndRestriction
-                };
-                String update = this.CRUDRenderer.RenderUpdate(setEndTs.Table, setEndTs.ColumnNames, setEndTs.ValueLiterals, setEndTs.Restriction);
-                this.DataConnection.ExecuteQuery(update, con);
-                trans.Commit();
-            });
-            //Insert New ones => set Endts
-            this.DataConnection.DoTransaction((trans, con) =>
-            {
+                DateTime t = System.DateTime.Now;
+                String currentTimeLiteral = this.CRUDRenderer.renderDateTime(t);
                 //Actually, just insert the statement
                 //Insert new Rows that are like the update
                 //Update the old ones
-                InsertOperation op = new InsertOperation()
-                {
-                    ColumnNames = updateOperation.ColumnNames.Union(IntegratedConstants.GetHistoryTableColumns().Select(x => x.ColumName)).ToArray(),
-                    ValueLiterals = updateOperation.ValueLiterals.Union(new String[] { "NOW(3)", "null" }).ToArray(),
-                    InsertTable = updateOperation.Table
-                };
+
                 OperatorRestriction startTsLower = new OperatorRestriction()
                 {
                     LHS = new ColumnOperand()
@@ -113,7 +47,7 @@ namespace QubaDC.Integrated.CRUD
          ,
                     RHS = new LiteralOperand()
                     {
-                        Literal = MySQLDialectHelper.RenderDateTime(currentTime)
+                        Literal = this.CRUDRenderer.GetSQLVariable("ct")
                     }
                 };
                 OperatorRestriction endTsBigger = new OperatorRestriction()
@@ -126,16 +60,42 @@ namespace QubaDC.Integrated.CRUD
                             TableReference = updateOperation.Table.TableName
                         }
                     },
-                    Op = RestrictionOperator.GET
+                    Op = RestrictionOperator.Equals
         ,
                     RHS = new LiteralOperand()
                     {
-                        Literal = MySQLDialectHelper.RenderDateTime(currentTime)
+                        Literal = currentTimeLiteral
                     }
                 };
+                OperatorRestriction endTSNull = new OperatorRestriction()
+                {
+                    LHS = new ColumnOperand()
+                    {
+                        Column = new ColumnReference()
+                        {
+                            ColumnName = IntegratedConstants.EndTS,
+                            TableReference = updateOperation.Table.TableName
+                        }
+                    },
+                    Op = RestrictionOperator.IS
+,
+                    RHS = new LiteralOperand()
+                    {
+                        Literal = "NULL"
+                    }
+                };
+
+
                 var selectAndRestriciton = new AndRestriction();
-                selectAndRestriciton.Restrictions = new Restriction[] { startTsLower, endTsBigger, updateOperation.Restriction };
-                SelectOperation s = new SelectOperation()
+                selectAndRestriciton.Restrictions = new Restriction[] { startTsLower, endTSNull, updateOperation.Restriction };
+
+                InsertOperation op = new InsertOperation()
+                {
+                    ColumnNames = updateOperation.ColumnNames.Union(IntegratedConstants.GetHistoryTableColumns().Select(x => x.ColumName)).ToArray(),
+                    ValueLiterals = updateOperation.ValueLiterals.Union(new String[] { currentTimeLiteral, "null" }).ToArray(),
+                    InsertTable = updateOperation.Table
+                };
+                SelectOperation selectCurrentFromBaseTable = new SelectOperation()
                 {
                     Columns = new ColumnReference[] { new ColumnReference() { ColumnName = "*", TableReference = updateOperation.Table.TableName } },
                     FromTable = new FromTable()
@@ -146,13 +106,70 @@ namespace QubaDC.Integrated.CRUD
                     },
                     Restriction = selectAndRestriciton
                 };
-
                 IntegratedSelectHandler selectHandler = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
-                String select = selectHandler.HandleSelect(s, false);
-                String insertIntoBaseTable = this.CRUDRenderer.RenderInsertSelect(op.InsertTable, op.ColumnNames, select);
-                this.DataConnection.ExecuteInsert(insertIntoBaseTable);
-                trans.Commit();
-            });
+                String select = selectHandler.HandleSelect(selectCurrentFromBaseTable, false);
+                String CreateTmpTable = "CREATE TEMPORARY TABLE IF NOT EXISTS tmptable AS ("+ select + ");";
+
+                var updateAndRestriction = new AndRestriction();
+                updateAndRestriction.Restrictions = new Restriction[] { endTSNull, updateOperation.Restriction };
+                //UpdateOperation setEndTs = new UpdateOperation()
+                //{
+                //    ColumnNames = new String[] { IntegratedConstants.EndTS },
+                //    Table = updateOperation.Table,
+                //    ValueLiterals = new String[] { currentTimeLiteral },
+                //    Restriction = updateAndRestriction
+                //};
+                //String update = this.CRUDRenderer.RenderUpdate(setEndTs.Table, setEndTs.ColumnNames, setEndTs.ValueLiterals, setEndTs.Restriction);
+
+
+
+                String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.GlobalUpdateTImeManager.GetTable(),
+                 new String[] { "Operation", "Timestamp" },
+                 new String[] { String.Format("'update on {0}'", this.GlobalUpdateTImeManager.GetTable().TableName),
+                 this.CRUDRenderer.GetSQLVariable("ct")}
+                 );
+
+
+                String Insert = this.CRUDRenderer.RenderInsertSelect(new Table() { TableSchema = updateOperation.Table.TableSchema, TableName = updateOperation.Table.TableName },
+                     null, "SELECT * FROM tmptable");
+
+                UpdateOperation setStartTs = new UpdateOperation()
+                {
+                    Table = updateOperation.Table,
+                    ColumnNames = updateOperation.ColumnNames.Concat(new String[] { IntegratedConstants.StartTS }).ToArray(),
+                    ValueLiterals = updateOperation.ValueLiterals.Concat(new String[] { this.CRUDRenderer.GetSQLVariable("ct") }).ToArray(),
+                    Restriction = selectCurrentFromBaseTable.Restriction
+                };
+
+                UpdateOperation setEndTs = new UpdateOperation()
+                {
+                    Table = updateOperation.Table,
+                    ColumnNames = new String[] { IntegratedConstants.EndTS },
+                    ValueLiterals = new String[] { this.CRUDRenderer.GetSQLVariable("ct") },
+                     Restriction = selectCurrentFromBaseTable.Restriction
+                };
+                String setEndtsBaseTable = this.CRUDRenderer.RenderUpdate(setEndTs.Table, setEndTs.ColumnNames, setEndTs.ValueLiterals, setEndTs.Restriction) + ";";
+                String insertIntoBaseTableFromTmpTable = this.CRUDRenderer.RenderInsertSelect(new Table() { TableSchema = updateOperation.Table.TableSchema, TableName = updateOperation.Table.TableName },null, "SELECT * FROM tmptable");
+                String setStartTsBaseTable = this.CRUDRenderer.RenderUpdate(setStartTs.Table, setStartTs.ColumnNames, setStartTs.ValueLiterals, setStartTs.Restriction) + ";";
+                return new String[]
+                {                  
+                   "SET @ct = NOW(3)",
+                    CreateTmpTable,
+                    setEndtsBaseTable,
+                    insertIntoBaseTableFromTmpTable,
+                    setStartTsBaseTable,                 
+                    insertToGlobalUpdate,
+                    "DROP TEMPORARY TABLE tmptable;"
+                };
+            };
+
+            String[] lockTables = new string[]
+                {
+                   updateOperation.Table.TableSchema+"."+updateOperation.Table.TableName,
+                   GlobalUpdateTImeManager.GetTableName()
+                };
+            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, this.DataConnection, this.CRUDRenderer);
         }
     }
 }
+
