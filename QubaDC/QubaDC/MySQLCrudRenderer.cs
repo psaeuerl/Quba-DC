@@ -130,5 +130,10 @@ namespace QubaDC
                 "UNLOCK TABLES;"
           };
         }
+
+        internal override string renderDateTime(DateTime t)
+        {
+            return MySQLDialectHelper.RenderDateTime(t);
+        }
     }
 }

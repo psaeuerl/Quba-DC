@@ -43,5 +43,6 @@ namespace QubaDC.CRUD
         internal abstract string[] RenderLockTables(string[] locktables);
         internal abstract string[] RenderCommitAndUnlock();
         internal abstract string[] RenderRollBackAndUnlock();
+        internal abstract string renderDateTime(DateTime t);
     }
 }
