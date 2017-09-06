@@ -84,7 +84,7 @@ namespace QubaDC
             String tableRef = PrepareTable(table);
 
             String[] setValues = columnNames.Zip(valueLiterals, (x, y) => QualifyObjectName(x) + " = " + y).ToArray();
-            String settingvalues = String.Join(System.Environment.NewLine, setValues);
+            String settingvalues = String.Join(","+System.Environment.NewLine, setValues);
 
             String baseUpdate = "UPDATE {0} SET {1} {2}";
             String updateResult = String.Format(baseUpdate, tableRef, settingvalues,restPart);
@@ -94,9 +94,9 @@ namespace QubaDC
         public override string RenderInsertSelect(Table insertTable, string[] columnnames, string select)
         {
            // String InsertFormat = "INSERT INTO {0} ({3}{1})  {2}";
-            String InsertFormat = "INSERT INTO {0}   {2}";
+            String InsertFormat = "INSERT INTO {0}  {2}";
             String table = PrepareTable(insertTable);
-            String columns = PrepareColumn(columnnames);
+            String columns = "";// PrepareColumn(columnnames);
             String values = select;
             String result = String.Format(InsertFormat, table, columns, values, System.Environment.NewLine);
             return result;
@@ -108,6 +108,7 @@ namespace QubaDC
             String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
             String[] setupAndAquireLock = new String[] {
                 @"SET autocommit=0;",
+                "SET SQL_SAFE_UPDATES=0;", 
                 lockTables
             };
             return setupAndAquireLock;
@@ -134,6 +135,11 @@ namespace QubaDC
         internal override string renderDateTime(DateTime t)
         {
             return MySQLDialectHelper.RenderDateTime(t);
+        }
+
+        internal override string GetSQLVariable(string v)
+        {
+            return "@"+v;
         }
     }
 }

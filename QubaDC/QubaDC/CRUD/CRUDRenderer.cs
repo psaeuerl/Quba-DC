@@ -44,5 +44,6 @@ namespace QubaDC.CRUD
         internal abstract string[] RenderCommitAndUnlock();
         internal abstract string[] RenderRollBackAndUnlock();
         internal abstract string renderDateTime(DateTime t);
+        internal abstract string GetSQLVariable(string v);
     }
 }
