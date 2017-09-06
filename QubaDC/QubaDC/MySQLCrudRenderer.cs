@@ -101,5 +101,34 @@ namespace QubaDC
             String result = String.Format(InsertFormat, table, columns, values, System.Environment.NewLine);
             return result;
         }
+
+        internal override string[] RenderLockTables(string[] locktables)
+        {
+            String[] tablesWithWrite = locktables.Select(x => x + " WRITE").ToArray();
+            String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
+            String[] setupAndAquireLock = new String[] {
+                @"SET autocommit=0;",
+                lockTables
+            };
+            return setupAndAquireLock;
+        }
+
+        internal override string[] RenderCommitAndUnlock()
+        {
+            return new String[]
+            {
+                "COMMIT;",
+                "UNLOCK TABLES;"
+            };
+        }
+
+        internal override string[] RenderRollBackAndUnlock()
+        {
+            return new String[]
+          {
+                "ROLLBACK;",
+                "UNLOCK TABLES;"
+          };
+        }
     }
 }

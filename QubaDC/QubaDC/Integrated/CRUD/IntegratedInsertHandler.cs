@@ -24,104 +24,72 @@ namespace QubaDC.Integrated.CRUD
 
         internal void HandleInsert(InsertOperation insertOperation)
         {
-            //String insertIntoBaseTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
-            //this.DataConnection.ExecuteQuery(insertIntoBaseTable);
-            //          this.DataConnection.
-            this.DataConnection.AquiereOpenConnection(con =>
-            {
-                String[] tables = new string[]
+            Func<String[]> renderStaetement = () =>
+       {
+           //We now have our locks
+           DateTime t = System.DateTime.Now;
+           insertOperation.ColumnNames = insertOperation.ColumnNames.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).ToArray();
+           insertOperation.ValueLiterals = insertOperation.ValueLiterals.Concat(new String[]
+           {
+                     MySQLDialectHelper.RenderDateTime(t),
+                     "null"
+           }).ToArray();
+           String insertToTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
+           String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.timeManager.GetTable(),
+new String[] { "Operation", "Timestamp" },
+new String[] { String.Format("'insert on {0}'", this.timeManager.GetTable().TableName), MySQLDialectHelper.RenderDateTime(t) }
+);
+           return new String[]
+           {
+                insertToTable,
+                insertToGlobalUpdate
+           };
+       };
+            String[] lockTables = new string[]
                 {
                    insertOperation.InsertTable.TableSchema+"."+insertOperation.InsertTable.TableName,
                    timeManager.GetTableName()
-                };
-                String[] tablesWithWrite = tables.Select(x => x + " WRITE").ToArray();
-                String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
-                String[] setupAndAquireLock = new String[] {
-                @"SET autocommit=0;",
-                lockTables
-            };
+                }; 
+            NewMethod(renderStaetement, lockTables);
+
+        }
+
+        private void NewMethod(Func<String[]> RenderStatements,String[] locktables)
+        {
+            this.DataConnection.AquiereOpenConnection(con =>
+            {
+                String[] lockTableStatements = this.CRUDRenderer.RenderLockTables(locktables);
                 try
                 {
-                    foreach (var setupSql in setupAndAquireLock)
+                    foreach (var setupSql in lockTableStatements)
                         this.DataConnection.ExecuteNonQuerySQL(setupSql, con);
                 }
                 catch (Exception e)
                 {
-                    throw new InvalidOperationException("Could not aquire locks for:" + String.Join(",", tables), e);
+                    throw new InvalidOperationException("Could not aquire locks for:" + String.Join(",", locktables), e);
                 }
 
-                try
-                {
-                    //We now have our locks
-                    DateTime t = System.DateTime.Now;
-                    insertOperation.ColumnNames = insertOperation.ColumnNames.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).ToArray();
-                    insertOperation.ValueLiterals = insertOperation.ValueLiterals.Concat(new String[]
-                    {
-                     MySQLDialectHelper.RenderDateTime(t),
-                     "null"
-                    }).ToArray();
-                    String insertToTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
-                    String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.timeManager.GetTable(),
-                        new String[] {"Operation","Timestamp"},
-                        new String[] { String.Format("'insert on {0}'", this.timeManager.GetTable().TableName), MySQLDialectHelper.RenderDateTime(t) }
-                        );
-                    System.Diagnostics.Debug.WriteLine(insertToTable);
-                    this.DataConnection.ExecuteNonQuerySQL(insertToTable,con);
-                    this.DataConnection.ExecuteNonQuerySQL(insertToGlobalUpdate,con);
-                    this.DataConnection.ExecuteNonQuerySQL("COMMIT;",con);
-                    this.DataConnection.ExecuteNonQuerySQL("UNLOCK TABLES;",con);
+            try
+            {
+                String[] statements = RenderStatements();
+                String[] success = this.CRUDRenderer.RenderCommitAndUnlock();
+                this.DataConnection.ExecuteNonQuerySQL(statements[0], con);
+                this.DataConnection.ExecuteNonQuerySQL(statements[1], con);
+                this.DataConnection.ExecuteNonQuerySQL(success[0], con);
+                this.DataConnection.ExecuteNonQuerySQL(success[1], con);
 
                 }
                 catch (Exception e)
                 {
-                    this.DataConnection.ExecuteNonQuerySQL("ROLLBACK;");
-                    this.DataConnection.ExecuteNonQuerySQL("UNLOCK TABLES;");
+                    String[] rollbackAndUnlock = this.CRUDRenderer.RenderRollBackAndUnlock();
+                    this.DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[0]);
+                    this.DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[1]);
                     throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
                 }
 
-
-
- //               String[] Inserts = new String[]
- //               {
- //                   insertToTable,
-
- //               @"	INSERT INTO `testing_scripts`.`updatetable`
-	//(`comment`,
-	//`updatetie`)
-	//VALUES
-	//('some value',
-	//" + MySQLDialectHelper.RenderDateTime(t) + "); "
- //               };
-
- //               String[] BackupStrings = new String[]
- //               {
- //               "ROLLBACK;",
- //               "UNLOCK TABLES;"
- //               };
-
- //               String[] CommitStrings = new String[]
- //               {
- //               "COMMIT;",
- //               "UNLOCK TABLES;"
- //               };
-
-
-
- //               //try
- //               //{
- //               //    foreach (var insert in Inserts)
- //               //        c.ExecuteNonQuerySQL(insert, con);
- //               //    foreach (var commit in CommitStrings)
- //               //        c.ExecuteNonQuerySQL(commit, con);
- //               //}
- //               //catch (Exception e)
- //               //{
- //               //    foreach (var insert in BackupStrings)
- //               //        c.ExecuteNonQuerySQL(insert, con);
- //               //    return;
- //               //}
             });
-
         }
+
+       
     }
 }

@@ -40,6 +40,8 @@ namespace QubaDC.CRUD
 
         internal abstract string RenderDelete(Table table, Restriction restriction);
         internal abstract string RenderRestriction(Restriction joinCondition);
-
+        internal abstract string[] RenderLockTables(string[] locktables);
+        internal abstract string[] RenderCommitAndUnlock();
+        internal abstract string[] RenderRollBackAndUnlock();
     }
 }
