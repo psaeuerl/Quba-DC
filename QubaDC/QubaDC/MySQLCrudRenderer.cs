@@ -141,5 +141,22 @@ namespace QubaDC
         {
             return "@"+v;
         }
+
+        internal override string RenderNowToVariable(string v)
+        {
+            return String.Format("SET {0} = NOW(3)", this.GetSQLVariable(v));
+        }
+
+        internal override string RenderTmpTableFromSelect(string tableSchema, string tableName, string select)
+        {
+            return String.Format("CREATE TEMPORARY TABLE IF NOT EXISTS  {0} AS ({1});",
+                this.PrepareTable(new Table() { TableName = tableName, TableSchema = tableSchema }),
+                select);
+        }
+
+        internal override string RenderDropTempTable(Table tmpTable)
+        {
+            return String.Format("DROP TEMPORARY TABLE {0};", this.PrepareTable(tmpTable));
+        }
     }
 }
