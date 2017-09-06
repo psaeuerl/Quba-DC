@@ -70,6 +70,7 @@
     <Compile Include="Hybrid\SMO\HybridPartitionTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridDecomposeTableHandler.cs" />
     <Compile Include="Hybrid\SMO\HybridJoinTableHandler.cs" />
+    <Compile Include="Integrated\CRUD\IntegratedCRUDExecuter.cs" />
     <Compile Include="Integrated\CRUD\IntegratedInsertHandler.cs" />
     <Compile Include="Integrated\CRUD\IntegratedSelectHandler.cs" />
     <Compile Include="Integrated\CRUD\IntegratedDeleteHandler.cs" />
