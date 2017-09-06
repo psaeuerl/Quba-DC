@@ -36,5 +36,7 @@ namespace QubaDC
 
         public abstract long? ExecuteInsert(string statement, DbConnection c);
 
+        public abstract void AquiereOpenConnection(Action<DbConnection> c);
+
     }
 }

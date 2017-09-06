@@ -29,7 +29,7 @@ namespace QubaDC
 
         public override void DoTransaction(Action<DbTransaction, DbConnection> p)
         {
-            this.AquireOpenConnection((con) =>
+            this._AquireOpenConnection((con) =>
             {
                 using (MySqlTransaction trans = con.BeginTransaction(IsolationLevel.Serializable))
                 {
@@ -47,10 +47,11 @@ namespace QubaDC
 
         private void AquireOpenConnection()
         {
-            AquireOpenConnection((t) => {; });
+            _AquireOpenConnection((t) => {; });
         }
 
-        private void AquireOpenConnection(Action<MySqlConnection> action)
+
+        private void _AquireOpenConnection(Action<MySqlConnection> action)
         {
             string connStr = CreateConnectionString();
             MySqlConnection con = null;
@@ -92,7 +93,7 @@ namespace QubaDC
 
         public override void ExecuteNonQuerySQL(string SQL)
         {
-            this.AquireOpenConnection(con => {
+            this._AquireOpenConnection(con => {
                 ExecuteNonQuerySQL(SQL, con);
             });
         }
@@ -129,7 +130,7 @@ namespace QubaDC
         public override long? ExecuteInsert(string statement)
         {
             long? result = null;
-            this.AquireOpenConnection(con =>
+            this._AquireOpenConnection(con =>
             {
                 result =  this.ExecuteInsert(statement, con);
             });
@@ -166,11 +167,16 @@ namespace QubaDC
         public override DataTable ExecuteQuery(string SQL)
         {
             DataTable result = null;
-            this.AquireOpenConnection(con =>
+            this._AquireOpenConnection(con =>
             {
                 result = this.ExecuteQuery(SQL, con);
             });
             return result;
+        }
+
+        public override void AquiereOpenConnection(Action<DbConnection> action)
+        {
+            this._AquireOpenConnection(x => action((DbConnection)x));
         }
     }
 }
