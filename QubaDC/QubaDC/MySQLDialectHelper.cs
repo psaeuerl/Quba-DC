@@ -8,7 +8,7 @@ namespace QubaDC
 {
     public class MySQLDialectHelper
     {
-        internal static string RenderDateTime(DateTime dateTime)
+        public static string RenderDateTime(DateTime dateTime)
         {
             String format = "TIMESTAMP '{0:D4}-{1:D2}-{2:D2} {3:D2}:{4:D2}:{5:D2}.{6:D3}'";
             String result = String.Format(format, dateTime.Year, dateTime.Month, dateTime.Day
