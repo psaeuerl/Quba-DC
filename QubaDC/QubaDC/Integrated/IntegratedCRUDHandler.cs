@@ -22,7 +22,7 @@ namespace QubaDC.Integrated
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
-            IntegratedInsertHandler h = new IntegratedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            IntegratedInsertHandler h = new IntegratedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.GlobalUpdateTimeManager);
             h.HandleInsert(insertOperation);
         }
 
@@ -40,7 +40,7 @@ namespace QubaDC.Integrated
         }
 
         internal override string RenderHashSelect(SelectOperation newOperation)
-        {
+        {            
             IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(newOperation, true);
             return select;
