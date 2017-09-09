@@ -13,6 +13,8 @@ namespace QubaDC.CRUD
 
         public abstract string SerializeDateTime(DateTime now);
         internal abstract string SerializeString(string v);
+        internal abstract string[] RenderAutoCommitZero();
+
 
         internal string Quote(string tableReference)
         {
@@ -48,5 +50,8 @@ namespace QubaDC.CRUD
         internal abstract string RenderNowToVariable(string v);
         internal abstract string RenderTmpTableFromSelect(string tableSchema, string tableName, string select);
         internal abstract string RenderDropTempTable(Table tmpTable);
+
+        public abstract string PrepareTable(Table insertTable);
+
     }
 }

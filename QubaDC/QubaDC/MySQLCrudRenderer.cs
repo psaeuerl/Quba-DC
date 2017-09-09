@@ -40,7 +40,7 @@ namespace QubaDC
             return String.Join("," + System.Environment.NewLine, cols);
         }
 
-        private string PrepareTable(Table insertTable)
+        public override string PrepareTable(Table insertTable)
         {
             return QualifyObjectName(insertTable.TableSchema.ToLowerInvariant())
                 +"."
@@ -106,12 +106,16 @@ namespace QubaDC
         {
             String[] tablesWithWrite = locktables.Select(x => x + " WRITE").ToArray();
             String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
-            String[] setupAndAquireLock = new String[] {
-                @"SET autocommit=0;",
-                "SET SQL_SAFE_UPDATES=0;", 
+            String[] setupAndAquireLock = new String[] {               
                 lockTables
             };
             return setupAndAquireLock;
+        }
+
+        internal override string[] RenderAutoCommitZero()
+        {
+             return new String[] { @"SET autocommit=0;",
+                "SET SQL_SAFE_UPDATES=0;" };
         }
 
         internal override string[] RenderCommitAndUnlock()
