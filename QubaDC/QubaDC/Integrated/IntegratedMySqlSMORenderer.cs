@@ -238,7 +238,10 @@ namespace QubaDC.Integrated
 
         internal override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
         {
-            throw new NotImplementedException();
+            String dropcolumns = "ADD  " + RenderColumnDefinition(true, column);
+            String table = GetQuotedTable(copiedTableSchema.Schema, copiedTableSchema.Name);
+            String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
+            return Drop;
         }
 
         internal override string RenderCopyTable(string schema, string name, string select)
@@ -376,7 +379,7 @@ DELIMITER;";
 
         internal override string RenderDropTable(string Schema, string Table)
         {
-            throw new NotImplementedException();
+            return "DROP TABLE " + GetQuotedTable(Schema, Table);
         }
 
         internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
@@ -391,7 +394,13 @@ DELIMITER;";
 
         internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
         {
-            throw new NotImplementedException();
+            String baseFormat = "INSERT {0} ({2}) {1};";
+
+            String target = GetQuotedTable(joinedTableSchema);
+            String columns = String.Join(", ", joinedTableSchema.Columns.Select(x => this.CRUDRenderer.Quote(x)));
+
+            String result = String.Format(baseFormat, target, select, columns);
+            return result;
         }
 
         internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
