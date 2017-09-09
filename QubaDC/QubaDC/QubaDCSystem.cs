@@ -47,6 +47,7 @@ namespace QubaDC
             SMOHandler.DataConnection = this.DataConnection;
             SMOHandler.SchemaManager = this.SchemaManager;
             SMOHandler.SMORenderer = this.SMORenderer;
+            SMOHandler.GlobalUpdateTimeManager = this.GlobalUpdateTimeManager;
 
             CRUDHandler.CRUDRenderer = this.CRUDRenderer;
             CRUDHandler.SchemaManager = this.SchemaManager;
@@ -90,8 +91,16 @@ namespace QubaDC
                     this.DataConnection.ExecuteSQLScript(trigger, c);
                     this.SchemaManager.StoreSchema(new Schema(), null, this.DataConnection, c);
 
-                    transaction.Commit();
+               
                 }
+
+                 if(DataConnection.ExecuteQuery(SchemaManager.GetStoredProcedureExistsStatement()).Rows.Count == 0)
+                {
+                    String storedProc = this.SchemaManager.GetCreateEnsureIDCreateProcedure();
+                    this.DataConnection.ExecuteSQLScript(storedProc, c);
+                }
+
+                transaction.Commit();
             });
         }
     

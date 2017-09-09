@@ -35,7 +35,7 @@ namespace QubaDC
         }
 
 
-        protected override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
+        public override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
         {
             String InsertFormat =
              @"INSERT INTO `{0}`.`qubadcsmotable`
@@ -159,5 +159,44 @@ WHERE timestamp <= {2}
 
             return RowToSchemainfo(row);
         }
+
+        internal override string GetTableName()
+        {
+            return String.Format("`{0}`.`{1}`", this.Connection.DataBase, QubaDCSystem.QubaDCSMOTable);
+        }
+
+        internal override string RenderEnsureSchema(SchemaInfo xy)
+        {
+            String stmt = @"call {0}.ensureSMOid({1});";
+            String res = String.Format(stmt, this.Connection.DataBase, xy.ID);
+            return res;
+        }
+
+        internal override string GetStoredProcedureExistsStatement()
+        {
+            return String.Format("SELECT 1 FROM mysql.proc p WHERE db = '{0}' AND name = 'ensureSMOid'", this.Connection.DataBase);
+        }
+
+        internal override string GetCreateEnsureIDCreateProcedure()
+        {
+            String stmt = @"
+delimiter //
+create procedure {0}.ensureSMOid(IN expectedId LONG)
+begin
+	DECLARE EXIT HANDLER FOR SQLSTATE '42000'
+		SELECT 'Invoiced barcodes may not have accounting removed.';
+	SELECT MAX(ID) into @maxId FROM {0}.qubadcsmotable;
+	IF (!(@maxId <=> expectedId))
+	THEN
+		SET @er := CONCAT('Optimistic Check failed, expected ',expectedId,' got ',@maxId);
+		 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @er;
+	END IF;
+end;
+//
+delimiter ;";
+            String res = String.Format(stmt, this.Connection.DataBase);
+            return res;
+        }
+        
     }
 }

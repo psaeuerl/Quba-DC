@@ -15,7 +15,7 @@ namespace QubaDC
 
         public abstract SchemaInfo GetCurrentSchema();
 
-        protected abstract string GetInsertSchemaStatement(Schema schema, SchemaModificationOperator smo);
+        public abstract string GetInsertSchemaStatement(Schema schema, SchemaModificationOperator smo);
 
         public void StoreSchema(Schema schema,SchemaModificationOperator smo, DataConnection con, DbConnection c)
         {
@@ -28,6 +28,10 @@ namespace QubaDC
         public abstract SchemaInfo GetCurrentSchema(DbConnection openConnection);
         public abstract SchemaInfo[] GetAllSchemataOrderdByIdDescending();
         public abstract string GetInsertToGlobalUpdateTrigger();
+        internal abstract string GetTableName();
         public abstract SchemaInfo GetSchemaActiveAt(DateTime dateTime);
+        internal abstract string RenderEnsureSchema(SchemaInfo xy);
+        internal abstract string GetStoredProcedureExistsStatement();
+        internal abstract string GetCreateEnsureIDCreateProcedure();
     }
 }
