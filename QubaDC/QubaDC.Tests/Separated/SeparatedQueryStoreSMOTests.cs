@@ -30,7 +30,7 @@ namespace QubaDC.Tests.Separated
         public override string BuildDataBaseName()
         {
             //Create Empty Schema
-            return "Hybrid_" + Guid.NewGuid().ToString().Replace("-", "");
+            return "Separated_" + Guid.NewGuid().ToString().Replace("-", "");
         }
 
         public override QubaDCSystem BuildSystem()
