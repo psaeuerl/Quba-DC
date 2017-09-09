@@ -10,6 +10,8 @@ namespace QubaDC.Integrated.SMO
     {
         public static String AsScript(this IEnumerable<String> parts)
         {
+            if (parts == null)
+                return "";
             return String.Join(System.Environment.NewLine, parts.Select(x => x.Last() == ';' ? x : x + ";").ToArray());
         }
     }

@@ -130,7 +130,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(AddColum addColum)
         {
-            throw new NotImplementedException();
+            IntegratedAddColumnHandler h = new IntegratedAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.GlobalUpdateTimeManager);
+            h.Handle(addColum);
         }
     }
 }
