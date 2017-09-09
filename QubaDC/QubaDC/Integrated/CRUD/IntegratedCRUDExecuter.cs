@@ -12,6 +12,7 @@ namespace QubaDC.Integrated.CRUD
         public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables, DataConnection DataConnection, CRUDRenderer crudRenderer)
         {
             List<String> parts = new List<string>();
+            parts.AddRange(crudRenderer.RenderAutoCommitZero());
             parts.AddRange(crudRenderer.RenderLockTables(locktables));
             parts.AddRange(RenderStatements());
             parts.AddRange(crudRenderer.RenderCommitAndUnlock());
@@ -27,8 +28,8 @@ namespace QubaDC.Integrated.CRUD
                 catch (Exception e)
                 {
                     String[] rollbackAndUnlock = crudRenderer.RenderRollBackAndUnlock();
-                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[0]);
-                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[1]);
+                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[0],con);
+                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[1],con);
                     throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
                 }
 
