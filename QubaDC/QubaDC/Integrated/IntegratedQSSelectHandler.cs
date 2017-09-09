@@ -259,8 +259,12 @@ namespace QubaDC.Integrated
             //b.) change all tables to the respective history ones + build restrictions for it
             List<Restriction> TimeStampRestrictions = new List<Restriction>();
             SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(lastGlobalUpdate.DateTime);
+            Dictionary<String, Guid?> table_to_ids = new Dictionary<String, Guid?>();
+
             foreach (var selectedTable in newOperation.GetAllSelectedTables())
             {
+                var foundTabl = SchemaInfo.Schema.FindTable(selectedTable);
+                table_to_ids.Add(selectedTable.TableAlias, foundTabl.Table.AddTimeSetGuid);
                 //var histTable = SchemaInfo.Schema.FindHistTable(selectedTable).ToTable();
                 //selectedTable.TableName = histTable.TableName;
                 //selectedTable.TableSchema = histTable.TableSchema;
@@ -346,13 +350,14 @@ namespace QubaDC.Integrated
             DataTable hashTable = null;
             String hash = null;
             Guid guid = Guid.NewGuid();
+            String additionalInfos = JsonSerializer.SerializeObject(table_to_ids);
             String time = cRUDHandler.CRUDRenderer.SerializeDateTime(queryTime);
             con.DoTransaction((trans, c) =>
             {
                 normResult = con.ExecuteQuery(select, c);
                 hashTable = con.ExecuteQuery(selectHash, c);
                 hash = hashTable.Select().First().Field<String>(0);
-                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid, selectHash, selectHashSerialized, null);
+                String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid, selectHash, selectHashSerialized, additionalInfos);
                 long? id = con.ExecuteInsert(insert, c);
                 System.Diagnostics.Debug.WriteLine(id.Value);
                 trans.Commit();
@@ -387,16 +392,29 @@ namespace QubaDC.Integrated
             String query = row.Field<String>("ReWrittenQuerySerialized");
             String querySerialized = row.Field<String>("HashSelectSerialized");
 
+            DateTime queryTime = row.Field<DateTime>("Timestamp");
+            SchemaInfo schemaAtExecutionTime = schemaManager.GetSchemaActiveAt(queryTime);
+            SchemaInfo CurrentSchema = schemaManager.GetCurrentSchema();
+            String originalSerialized = row.Field<String>("QuerySerialized");
+            SelectOperation originalSelect = JsonSerializer.DeserializeObject<SelectOperation>(originalSerialized);
+            String addInfo = row.Field<String>("AdditionalInformation");
+            var table_to_ids = JsonSerializer.DeserializeObject<Dictionary<String, Guid?>>(addInfo);
+
+            String hybridSelect = cRUDHandler.RenderHybridSelectOperation(originalSelect, schemaAtExecutionTime, CurrentSchema, table_to_ids);
+            String hybridHashSelect = cRUDHandler.RenderHybridHashSelect(originalSelect, schemaAtExecutionTime, CurrentSchema, table_to_ids);
+
+
+
             DataTable normaResult = null;
             DataTable hashTable = null;
             con.DoTransaction((trans, c) =>
             {
 
-                hashTable = con.ExecuteQuery(querySerialized, c);
+                hashTable = con.ExecuteQuery(hybridHashSelect, c);
                 String currentHash = hashTable.Select().First().Field<String>(0);
                 if (currentHash != hash)
                     throw new InvalidOperationException("Hashes for GUID: " + gUID.ToString() + " Are not equal, HashSelect: " + querySerialized + System.Environment.NewLine + "Select: " + query);
-                normaResult = con.ExecuteQuery(query, c);
+                normaResult = con.ExecuteQuery(hybridSelect, c);
                 trans.Commit();
             });
 

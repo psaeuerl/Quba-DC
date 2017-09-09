@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,91 @@ FROM {1}
             if (result == "")
                 return result;
             return "ORDER BY "+result;            
+        }
+
+        internal string HandleIntegratedSelect(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema, bool RenderAsHash, Dictionary<String, Guid?> TableRefToGuidMapping)
+        {
+            String Format =
+@"SELECT
+{0}
+FROM {1}
+{2}
+{3}"; //0 => Columns, 1 => FROM Part, 2 => Where, 3 => Order By
+            String columns = "";
+            if (!RenderAsHash)
+                columns = RenderColumns(selectOperation.Columns, selectOperation.LiteralColumns);
+            else
+                columns = this.RenderAsHash(selectOperation.Columns, selectOperation.LiteralColumns);
+            String fromPart = RenderIntegratedFromPart(selectOperation, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping);
+            String wherePart = RenderWherePart(selectOperation.Restriction);
+            String OrderBy = RenderOrderBy(selectOperation.SortingColumns);
+            String select = String.Format(Format, columns, fromPart, wherePart, OrderBy);
+            return select;
+        }
+
+        private string RenderIntegratedFromPart(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)
+        {
+            var histTable = exeuctionTimeSchema.Schema.FindHistTable(selectOperation.FromTable);
+            var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
+
+            Boolean currentSchemaContainsTable = false;
+            TableSchemaWithHistTable current = null;
+            if (expectedGuid.HasValue)
+            {
+                currentSchemaContainsTable = currentSchema.Schema.Tables.Any(x => x.Table.AddTimeSetGuid == expectedGuid.Value);
+                if (currentSchemaContainsTable)
+                    current = currentSchema.Schema.Tables.First(x => x.Table.AddTimeSetGuid == expectedGuid.Value);
+            }
+
+            ColumnReference[] columns = selectOperation.GetColumnsForTableReference(selectOperation.FromTable.TableAlias);
+            string table = RenderIntegratedFromTable(selectOperation.FromTable, histTable, currentSchemaContainsTable);
+            var parts = selectOperation.JoinedTables.Select(x => RenderIntegratedJoinedTable(selectOperation, x, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping));
+            var joined = String.Join(System.Environment.NewLine, parts);
+            var result = String.Join(System.Environment.NewLine, table, joined);
+            return table;
+        }
+
+        private string RenderIntegratedFromTable(FromTable fromTable, TableSchema histTable, bool currentSchemaContainsTable)
+        {
+            return currentSchemaContainsTable ? RenderFromTable(fromTable)
+                                            : RenderFromTable(new FromTable()
+                                            {
+                                                TableAlias = fromTable.TableAlias,
+                                                TableName = histTable.Name,
+                                                TableSchema = histTable.Schema
+                                            });
+        }
+
+        private object RenderIntegratedJoinedTable(SelectOperation selectOperation, JoinedTable x, SchemaInfo s, SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping)
+        {
+            String Format = "{0} {1} {2}";
+            //0 => condition
+            //1 => tablename
+            //2 => joinrestriction
+            String joinType = CRUDRenderer.RenderJoinType(x.Join);
+            FromTable t = new FromTable()
+            {
+                TableAlias = x.TableAlias,
+                TableName = x.TableName,
+                TableSchema = x.TableSchema
+            };
+            var histTable = s.Schema.FindHistTable(t);
+
+            var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
+            Boolean currentSchemaContainsTable = false;
+            TableSchemaWithHistTable current = null;
+            if (expectedGuid.HasValue)
+            {
+                currentSchemaContainsTable = currentSchema.Schema.Tables.Any(y => y.Table.AddTimeSetGuid == expectedGuid.Value);
+                current = currentSchema.Schema.Tables.First(y => y.Table.AddTimeSetGuid == expectedGuid.Value);
+            }
+            ColumnReference[] columns = selectOperation.GetColumnsForTableReference(x.TableAlias);
+
+            String table = RenderIntegratedFromTable(t, histTable, currentSchemaContainsTable);
+
+            String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
+            String result = String.Format(Format, joinType, table, rest);
+            return result;
         }
 
         private String RenderSorintg(ColumnSorting x)
