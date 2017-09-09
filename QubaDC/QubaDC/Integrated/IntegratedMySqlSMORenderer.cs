@@ -243,12 +243,19 @@ namespace QubaDC.Integrated
 
         internal override string RenderCopyTable(string schema, string name, string select)
         {
-            throw new NotImplementedException();
+            String baseFormat = "CREATE TABLE {0} AS {1}; ";
+            String newTable = GetQuotedTable(schema, name);
+            String result = String.Format(baseFormat, newTable, select);
+            return result;
         }
 
         internal override string RenderCopyTable(string schema, string tablename, string newschema, string newname)
         {
-            throw new NotImplementedException();
+            String baseFormat = "CREATE TABLE {0} LIKE {1}; ";
+            String oldTable = GetQuotedTable(schema, tablename);
+            String newTable = GetQuotedTable(newschema, newname);
+            String result = String.Format(baseFormat, newTable, oldTable);
+            return result;
         }
 
         internal override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
@@ -394,7 +401,11 @@ DELIMITER;";
 
         internal override string RenderRenameTable(RenameTable renameTable)
         {
-            throw new NotImplementedException();
+            String baseRename = "RENAME TABLE {0} TO {1}";
+            String oldName = GetQuotedTable(renameTable.OldSchema, renameTable.OldTableName);
+            String newName = GetQuotedTable(renameTable.NewSchema, renameTable.NewTableName);
+            String result = String.Format(baseRename, oldName, newName);
+            return result;
         }
     }
 }
