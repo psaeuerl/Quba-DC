@@ -11,22 +11,22 @@ using Xunit;
 
 namespace QubaDC.Tests
 {
-    public class SeparatedGlobalUpdateTimeTests : SystemGlobalUpdateTimeTests
+    public class HybridGlobalUpdateTimeTests : SystemGlobalUpdateTimeTests
     {
-        public SeparatedGlobalUpdateTimeTests() : base()
+        public HybridGlobalUpdateTimeTests() : base()
         {
-            SeparatedQBDCFixture f = new SeparatedQBDCFixture();
+            HybridQBDCFixture f = new HybridQBDCFixture();
             this.SeparatedFixture = f;
             this.Fixture = f;
             base.Init();
         }
 
-        public SeparatedQBDCFixture SeparatedFixture { get; private set; }
+        public HybridQBDCFixture SeparatedFixture { get; private set; }
 
         public override string BuildDataBaseName()
         {
             //Create Empty Schema
-            return "Separated" + Guid.NewGuid().ToString().Replace("-", "");
+            return "Hybrid" + Guid.NewGuid().ToString().Replace("-", "");
         }
 
         public override QubaDCSystem BuildSystem()

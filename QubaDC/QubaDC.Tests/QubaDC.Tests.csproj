@@ -69,8 +69,11 @@
     <Compile Include="Hybrid\HybridBasicTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreCRUDTests.cs" />
     <Compile Include="Hybrid\HybridQueryStoreSMOTests.cs" />
+    <Compile Include="Hybrid\HybridGlobalUpdateTimeTests.cs" />
+    <Compile Include="Integrated\HybridGlobalUpdateTimeTests.cs" />
     <Compile Include="Integrated\IntegratedQueryStoreCRUDTests.cs" />
     <Compile Include="Integrated\IntegratedBasicTests.cs" />
+    <Compile Include="MySQLTransactionLockingTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="SchemaSerializationTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreSMOTests.cs" />
     <Compile Include="Separated\SeparatedQueryStoreCRUDTests.cs" />
+    <Compile Include="SystemTests\SystemGlobalUpdateTimeTests.cs" />
     <Compile Include="SystemTests\SystemQueryStoreSMOTests.cs" />
     <Compile Include="SystemTests\SystemQueryStoreCRUDTests.cs" />
     <Compile Include="SystemTests\SystemBasicTests.cs" />
