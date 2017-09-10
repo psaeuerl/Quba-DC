@@ -122,11 +122,6 @@ namespace QubaDC.Separated.SMO
                 this.schemaManager.StoreSchema(currentSchema, renameColumn, con, c);
 
 
-                String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
-                con.ExecuteNonQuerySQL(dropTableSql,c);
-
-
-
                 transaction.Commit();
             });
         
