@@ -110,7 +110,7 @@ namespace QubaDC.Separated.SMO
                     FromTable = new FromTable() { TableAlias = "t1", TableName = originalHistTable.Name , TableSchema = originalHistTable.Schema }
                 };
                 String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
-                //Hist because of startts/endts
+
                 TableSchema isnertWithStartts = new TableSchema()
                 {
                     Columns = copiedTableSchema.Columns.Concat(new String[] {IntegratedConstants.StartTS,IntegratedConstants.EndTS}).ToArray(),
