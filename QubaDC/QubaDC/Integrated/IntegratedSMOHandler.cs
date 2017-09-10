@@ -108,7 +108,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(CopyTable copyTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(copyTable);
         }
 
         internal override void Visit(DecomposeTable decomposeTable)
