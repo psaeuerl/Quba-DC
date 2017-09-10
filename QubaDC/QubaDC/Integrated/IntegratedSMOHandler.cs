@@ -121,7 +121,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameColumn);
         }
 
         internal override void Visit(MergeTable mergeTable)

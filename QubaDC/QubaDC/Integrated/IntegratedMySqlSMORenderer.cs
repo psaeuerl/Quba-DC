@@ -405,7 +405,12 @@ DELIMITER;";
 
         internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
         {
-            throw new NotImplementedException();
+            String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
+            String table = GetQuotedTable(schema.Schema, schema.Name);
+            String baseColumn = Quote(renameColumn.ColumnName);
+            String type = RenderColumnDefinition(true, cd);
+            String result = String.Format(baseFormat, table, baseColumn, type);
+            return result;
         }
 
         internal override string RenderRenameTable(RenameTable renameTable)
