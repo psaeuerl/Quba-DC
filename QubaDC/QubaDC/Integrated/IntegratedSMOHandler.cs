@@ -79,7 +79,8 @@ namespace QubaDC.Integrated
         //}
         internal override void Visit(RenameTable renameTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(renameTable);
         }
 
         internal override void Visit(PartitionTable partitionTable)
