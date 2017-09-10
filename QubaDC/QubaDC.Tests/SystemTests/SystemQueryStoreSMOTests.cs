@@ -40,6 +40,8 @@ namespace QubaDC.Tests.Separated
         public QubaDCSystem QBDC { get; private set; }
         public bool Succcess { get; private set; } = false;
 
+        public bool CheckTriggersCopied { get; set; } = true;
+
         public void Dispose()
         {
             if (Succcess)
@@ -175,8 +177,11 @@ namespace QubaDC.Tests.Separated
             var xy = newSchemaInfo.Schema.FindTable(ct.CopiedSchema, ct.CopiedTableName);
             Assert.True(newSchemaInfo.Schema.ContainsTable(ct.CopiedSchema, ct.CopiedTableName));
 
-            String[] triggersOnCopeidTable = this.Fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
-            Assert.Equal(3, triggersOnCopeidTable.Length);
+            if (CheckTriggersCopied)
+            {
+                String[] triggersOnCopeidTable = this.Fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
+                Assert.Equal(3, triggersOnCopeidTable.Length);
+            }
 
             //Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);

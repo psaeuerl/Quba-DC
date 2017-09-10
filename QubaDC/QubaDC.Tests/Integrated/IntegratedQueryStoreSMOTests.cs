@@ -23,6 +23,7 @@ namespace QubaDC.Tests.Separated
             this.SeparatedFixture = f;
             this.Fixture = f;
             base.Init();
+            base.CheckTriggersCopied = false;
         }
 
         public IntegratedQBDCFixture SeparatedFixture { get; private set; }
