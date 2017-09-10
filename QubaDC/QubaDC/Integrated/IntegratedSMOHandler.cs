@@ -100,7 +100,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(DropColumn dropColumn)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(dropColumn);
         }
 
         internal override void Visit(CopyTable copyTable)
