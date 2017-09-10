@@ -107,16 +107,29 @@ FROM {1}
             }
 
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(selectOperation.FromTable.TableAlias);
-            string table = RenderIntegratedFromTable(selectOperation.FromTable, histTable, currentSchemaContainsTable);
+            string table = RenderIntegratedFromTable(selectOperation.FromTable, histTable, currentSchemaContainsTable, current);
             var parts = selectOperation.JoinedTables.Select(x => RenderIntegratedJoinedTable(selectOperation, x, exeuctionTimeSchema, currentSchema, TableRefToGuidMapping));
             var joined = String.Join(System.Environment.NewLine, parts);
             var result = String.Join(System.Environment.NewLine, table, joined);
             return table;
         }
 
-        private string RenderIntegratedFromTable(FromTable fromTable, TableSchema histTable, bool currentSchemaContainsTable)
+        private string RenderIntegratedFromTable(FromTable fromTable, TableSchema histTable, bool currentSchemaContainsTable, TableSchemaWithHistTable currentSchema)
         {
-            return currentSchemaContainsTable ? RenderFromTable(fromTable)
+            //Rename Table cases + history handled here
+            String tableName = fromTable.TableName;
+            String tableSchema = fromTable.TableSchema;
+            if (currentSchema != null)
+            {
+                tableName = currentSchema.Table.Name;
+                tableSchema = currentSchema.Table.Schema;
+            }
+            return currentSchemaContainsTable ? RenderFromTable(new FromTable()
+                                            {
+                                                TableAlias = fromTable.TableAlias,
+                                                TableName = tableName,
+                                                TableSchema = tableSchema
+                                            })
                                             : RenderFromTable(new FromTable()
                                             {
                                                 TableAlias = fromTable.TableAlias,
@@ -150,7 +163,7 @@ FROM {1}
             }
             ColumnReference[] columns = selectOperation.GetColumnsForTableReference(x.TableAlias);
 
-            String table = RenderIntegratedFromTable(t, histTable, currentSchemaContainsTable);
+            String table = RenderIntegratedFromTable(t, histTable, currentSchemaContainsTable, current);
 
             String rest = CRUDRenderer.RenderRestriction(x.JoinCondition);
             String result = String.Format(Format, joinType, table, rest);
