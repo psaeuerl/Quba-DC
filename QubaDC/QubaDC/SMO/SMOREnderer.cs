@@ -25,7 +25,7 @@ namespace QubaDC.SMO
         internal abstract string RenderCopyTable(String schema, String tablename, String newschema, String newname);
 
         internal abstract string RenderDropColumns(string schema, string name, string[] columns);
-        internal abstract string RenderInsertFromOneTableToOther(TableSchema table, TableSchema firstTableSchema, Restriction rc, string[] selectColumns,string[] insertcolumns = null);
+        internal abstract string RenderInsertFromOneTableToOther(TableSchema table, TableSchema firstTableSchema, Restriction rc, string[] selectColumns,string[] insertcolumns = null, string[] literals = null);
         internal abstract string RenderCopyTable(string schema, string name, string select);
         internal abstract string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select);
 

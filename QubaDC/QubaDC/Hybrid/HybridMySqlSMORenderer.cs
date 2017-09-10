@@ -239,7 +239,7 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
             return result;
         }
 
-        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null)
+        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null, string[] literals = null)
         {
             String baseFormat = "INSERT {0} {4} SELECT {3} FROM {1} {2};";
             String columnString = "*";

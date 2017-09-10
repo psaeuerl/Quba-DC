@@ -387,9 +387,28 @@ DELIMITER;";
             throw new NotImplementedException();
         }
 
-        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema firstTableSchema, Restriction rc, string[] selectColumns, string[] insertcolumns = null)
+        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null, string[] literals = null)
         {
-            throw new NotImplementedException();
+            String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
+            String columnString = "*";
+            if (columns != null || literals != null)
+            {
+                IEnumerable<String> parts = new String[] { };
+                if (columns != null)
+                    parts = parts.Concat(columns.Select(x => Quote(x)));
+                if(literals != null)
+                    parts = parts.Concat(literals);
+                columnString = String.Join(", ", parts);
+            }
+            String oldTable = GetQuotedTable(table);
+            String target = GetQuotedTable(copiedTableSchema);
+
+            String restriction = this.CRUDRenderer.RenderRestriction(rc);
+            if (!String.IsNullOrWhiteSpace(restriction))
+                restriction = "WHERE " + restriction;
+
+            String result = String.Format(baseFormat, target, oldTable, restriction, columnString);
+            return result;
         }
 
         internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
