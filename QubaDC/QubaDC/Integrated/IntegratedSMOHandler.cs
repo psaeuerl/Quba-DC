@@ -85,7 +85,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(PartitionTable partitionTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(partitionTable);
         }
 
         internal override void Visit(DropTable dropTable)

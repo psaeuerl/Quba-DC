@@ -80,6 +80,7 @@
     <Compile Include="Integrated\IntegratedQSSelectHandler.cs" />
     <Compile Include="Integrated\IntegratedSMOHandler.cs" />
     <Compile Include="Integrated\IntegratedConstants.cs" />
+    <Compile Include="Integrated\SMO\IntegratedPartitionTableHandler.cs" />
     <Compile Include="Integrated\SMO\Extensions.cs" />
     <Compile Include="Integrated\SMO\IntegratedCreateTableHandler.cs" />
     <Compile Include="Integrated\SMO\IntegratedAddColumnHandler.cs" />
