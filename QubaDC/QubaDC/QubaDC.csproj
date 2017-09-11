@@ -89,6 +89,7 @@
     <Compile Include="Integrated\SMO\IntegratedRenameColumnHandler.cs" />
     <Compile Include="Integrated\SMO\IntegratedDropTableHandler.cs" />
     <Compile Include="Integrated\SMO\IntegratedCopyTableHandler.cs" />
+    <Compile Include="Integrated\SMO\IntegratedMergeTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />

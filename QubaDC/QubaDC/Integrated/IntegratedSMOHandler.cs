@@ -130,7 +130,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(MergeTable mergeTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(mergeTable);
         }
 
         internal override void Visit(AddColum addColum)
