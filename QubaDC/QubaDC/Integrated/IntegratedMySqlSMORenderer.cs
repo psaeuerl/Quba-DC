@@ -364,7 +364,10 @@ DELIMITER;";
 
         internal override string RenderDropColumns(string schema, string name, string[] columns)
         {
-            throw new NotImplementedException();
+            String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + Quote(x)));
+            String table = GetQuotedTable(schema, name);
+            String Drop = String.Format("ALTER TABLE {0} {1}", table, dropcolumns);
+            return Drop;
         }
 
         internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
