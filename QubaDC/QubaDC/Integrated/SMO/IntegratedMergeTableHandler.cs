@@ -89,11 +89,14 @@ namespace QubaDC.Separated.SMO
 
                 String[] allColumns = firstTable.Table.Columns;
                 var StartEndTs = new String[] { "NOW(3)", "NULL" };
+                var RestrictionT1 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(firstTable.Table.Name, "NOW(3)");
+
                 //Insert data from old to new
-                String insertFromFirstTable = SMORenderer.RenderInsertFromOneTableToOther(firstTable.Table, mergedTableSchema, null, allColumns, null, StartEndTs);
+                String insertFromFirstTable = SMORenderer.RenderInsertFromOneTableToOther(firstTable.Table, mergedTableSchema, RestrictionT1, allColumns, null, StartEndTs);
                 con.ExecuteNonQuerySQL(insertFromFirstTable);
 
-                String insertFromSecondTable = SMORenderer.RenderInsertFromOneTableToOther(secondTable.Table, mergedTableSchema, null, allColumns, null, StartEndTs);
+                var RestrictionT2 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(secondTable.Table.Name, "NOW(3)");
+                String insertFromSecondTable = SMORenderer.RenderInsertFromOneTableToOther(secondTable.Table, mergedTableSchema, RestrictionT2, allColumns, null, StartEndTs);
                 con.ExecuteNonQuerySQL(insertFromSecondTable);
 
                 DropHistTableRenameCurrentToHist(con, firstTable);
