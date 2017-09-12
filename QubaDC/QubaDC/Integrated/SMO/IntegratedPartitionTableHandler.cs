@@ -102,14 +102,18 @@ namespace QubaDC.Integrated.SMO
                 String[] allColumns = originalTable.Table.Columns;
                 var StartEndTs = new String[] { SMORenderer.CRUDRenderer.GetSQLVariable("ct"), "NULL" };
 
+
+                var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, "NOW(3)");
                 //Insert data from old to true
                 Restriction trueRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "TRUE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, trueTableSchema, trueRestriction, allColumns, null, StartEndTs);
+                Restriction trueRestAll = new AndRestriction() { Restrictions = new Restriction[] { Restriction, trueRestriction } };
+                String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, trueTableSchema, trueRestAll, allColumns, null, StartEndTs);
                 
 
                 //Insert data from old to false
                 Restriction falseRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "FALSE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                String insertFalseFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, falseTableSchema, falseRestriction, allColumns, null, StartEndTs);
+                Restriction falseRestAll = new AndRestriction() { Restrictions = new Restriction[] { Restriction, falseRestriction } };
+                String insertFalseFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, falseTableSchema, falseRestAll, allColumns, null, StartEndTs);
 
                 String inserts = new string[]
                 {
