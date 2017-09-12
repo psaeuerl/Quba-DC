@@ -93,6 +93,7 @@
     <Compile Include="Integrated\SMO\IntegratedMergeTableHandler.cs" />
     <Compile Include="Integrated\SMO\IntegratedDecomposeTableHandler.cs" />
     <Compile Include="Integrated\SMO\IntegratedSMOHelper.cs" />
+    <Compile Include="Integrated\SMO\IntegratedJoinTableHandler.cs" />
     <Compile Include="MySQLRestrictionVisitor.cs" />
     <Compile Include="QueryStoreReexecuteResult.cs" />
     <Compile Include="QueryStoreSelectResult.cs" />

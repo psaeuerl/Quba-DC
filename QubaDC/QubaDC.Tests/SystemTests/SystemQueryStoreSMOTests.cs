@@ -436,8 +436,11 @@ namespace QubaDC.Tests.Separated
             Assert.False(newSchemaInfo.Schema.ContainsTable(mt.FirstSchema, mt.FirstTableName));
             Assert.False(newSchemaInfo.Schema.ContainsTable(mt.SecondSchema, mt.SecondTableName));
 
-            String[] triggersOnCopeidTable = this.Fixture.GetTriggersForTable(mt.ResultSchema, mt.ResultTableName);
-            Assert.Equal(3, triggersOnCopeidTable.Length);
+            if (CheckTriggersCopied)
+            {
+                String[] triggersOnCopeidTable = this.Fixture.GetTriggersForTable(mt.ResultSchema, mt.ResultTableName);
+                Assert.Equal(3, triggersOnCopeidTable.Length);
+            }
 
             //////Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);

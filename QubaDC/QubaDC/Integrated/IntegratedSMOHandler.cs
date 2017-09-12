@@ -121,7 +121,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(JoinTable joinTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(joinTable);
         }
 
         internal override void Visit(RenameColumn renameColumn)
