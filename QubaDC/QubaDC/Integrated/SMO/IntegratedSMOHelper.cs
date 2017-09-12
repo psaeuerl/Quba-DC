@@ -10,7 +10,7 @@ namespace QubaDC.Integrated.SMO
 {
     class IntegratedSMOHelper
     {
-        public static Restriction GetBasiRestriction(Table selectedTable, String queryTimeVariable)
+        public static Restriction GetBasiRestriction(String tableRef, String queryTimeVariable)
         {
             OperatorRestriction startTs = new OperatorRestriction()
             {
@@ -19,7 +19,7 @@ namespace QubaDC.Integrated.SMO
                     Column = new ColumnReference()
                     {
                         ColumnName = IntegratedConstants.StartTS,
-                        TableReference = selectedTable.TableName
+                        TableReference = tableRef
                     }
                 },
                 Op = RestrictionOperator.LET
@@ -42,7 +42,7 @@ namespace QubaDC.Integrated.SMO
                     Column = new ColumnReference()
                     {
                         ColumnName = IntegratedConstants.EndTS,
-                        TableReference = selectedTable.TableName
+                        TableReference = tableRef
                     }
                 },
             };
@@ -53,7 +53,7 @@ namespace QubaDC.Integrated.SMO
                     Column = new ColumnReference()
                     {
                         ColumnName = IntegratedConstants.EndTS,
-                        TableReference = selectedTable.TableName
+                        TableReference = tableRef
                     }
                 },
                 Op = RestrictionOperator.IS

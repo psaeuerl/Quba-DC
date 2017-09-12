@@ -89,7 +89,7 @@ namespace QubaDC.Integrated.SMO
                 //TODO => ADD RESTRICITON THAT ENDTS IS NULL!!!
                 String setNow = SMORenderer.CRUDRenderer.RenderNowToVariable("ct");
                 var StartEndTs = new String[] { SMORenderer.CRUDRenderer.GetSQLVariable("ct"), "NULL" };
-                var restrictToActive = IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.ToTable(), SMORenderer.CRUDRenderer.GetSQLVariable("ct"));
+                var restrictToActive = IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, SMORenderer.CRUDRenderer.GetSQLVariable("ct"));
 
                 //Insert data from old to true                
                 String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, firstTableSchema, restrictToActive, firstTableSchema.Columns, null, StartEndTs);
