@@ -395,7 +395,7 @@ namespace QubaDC.Integrated
             DateTime queryTime = row.Field<DateTime>("Timestamp");
             SchemaInfo schemaAtExecutionTime = schemaManager.GetSchemaActiveAt(queryTime);
             SchemaInfo CurrentSchema = schemaManager.GetCurrentSchema();
-            String originalSerialized = row.Field<String>("QuerySerialized");
+            String originalSerialized = row.Field<String>("ReWrittenQuery");
             SelectOperation originalSelect = JsonSerializer.DeserializeObject<SelectOperation>(originalSerialized);
             String addInfo = row.Field<String>("AdditionalInformation");
             var table_to_ids = JsonSerializer.DeserializeObject<Dictionary<String, Guid?>>(addInfo);
