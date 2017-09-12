@@ -34,7 +34,7 @@ namespace QubaDC
 
         internal override string Visit(ValueRestrictionOperand valueRestrictionOperand)
         {
-            throw new NotImplementedException();
+            return "(" + valueRestrictionOperand.Value + ")";
         }
 
         internal override string Visit(DateTimeRestrictionOperand dateTimeRestrictionOperand)
