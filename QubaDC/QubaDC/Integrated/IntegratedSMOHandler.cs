@@ -115,7 +115,8 @@ namespace QubaDC.Integrated
 
         internal override void Visit(DecomposeTable decomposeTable)
         {
-            throw new NotImplementedException();
+            var h = new IntegratedDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            h.Handle(decomposeTable);
         }
 
         internal override void Visit(JoinTable joinTable)
