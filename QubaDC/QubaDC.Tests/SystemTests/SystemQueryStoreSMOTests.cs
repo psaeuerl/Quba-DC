@@ -565,11 +565,20 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'", "'someval2'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
+
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
             var result = QBDC.QueryStore.ExecuteSelect(s);
-            Assert.Equal("e25197df7758a84e1f280350e2ab8074", result.Hash);
+            Assert.Equal("e25197df7758a84e1f280350e2ab8074", result.Hash);            
+
+
+
+
 
             DecomposeTable ct = new DecomposeTable()
             {
