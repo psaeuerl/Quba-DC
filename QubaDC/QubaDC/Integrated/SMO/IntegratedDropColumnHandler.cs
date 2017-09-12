@@ -98,7 +98,9 @@ namespace QubaDC.Separated.SMO
                     LiteralColumns = new LiteralColumn[] { 
                         new LiteralColumn() { ColumnLiteral = "NOW(3)", ColumnName = IntegratedConstants.StartTS },
                         new LiteralColumn() { ColumnLiteral = "NULL", ColumnName = IntegratedConstants.EndTS }},
-                    FromTable = new FromTable() { TableAlias = "t1", TableName = originalHistTable.Name , TableSchema = originalTable.Table.Schema }
+                    FromTable = new FromTable() { TableAlias = "t1", TableName = originalHistTable.Name , TableSchema = originalTable.Table.Schema },
+                    Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction("t1", "NOW(3)")
+
                 };
                 String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
                 TableSchema isnertWithStartts = new TableSchema()
