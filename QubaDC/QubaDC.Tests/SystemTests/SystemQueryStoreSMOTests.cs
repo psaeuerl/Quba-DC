@@ -60,6 +60,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -106,6 +110,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -149,6 +157,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -211,6 +223,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -286,6 +302,11 @@ namespace QubaDC.Tests.Separated
             c2.InsertTable.TableName = t2.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
 
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
+
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -354,6 +375,10 @@ namespace QubaDC.Tests.Separated
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'schema2'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
 
 
 
@@ -441,6 +466,10 @@ namespace QubaDC.Tests.Separated
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
@@ -501,6 +530,10 @@ namespace QubaDC.Tests.Separated
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
@@ -639,6 +672,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
@@ -700,6 +737,10 @@ namespace QubaDC.Tests.Separated
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'","'anotherinfo'");
             c2.InsertTable.TableName = t.TableName;
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
 
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
@@ -757,6 +798,10 @@ namespace QubaDC.Tests.Separated
             QBDC.CRUDHandler.HandleInsert(c);
             InsertOperation c2 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "2", "'ehji'");
             QBDC.CRUDHandler.HandleInsert(c2);
+            InsertOperation c3 = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "3", "'klmn'", "'someval3'");
+            QBDC.CRUDHandler.HandleInsert(c3);
+            DeleteOperation d1 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "3", "'klmn'");
+            QBDC.CRUDHandler.HandleDeletOperation(d1);
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
