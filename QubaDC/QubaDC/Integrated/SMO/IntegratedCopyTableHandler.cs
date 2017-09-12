@@ -74,7 +74,9 @@ namespace QubaDC.Separated.SMO
                 //Insert data from old to new                
                 String[]allColumns = originalTable.Table.Columns;
                 var StartEndTs = new String[] { "NOW(3)", "NULL" };
-                String insertFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, copiedTableSchema, null, allColumns,null, StartEndTs);
+                var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, "NOW(3)");
+
+                String insertFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, copiedTableSchema, Restriction, allColumns,null, StartEndTs);
                 con.ExecuteNonQuerySQL(insertFromTable);
 
                 this.schemaManager.StoreSchema(currentSchema, copyTable, con, c);
