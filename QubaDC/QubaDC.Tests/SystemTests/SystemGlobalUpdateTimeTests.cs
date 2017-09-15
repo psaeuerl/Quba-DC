@@ -51,6 +51,7 @@ namespace QubaDC.Tests
         [Fact]
         public void QBDCInitCreatesGlobalTimeStampTable()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
@@ -63,6 +64,7 @@ namespace QubaDC.Tests
         [Fact]
         public void SMOCreatesGlobalUpdate()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
@@ -80,6 +82,7 @@ namespace QubaDC.Tests
         [Fact]
         public void InsertCreatesGlobalUpdate()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
@@ -101,6 +104,7 @@ namespace QubaDC.Tests
         [Fact]
         public void DeleteCreatesGlobalUpdate()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
@@ -128,6 +132,7 @@ namespace QubaDC.Tests
         [Fact]
         public void UpdateCreatesGlobalUpdate()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();

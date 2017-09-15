@@ -51,6 +51,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void RenameTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -101,6 +102,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void DropTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -148,6 +150,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void CopyTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -214,6 +217,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void PartitionTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -285,6 +289,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void MergeTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -363,6 +368,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void JoinTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -457,6 +463,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void DropColumnWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -521,6 +528,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void AddColumnWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -592,6 +600,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void DecomposeTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -666,6 +675,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void RenameColumnWorks()
         {
+            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -723,6 +733,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void RenamingOneColumnToAnotherAndBackWorks()
         {
+            throw new NotImplementedException("Needs review");
             //TODO:
             //Create Table x(a,b)
             //Drop column b
@@ -787,6 +798,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void CreateTableOfDroppedOneWorks()
         {
+            throw new NotImplementedException("Needs review");
             //TODO:
             //Create Table a
             //Drop Table a

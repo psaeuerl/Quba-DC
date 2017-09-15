@@ -51,12 +51,13 @@ namespace QubaDC.Tests.SystemTests
             Assert.Equal(0, allTables.Count());
             QBDC.Init();
             var allTablesAfterInit = Fixture.DataConnection.GetAllTables();
-            Assert.Equal(3, allTablesAfterInit.Count());
+            Assert.Equal(2, allTablesAfterInit.Count());
         }
 
         [Fact]
         public void CreateTableWorks()
         {
+            throw new NotImplementedException("Needs review");
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
