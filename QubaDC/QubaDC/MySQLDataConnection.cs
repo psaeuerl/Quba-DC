@@ -86,7 +86,7 @@ namespace QubaDC
             Guard.ArgumentNotNullOrWhiteSpace(Credentials.UserName, nameof(Credentials.UserName));
             Guard.ArgumentNotNullOrWhiteSpace(Credentials.Password, nameof(Credentials.Password));
             Guard.ArgumentNotNullOrWhiteSpace(DataBase, nameof(DataBase));
-            string connStr = String.Format("server={0};user id={1}; password={2}; database=mysql; pooling=false",
+            string connStr = String.Format("server={0};user id={1}; password={2}; database=mysql; pooling=false;Allow User Variables=True",
             Server, Credentials.UserName, Credentials.Password);
             return connStr;
         }
