@@ -16,5 +16,7 @@ namespace QubaDC
         internal abstract string GetCreateMetaTableFor(string schema, string tableName);
         internal abstract Table GetMetaTableFor(string schema, string tableName);
         internal abstract string GetStartInsertFor(string schema, string tableName);
+
+        public abstract DateTime GetLatestUpdate(params Table[] tables);
     }
 }

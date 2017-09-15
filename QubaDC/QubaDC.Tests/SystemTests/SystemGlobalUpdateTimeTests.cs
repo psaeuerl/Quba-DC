@@ -81,24 +81,21 @@ namespace QubaDC.Tests
 
         [Fact]
         public void InsertCreatesGlobalUpdate()
-        {
-            throw new NotImplementedException("Needs review");
+        { 
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
-            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
 
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
 
-            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+            DateTime timeAfterCreateTable = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
             InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
             QBDC.CRUDHandler.HandleInsert(c);
-            var update3 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+            DateTime timeAfterInsert = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
-            Assert.Equal(3, update3.ID);
-            Assert.True(update2.DateTime > update1.DateTime);
+            Assert.True(timeAfterInsert > timeAfterCreateTable);
         }
 
         [Fact]

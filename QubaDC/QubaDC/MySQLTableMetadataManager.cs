@@ -47,7 +47,7 @@ namespace QubaDC
 
         public override TableLastUpdate GetLatestUpdate()
         {
-
+            throw new InvalidOperationException("GetLatestUpdate is obsolete");
             String stmt = "Select ID,Timestamp,Operation FROM " + GetTableName()
                         + "WHERE Timestamp = (Select MAX(Timestamp) FROM " + GetTableName() + ")";
             DataTable t = this.Connection.ExecuteQuery(stmt);
@@ -99,6 +99,17 @@ VALUES
 true);";
             String result = String.Format(baseStmt, t.TableSchema, t.TableName);
             return result;
+        }
+
+        public override DateTime GetLatestUpdate(params Table[] tables)
+        {
+            string stmt = "SELECT MAX(lastUpdate) FROM {0}";
+            string tbl = "`{0}`.`{1}`";
+            String tableSQL = String.Join(", ", tables.Select(x => String.Format(tbl, x.TableSchema, x.TableName+"_metadata")));
+            String result = String.Format(stmt, tableSQL);
+            DataTable res = this.Connection.ExecuteQuery(result);
+            DateTime resDatetime=  res.Select().First().Field<DateTime>(0);
+            return resDatetime;
         }
     }
 }
