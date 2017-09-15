@@ -97,7 +97,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(CreateTable createTable)
         {
-            IntegratedCreateTableHandler h = new IntegratedCreateTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            IntegratedCreateTableHandler h = new IntegratedCreateTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.GlobalUpdateTimeManager);
             h.Handle(createTable);
         }
 

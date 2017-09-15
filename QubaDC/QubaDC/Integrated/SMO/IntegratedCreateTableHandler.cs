@@ -14,65 +14,68 @@ namespace QubaDC.Integrated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public IntegratedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, GlobalUpdateTimeManager timeManager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.TimeManager = timeManager;
         }
 
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public GlobalUpdateTimeManager TimeManager { get; private set; }
 
         internal void Handle(CreateTable createTable)
         {
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
-            {
-                ////What to do?
-                ////Create Table normal
-                ////Create Table Hist
-                ////Create Trigger on normal
-                ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
+            throw new NotImplementedException();
+        //    var con = (MySQLDataConnection)DataConnection;
+        //    con.DoTransaction((transaction, c) =>
+        //    {
+        //        ////What to do?
+        //        ////Create Table normal
+        //        ////Create Table Hist
+        //        ////Create Trigger on normal
+        //        ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
 
-                CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
-                newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
-                String createBaseTable = SMORenderer.RenderCreateTable(newCt);
-                ////Create History Table
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-                Schema x = xy.Schema;
-                if (xy.ID == null)
-                {
-                    x = new Schema();
-                    xy.ID = 0;
-                }
+        //        CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
+        //        newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
+        //        String createBaseTable = SMORenderer.RenderCreateTable(newCt);
+        //        ////Create History Table
+        //        SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
+        //        Schema x = xy.Schema;
+        //        if (xy.ID == null)
+        //        {
+        //            x = new Schema();
+        //            xy.ID = 0;
+        //        }
 
-                CreateTable ctHistTable = CreateHistTable(createTable, xy);
+        //        CreateTable ctHistTable = CreateHistTable(createTable, xy);
 
-                String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+        //        String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
 
-                //Manage Schema Statement
-                x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
+        //        //Manage Schema Statement
+        //        x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+        //        //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
 
-                //Add tables
-                con.ExecuteNonQuerySQL(createBaseTable, c);
-                con.ExecuteNonQuerySQL(createHistTable, c);
+        //        //Add tables
+        //        con.ExecuteNonQuerySQL(createBaseTable, c);
+        //        con.ExecuteNonQuerySQL(createHistTable, c);
 
-                //////INsert Trigger 
-                //String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                //String updateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+        //        //////INsert Trigger 
+        //        //String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+        //        //String updateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
 
-                //////Add Trigger
-                //con.ExecuteSQLScript(trigger, c);
-                //con.ExecuteSQLScript(updateTrigger, c);
+        //        //////Add Trigger
+        //        //con.ExecuteSQLScript(trigger, c);
+        //        //con.ExecuteSQLScript(updateTrigger, c);
 
 
 
-                ////Store Schema
-                this.schemaManager.StoreSchema(x, createTable, con, c);
-                transaction.Commit();
-            });
+        //        ////Store Schema
+        //        this.schemaManager.StoreSchema(x, createTable, con, c);
+        //        transaction.Commit();
+        //    });
         }
 
         private static CreateTable CreateHistTable(CreateTable createTable, SchemaInfo xy)
