@@ -114,6 +114,7 @@ ORDER BY id DESC";
 
         public override string GetInsertToGlobalUpdateTrigger()
         {
+            throw new InvalidOperationException("Not needed => will be removed");
             String result = String.Format(@"DELIMITER $$
 CREATE TRIGGER `{0}`.qubadcsmotable_to_global_timestamp
 AFTER INSERT
@@ -174,7 +175,8 @@ WHERE timestamp <= {2}
 
         internal override string GetStoredProcedureExistsStatement()
         {
-            return String.Format("SELECT 1 FROM mysql.proc p WHERE db = '{0}' AND name = 'ensureSMOid'", this.Connection.DataBase);
+            throw new InvalidOperationException("Will probably be removed");
+   //         return String.Format("SELECT 1 FROM mysql.proc p WHERE db = '{0}' AND name = 'ensureSMOid'", this.Connection.DataBase);
         }
 
         internal override string GetCreateEnsureIDCreateProcedure()

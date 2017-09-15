@@ -75,11 +75,11 @@ namespace QubaDC
         {
             this.DataConnection.DoTransaction((transaction, c) =>
             {
-                if (!DataConnection.GetAllTables().Any(x => x.Name == GlobalUpdateTableName))
-                {
-                    String sql = this.GlobalUpdateTimeManager.GetCreateUpdateTimeTableStatement();
-                    this.DataConnection.ExecuteNonQuerySQL(sql, c);
-                }
+                //if (!DataConnection.GetAllTables().Any(x => x.Name == GlobalUpdateTableName))
+                //{
+                //    String sql = this.GlobalUpdateTimeManager.GetCreateUpdateTimeTableStatement();
+                //    this.DataConnection.ExecuteNonQuerySQL(sql, c);
+                //}
 
                 if (!DataConnection.GetAllTables().Any(x => x.Name == QubaDCSMOTable))
                 {
@@ -87,18 +87,16 @@ namespace QubaDC
                     Guard.ArgumentTrueForAll<String>(QubaDCSMOColumns, (x) => { return sql.Contains(x); }, "SMO Table Columns");
                     this.DataConnection.ExecuteNonQuerySQL(sql, c);
 
-                    String trigger = this.SchemaManager.GetInsertToGlobalUpdateTrigger();
-                    this.DataConnection.ExecuteSQLScript(trigger, c);
+                    //String trigger = this.SchemaManager.GetInsertToGlobalUpdateTrigger();
+                    //this.DataConnection.ExecuteSQLScript(trigger, c);
                     this.SchemaManager.StoreSchema(new Schema(), null, this.DataConnection, c);
-
-               
                 }
 
-                 if(DataConnection.ExecuteQuery(SchemaManager.GetStoredProcedureExistsStatement()).Rows.Count == 0)
-                {
-                    String storedProc = this.SchemaManager.GetCreateEnsureIDCreateProcedure();
-                    this.DataConnection.ExecuteSQLScript(storedProc, c);
-                }
+                // if(DataConnection.ExecuteQuery(SchemaManager.GetStoredProcedureExistsStatement()).Rows.Count == 0)
+                //{
+                //    String storedProc = this.SchemaManager.GetCreateEnsureIDCreateProcedure();
+                //    this.DataConnection.ExecuteSQLScript(storedProc, c);
+                //}
 
                 transaction.Commit();
             });

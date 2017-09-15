@@ -18,6 +18,7 @@ namespace QubaDC
         }
         public override string GetCreateUpdateTimeTableStatement()
         {
+            throw new InvalidOperationException(" Will be removed");
             String stmt =
              @"CREATE TABLE " + GetTableName()
 + @" (
