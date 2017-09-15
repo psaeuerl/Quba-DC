@@ -19,7 +19,7 @@ namespace QubaDC
                   new MySqlSchemaManager(con),
                   renderer,
                   new MySQLCrudRenderer(),
-                  new MySQLGlobalUpdateTimeManager(con))
+                  new MySQLTableMetadataManager(con))
         {
             this.TypedConnection = con; ;
         }

@@ -63,12 +63,12 @@ namespace QubaDC.Tests.SystemTests
             var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables();
             Assert.Contains("basictable", allTablesAfterCreateTable.Select(x => x.Name));
             Assert.Contains("basictable_1", allTablesAfterCreateTable.Select(x => x.Name));
-            Assert.Contains("basictable_last_update", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("basictable_metadata", allTablesAfterCreateTable.Select(x => x.Name));
             var schemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             var schema = schemaInfo.Schema;
             Assert.Equal(1, schema.HistTables.Count());
             Assert.Equal(1, schema.Tables.Count());
-            throw new NotImplementedException("Assert on last-update table");
+            Assert.Equal("basictable_metadata", schema.Tables.First().MetaTableName);
         }
 
 

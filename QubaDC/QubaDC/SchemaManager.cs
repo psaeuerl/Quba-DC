@@ -15,15 +15,14 @@ namespace QubaDC
 
         public abstract SchemaInfo GetCurrentSchema();
 
-        public abstract string GetInsertSchemaStatement(Schema schema, SchemaModificationOperator smo);
+        public abstract string GetInsertSchemaStatement(Schema schema, SchemaModificationOperator smo, bool useUpdateTimeVariable=false);
 
-        public void StoreSchema(Schema schema,SchemaModificationOperator smo, DataConnection con, DbConnection c)
+        public void StoreSchema(Schema schema,SchemaModificationOperator smo, DataConnection con, DbConnection c, bool useUpdateTimeVariable = false)
         {
             var curSchema = GetCurrentSchema();
-            String stmt = GetInsertSchemaStatement(schema, smo);
+            String stmt = GetInsertSchemaStatement(schema, smo, useUpdateTimeVariable);
             con.ExecuteInsert(stmt, c);
         }
-
 
         public abstract SchemaInfo GetCurrentSchema(DbConnection openConnection);
         public abstract SchemaInfo[] GetAllSchemataOrderdByIdDescending();

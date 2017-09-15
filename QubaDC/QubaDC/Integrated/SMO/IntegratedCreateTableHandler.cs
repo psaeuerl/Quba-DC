@@ -7,6 +7,7 @@ using QubaDC.SMO;
 using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
+using QubaDC.CRUD;
 
 namespace QubaDC.Integrated.SMO
 {
@@ -16,66 +17,76 @@ namespace QubaDC.Integrated.SMO
 
         public IntegratedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableLastUpdateManager timeManager)
         {
-            this.DataConnection = c;
+            this.con = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
             this.TimeManager = timeManager;
         }
 
-        public DataConnection DataConnection { get; private set; }
+        public DataConnection con { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
         public TableLastUpdateManager TimeManager { get; private set; }
 
         internal void Handle(CreateTable createTable)
         {
-            throw new NotImplementedException();
-        //    var con = (MySQLDataConnection)DataConnection;
-        //    con.DoTransaction((transaction, c) =>
-        //    {
-        //        ////What to do?
-        //        ////Create Table normal
-        //        ////Create Table Hist
-        //        ////Create Trigger on normal
-        //        ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
+            ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
 
-        //        CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
-        //        newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
-        //        String createBaseTable = SMORenderer.RenderCreateTable(newCt);
-        //        ////Create History Table
-        //        SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-        //        Schema x = xy.Schema;
-        //        if (xy.ID == null)
-        //        {
-        //            x = new Schema();
-        //            xy.ID = 0;
-        //        }
+            CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
+            newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
+            String createBaseTable = SMORenderer.RenderCreateTable(newCt);
 
-        //        CreateTable ctHistTable = CreateHistTable(createTable, xy);
+            String[] beforeLockStatements = new String[]
+            {
+                "SET autocommit=0;",
+                "SELECT GET_LOCK('SMO UPDATES',10);",
+                "SET @updateTime = NOW(3); "
+            };
 
-        //        String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+            String[] cleanup = new String[]
+            {
+                "COMMIT;",
+                "SELECT RELEASE_LOCK('SMO UPDATES');"
+            };
+            con.AquiereOpenConnection(oc =>
+            {
+                foreach (var stmt in beforeLockStatements)
+                    con.ExecuteSQLScript(stmt, oc);
 
-        //        //Manage Schema Statement
-        //        x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-        //        //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
-
-        //        //Add tables
-        //        con.ExecuteNonQuerySQL(createBaseTable, c);
-        //        con.ExecuteNonQuerySQL(createHistTable, c);
-
-        //        //////INsert Trigger 
-        //        //String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-        //        //String updateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-
-        //        //////Add Trigger
-        //        //con.ExecuteSQLScript(trigger, c);
-        //        //con.ExecuteSQLScript(updateTrigger, c);
+                var res= con.ExecuteQuery("SELECT @updateTime;");
+                //Aquiered Lock
+                //Get Schema
+                SchemaInfo currentSchemaInfo = this.schemaManager.GetCurrentSchema(oc);
+                Schema currentSchema = currentSchemaInfo.Schema;
+                if (currentSchemaInfo.ID == null)
+                {
+                    currentSchema = new Schema();
+                    currentSchemaInfo.ID = 0;
+                }
 
 
+                //Actual CreateTableCode
+                CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
+                String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+                String createMetaTable = TimeManager.GetCreateMetaTableFor(newCt.Schema, newCt.TableName);
+                Table metaTable = TimeManager.GetMetaTableFor(newCt.Schema, newCt.TableName);
+                //Manage Schema Statement
+                currentSchema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
+                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
 
-        //        ////Store Schema
-        //        this.schemaManager.StoreSchema(x, createTable, con, c);
-        //        transaction.Commit();
-        //    });
+                //Add tables
+                con.ExecuteNonQuerySQL(createBaseTable, oc);
+                con.ExecuteNonQuerySQL(createHistTable, oc);
+                con.ExecuteNonQuerySQL(createMetaTable, oc);
+
+                this.schemaManager.StoreSchema(currentSchema, createTable, con, oc,true);
+
+                String baseInsert= TimeManager.GetStartInsertFor(newCt.Schema, newCt.TableName);
+                con.ExecuteNonQuerySQL(baseInsert, oc);
+
+                foreach (var stmt in cleanup)
+                    con.ExecuteSQLScript(stmt, oc);
+
+            });  
         }
 
         private static CreateTable CreateHistTable(CreateTable createTable, SchemaInfo xy)

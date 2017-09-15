@@ -118,11 +118,11 @@
     <Compile Include="DatabaseObjects\TableSchema.cs" />
     <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
     <Compile Include="DataConnection.cs" />
-    <Compile Include="GlobalUpdate.cs" />
-    <Compile Include="GlobalUpdateTimeManager.cs" />
+    <Compile Include="TableLastUpdate.cs" />
+    <Compile Include="TableLastUpdateManager.cs" />
     <Compile Include="MySQLCrudRenderer.cs" />
     <Compile Include="MySQLDialectHelper.cs" />
-    <Compile Include="MySQLGlobalUpdateTimeManager.cs" />
+    <Compile Include="MySQLTableMetadataManager.cs" />
     <Compile Include="Separated\SeparatedMySqlSMORenderer.cs" />
     <Compile Include="MySQLDataConnection.cs" />
     <Compile Include="MySQLQubaDCSystem.cs" />

@@ -35,8 +35,9 @@ namespace QubaDC
         }
 
 
-        public override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo)
+        public override string GetInsertSchemaStatement(Schema schema,SchemaModificationOperator smo, bool useUpdateVariable = false)
         {
+            string nowOrVariable = useUpdateVariable ? "@updateTime" : "NOW(3)";
             String InsertFormat =
              @"INSERT INTO `{0}`.`qubadcsmotable`
 (`Schema`,
@@ -45,13 +46,13 @@ namespace QubaDC
 VALUES(
 '{1}',
 '{2}',
-NOW(3)
+{3}
 );";
             String argDb = this.Connection.DataBase;
             String argSchema = JsonSerializer.SerializeObject(schema);
             String argSMO = JsonSerializer.SerializeObject(smo).Replace("'", "\\'");
             //TODO => Use Parameterized Query
-            String result = String.Format(InsertFormat, argDb, argSchema, argSMO);
+            String result = String.Format(InsertFormat, argDb, argSchema, argSMO, nowOrVariable);
             return result;
         }
 

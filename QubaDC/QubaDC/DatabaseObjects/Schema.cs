@@ -16,8 +16,11 @@ namespace QubaDC.DatabaseObjects
 
         private List<TableSchema> _HistTables { get;  set; } = new List<TableSchema>();      
 
-        public void AddTable(TableSchema table, TableSchema histequivalent)
+        public void AddTable(TableSchema table, TableSchema histequivalent, Table lastUpdate = null)
         {
+            //PS => allowed null due to compiling reasons
+            if (lastUpdate == null)
+                throw new InvalidOperationException("Need last update table");
             AssertTableColumns(table);
             AssertTableColumns(histequivalent);
             table.AddTimeSetGuid = Guid.NewGuid();
@@ -25,7 +28,9 @@ namespace QubaDC.DatabaseObjects
             {
                 Table = table,
                 HistTableName = histequivalent.Name,
-                HistTableSchema = histequivalent.Schema
+                HistTableSchema = histequivalent.Schema,
+                MetaTableName = lastUpdate.TableName,
+                MetaTableSchema = lastUpdate.TableSchema
             });
             this._HistTables.Add(histequivalent);
         }

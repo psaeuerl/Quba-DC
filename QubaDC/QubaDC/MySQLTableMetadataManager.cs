@@ -4,14 +4,15 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QubaDC.CRUD;
 
 namespace QubaDC
 {
-    public class MySQLGlobalUpdateTimeManager : TableLastUpdateManager
+    public class MySQLTableMetadataManager : TableLastUpdateManager
     {
         private MySQLDataConnection Connection { get; set; }
 
-        public MySQLGlobalUpdateTimeManager(MySQLDataConnection con)
+        public MySQLTableMetadataManager(MySQLDataConnection con)
         {
             this.Connection = con;
 
@@ -65,6 +66,39 @@ namespace QubaDC
                 DateTime = row.Field<DateTime>("Timestamp")
 
             };
+        }
+
+        internal override string GetCreateMetaTableFor(string schema, string tableName)
+        {
+            Table t = GetMetaTableFor(schema, tableName); 
+            String ct = @" CREATE TABLE `{0}`.`{1}` (
+  `lastUpdate` datetime(3) NOT NULL,
+  `canBeQueried` BOOL NOT NULL
+);";
+            String result = String.Format(ct, t.TableSchema, t.TableName);
+            return result;            
+        }
+
+        internal override Table GetMetaTableFor(string schema, string tableName)
+        {
+            return new Table()
+            {
+                TableName = tableName + "_metadata",
+                TableSchema = schema
+            };
+        }
+
+        internal override string GetStartInsertFor(string schema, string tableName)
+        {
+            Table t = GetMetaTableFor(schema, tableName);
+            String baseStmt = @"INSERT INTO `{0}`.`{1}`
+(`lastUpdate`,
+`canBeQueried`)
+VALUES
+(@updateTime,
+true);";
+            String result = String.Format(baseStmt, t.TableSchema, t.TableName);
+            return result;
         }
     }
 }
