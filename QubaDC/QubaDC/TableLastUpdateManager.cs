@@ -7,10 +7,10 @@ using QubaDC.CRUD;
 
 namespace QubaDC
 {
-    public abstract class GlobalUpdateTimeManager
+    public abstract class TableLastUpdateManager
     {
         public abstract String GetCreateUpdateTimeTableStatement();
-        public abstract GlobalUpdate GetLatestUpdate();
+        public abstract TableLastUpdate GetLatestUpdate();
         public abstract string GetTableName();
         public abstract Table GetTable();
     }

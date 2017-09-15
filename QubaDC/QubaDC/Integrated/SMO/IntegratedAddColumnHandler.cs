@@ -16,10 +16,10 @@ namespace QubaDC.Separated.SMO
 {
     class IntegratedAddColumnHandler
     {
-        private readonly GlobalUpdateTimeManager GlobalUpdateTimeManager;
+        private readonly TableLastUpdateManager GlobalUpdateTimeManager;
         private SchemaManager schemaManager;
 
-        public IntegratedAddColumnHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer, GlobalUpdateTimeManager manager)
+        public IntegratedAddColumnHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer, TableLastUpdateManager manager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;

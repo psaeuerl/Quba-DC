@@ -232,7 +232,7 @@ namespace QubaDC.Integrated
         //                Result = normaResult
         //            };
         //        }
-        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager schemaManager, DataConnection con, GlobalUpdateTimeManager timeManager, CRUDVisitor cRUDHandler, QueryStore qs)
+        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager schemaManager, DataConnection con, TableLastUpdateManager timeManager, CRUDVisitor cRUDHandler, QueryStore qs)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.

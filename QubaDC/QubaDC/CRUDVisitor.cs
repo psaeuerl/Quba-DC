@@ -17,7 +17,7 @@ namespace QubaDC
         /// <summary>
         /// Needed by Integrated Update
         /// </summary>
-        public GlobalUpdateTimeManager GlobalUpdateTimeManager { get; set; }
+        public TableLastUpdateManager GlobalUpdateTimeManager { get; set; }
 
         public abstract void HandleDeletOperation(DeleteOperation deleteOperation);
 

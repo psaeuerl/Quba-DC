@@ -14,7 +14,7 @@ namespace QubaDC.Integrated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, GlobalUpdateTimeManager timeManager)
+        public IntegratedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableLastUpdateManager timeManager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
@@ -24,7 +24,7 @@ namespace QubaDC.Integrated.SMO
 
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
-        public GlobalUpdateTimeManager TimeManager { get; private set; }
+        public TableLastUpdateManager TimeManager { get; private set; }
 
         internal void Handle(CreateTable createTable)
         {

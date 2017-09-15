@@ -9,7 +9,7 @@ namespace QubaDC.Integrated.CRUD
 {
     class IntegratedInsertHandler
     {
-        public IntegratedInsertHandler(DataConnection c, SchemaManager schemaManager, CRUDRenderer crudRender, GlobalUpdateTimeManager timeManager)
+        public IntegratedInsertHandler(DataConnection c, SchemaManager schemaManager, CRUDRenderer crudRender, TableLastUpdateManager timeManager)
         {
             this.DataConnection = c;
             this.SchemaManager = schemaManager;
@@ -20,7 +20,7 @@ namespace QubaDC.Integrated.CRUD
         public CRUDRenderer CRUDRenderer { get; private set; }
         public DataConnection DataConnection { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
-        public GlobalUpdateTimeManager timeManager { get; private set; }
+        public TableLastUpdateManager timeManager { get; private set; }
 
         internal void HandleInsert(InsertOperation insertOperation)
         {

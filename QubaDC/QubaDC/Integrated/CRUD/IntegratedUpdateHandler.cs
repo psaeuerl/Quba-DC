@@ -10,7 +10,7 @@ namespace QubaDC.Integrated.CRUD
 {
     class IntegratedUpdateHandler
     {
-        public IntegratedUpdateHandler(DataConnection c, SchemaManager schemaManager, CRUDRenderer crudRender, GlobalUpdateTimeManager timeManager)
+        public IntegratedUpdateHandler(DataConnection c, SchemaManager schemaManager, CRUDRenderer crudRender, TableLastUpdateManager timeManager)
         {
             this.DataConnection = c;
             this.SchemaManager = schemaManager;
@@ -20,7 +20,7 @@ namespace QubaDC.Integrated.CRUD
 
         public CRUDRenderer CRUDRenderer { get; private set; }
         public DataConnection DataConnection { get; private set; }
-        public GlobalUpdateTimeManager GlobalUpdateTImeManager { get; private set; }
+        public TableLastUpdateManager GlobalUpdateTImeManager { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
 
         internal void HandleUpdate(UpdateOperation updateOperation)

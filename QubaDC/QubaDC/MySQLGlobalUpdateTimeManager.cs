@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QubaDC
 {
-    public class MySQLGlobalUpdateTimeManager : GlobalUpdateTimeManager
+    public class MySQLGlobalUpdateTimeManager : TableLastUpdateManager
     {
         private MySQLDataConnection Connection { get; set; }
 
@@ -44,7 +44,7 @@ namespace QubaDC
             };
         }
 
-        public override GlobalUpdate GetLatestUpdate()
+        public override TableLastUpdate GetLatestUpdate()
         {
 
             String stmt = "Select ID,Timestamp,Operation FROM " + GetTableName()
@@ -58,7 +58,7 @@ namespace QubaDC
             //a.) very unlikely to occur if not outright impossible due to transaction management both accessing the same table
             //b.) latestupdate is used to determine against which schema to execute queries, nothing more, therefor not dead critical
             var row = rows[0];
-            return new GlobalUpdate()
+            return new TableLastUpdate()
             {
                 Operation = row.Field<String>("Operation"),
                 ID = row.Field<Int32>("ID"),

@@ -26,7 +26,7 @@ namespace QubaDC
 
         public QubaDCSystem(DataConnection DataConnection, SMOVisitor separatedSMOHandler, 
             CRUDVisitor separatedCRUDHandler, 
-            QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r, GlobalUpdateTimeManager globalTimeManager)
+            QueryStore qs, SchemaManager manager, SMORenderer renderer, CRUDRenderer r, TableLastUpdateManager globalTimeManager)
         {
             this.DataConnection = DataConnection;
             this.SMOHandler = separatedSMOHandler;
@@ -110,6 +110,6 @@ namespace QubaDC
         public SchemaManager SchemaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
         public CRUDRenderer CRUDRenderer { get; private set; }
-        public GlobalUpdateTimeManager GlobalUpdateTimeManager { get; private set; }
+        public TableLastUpdateManager GlobalUpdateTimeManager { get; private set; }
     }
 }

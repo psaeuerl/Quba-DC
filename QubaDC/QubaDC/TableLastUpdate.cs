@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QubaDC
 {
-    public class GlobalUpdate
+    public class TableLastUpdate
     {
         public int ID { get; set; }
         public String Operation { get; set; }
