@@ -48,36 +48,6 @@ namespace QubaDC.Tests
             this.Fixture.DropDatabaseIfExists(currentDatabase);
         }
 
-        [Fact]
-        public void QBDCInitCreatesGlobalTimeStampTable()
-        {
-            throw new NotImplementedException("Needs review");
-            //Create Basic Table
-            QBDC.Init();
-            var tables = QBDC.DataConnection.GetAllTables();
-            Assert.True(tables.Select(x => x.Name.ToLowerInvariant()).Contains(QubaDCSystem.GlobalUpdateTableName.ToLowerInvariant()));
-            var update = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-            Assert.NotNull(update);
-            Assert.Equal(1, update.ID);            
-        }
-
-        [Fact]
-        public void SMOCreatesGlobalUpdate()
-        {
-            throw new NotImplementedException("Needs review");
-            //Create Basic Table
-            QBDC.Init();
-            var tables = QBDC.DataConnection.GetAllTables();
-            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-
-            CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
-            QBDC.SMOHandler.HandleSMO(t);
-
-            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-            Assert.Equal(2, update2.ID);
-            Assert.True(update2.DateTime > update1.DateTime);
-        }
-
 
         [Fact]
         public void InsertCreatesGlobalUpdate()
