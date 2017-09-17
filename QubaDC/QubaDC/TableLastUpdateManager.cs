@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,5 +19,7 @@ namespace QubaDC
         internal abstract string GetStartInsertFor(string schema, string tableName);
 
         public abstract DateTime GetLatestUpdate(params Table[] tables);
+        internal abstract bool GetCanBeQueriedFor(Table changingTable, DbConnection con);
+        internal abstract string GetSetLastUpdateStatement(Table insertTable, string v);
     }
 }
