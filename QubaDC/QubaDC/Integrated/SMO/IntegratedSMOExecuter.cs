@@ -11,29 +11,29 @@ namespace QubaDC.Integrated.SMO
     {
         public static void Execute(SMORenderer SMORenderer, DataConnection con, string[] PreLockingStatements, string[] AfterLockingStatemnts, string[] tablesToLock)
         {
-            String lockTables = SMORenderer.CRUDRenderer.RenderLockTables(tablesToLock).AsScript();
-            String result = String.Join(System.Environment.NewLine,
-                SMORenderer.CRUDRenderer.RenderAutoCommitZero().AsScript(),
-                PreLockingStatements.AsScript(),
-                lockTables,
-                AfterLockingStatemnts.AsScript(),
-                SMORenderer.CRUDRenderer.RenderCommitAndUnlock().AsScript()
-                );
-            con.AquiereOpenConnection(c =>
-            {
-                try
-                {
+            //String lockTables = SMORenderer.CRUDRenderer.RenderLockTables(tablesToLock).AsScript();
+            //String result = String.Join(System.Environment.NewLine,
+            //    SMORenderer.CRUDRenderer.RenderAutoCommitZero().AsScript(),
+            //    PreLockingStatements.AsScript(),
+            //    lockTables,
+            //    AfterLockingStatemnts.AsScript(),
+            //    SMORenderer.CRUDRenderer.RenderCommitAndUnlock().AsScript()
+            //    );
+            //con.AquiereOpenConnection(c =>
+            //{
+            //    try
+            //    {
 
-                    con.ExecuteSQLScript(result, c);
-                }
-                catch (Exception e)
-                {
-                    String[] rollbackAndUnlock = SMORenderer.CRUDRenderer.RenderRollBackAndUnlock();
-                    con.ExecuteNonQuerySQL(rollbackAndUnlock[0], c);
-                    con.ExecuteNonQuerySQL(rollbackAndUnlock[1], c);
-                    throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
-                }
-            });
+            //        con.ExecuteSQLScript(result, c);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        String[] rollbackAndUnlock = SMORenderer.CRUDRenderer.RenderRollBackAndUnlock();
+            //        con.ExecuteNonQuerySQL(rollbackAndUnlock[0], c);
+            //        con.ExecuteNonQuerySQL(rollbackAndUnlock[1], c);
+            //        throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
+            //    }
+            //});
         }
     }
 }
