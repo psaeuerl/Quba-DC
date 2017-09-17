@@ -25,61 +25,26 @@ namespace QubaDC.Integrated.CRUD
 
         internal void HandleDelete(DeleteOperation deleteOperation)
         {
-
-            ////Actually, just insert the statement
-            //String updateTableSetEndTs = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
-            //this.DataConnection.ExecuteQuery(updateTableSetEndTs);
-
-            //    Func<String[]> renderStatement = () =>
-            //    {
-            //        DateTime t = System.DateTime.Now;
-            //UpdateOperation uo = new UpdateOperation()
-            //{
-            //    ColumnNames = new String[] { IntegratedConstants.EndTS },
-            //    ValueLiterals = new String[] { this.CRUDRenderer.renderDateTime(t) },
-            //    Restriction = deleteOperation.Restriction,
-            //    Table = deleteOperation.Table
-            //};
-            //        String updateOperation = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
-
-            //        String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.timeManager.GetTable(),
-            //new String[] { "Operation", "Timestamp" },
-            //new String[] { String.Format("'delete on {0}'", this.timeManager.GetTable().TableName), this.CRUDRenderer.renderDateTime(t) }
-            //);
-
-            //        return new String[]
-            //        {
-            //            updateOperation,
-            //            insertToGlobalUpdate
-            //        };
-            //    };
-            //    String[] lockTables = new string[]
-            //    {
-            //                   deleteOperation.Table.TableSchema+"."+deleteOperation.Table.TableName,
-            //                   timeManager.GetTableName()
-            //    };
-            //        //IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStatement, lockTables, this.DataConnection, this.CRUDRenderer);
-
             Func<String[]> renderStaetement = () =>
             {
-                String insertTimeVariable = "insertTime";
-                String setInsertTime = this.CRUDRenderer.RenderNowToVariable(insertTimeVariable);
+                String nowVariable = "deleteTime";
+                String setNowVariableStmt = this.CRUDRenderer.RenderNowToVariable(nowVariable);
 
                 UpdateOperation uo = new UpdateOperation()
                 {
                     ColumnNames = new String[] { IntegratedConstants.EndTS },
-                    ValueLiterals = new String[] { this.CRUDRenderer.GetSQLVariable(insertTimeVariable) },
+                    ValueLiterals = new String[] { this.CRUDRenderer.GetSQLVariable(nowVariable) },
                     Restriction = deleteOperation.Restriction,
                     Table = deleteOperation.Table
                 };
 
 
                 String updateOperation = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
-                String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(deleteOperation.Table, this.CRUDRenderer.GetSQLVariable(insertTimeVariable));
+                String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(deleteOperation.Table, this.CRUDRenderer.GetSQLVariable(nowVariable));
 
                 return new String[]
                 {
-                            setInsertTime,
+                            setNowVariableStmt,
                             updateOperation,
                             updateLastUpdate
                 };
