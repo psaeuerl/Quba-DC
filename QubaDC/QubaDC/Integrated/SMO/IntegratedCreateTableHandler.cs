@@ -8,6 +8,7 @@ using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
 using QubaDC.CRUD;
+using static QubaDC.Integrated.SMO.IntegratedSMOExecuter;
 
 namespace QubaDC.Integrated.SMO
 {
@@ -29,65 +30,94 @@ namespace QubaDC.Integrated.SMO
 
         internal void Handle(CreateTable createTable)
         {
-            ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
 
-            CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
-            newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
-            String createBaseTable = SMORenderer.RenderCreateTable(newCt);
 
-            String[] beforeLockStatements = new String[]
+
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
-                "SET autocommit=0;",
-                "SELECT GET_LOCK('SMO UPDATES',10);",
-                "SET @updateTime = NOW(3); "
-            };
+                ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
+                CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
+                newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
+                String createBaseTable = SMORenderer.RenderCreateTable(newCt);
 
-            String[] cleanup = new String[]
-            {
-                "COMMIT;",
-                "SELECT RELEASE_LOCK('SMO UPDATES');"
-            };
-            con.AquiereOpenConnection(oc =>
-            {
-                foreach (var stmt in beforeLockStatements)
-                    con.ExecuteSQLScript(stmt, oc);
-
-                var res= con.ExecuteQuery("SELECT @updateTime;");
-                //Aquiered Lock
-                //Get Schema
-                SchemaInfo currentSchemaInfo = this.schemaManager.GetCurrentSchema(oc);
-                Schema currentSchema = currentSchemaInfo.Schema;
-                if (currentSchemaInfo.ID == null)
-                {
-                    currentSchema = new Schema();
-                    currentSchemaInfo.ID = 0;
-                }
-
-
-                //Actual CreateTableCode
                 CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
                 String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
                 String createMetaTable = TimeManager.GetCreateMetaTableFor(newCt.Schema, newCt.TableName);
                 Table metaTable = TimeManager.GetMetaTableFor(newCt.Schema, newCt.TableName);
                 //Manage Schema Statement
-                currentSchema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
+                currentSchemaInfo.Schema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
                 //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
 
-                //Add tables
-                con.ExecuteNonQuerySQL(createBaseTable, oc);
-                con.ExecuteNonQuerySQL(createHistTable, oc);
-                con.ExecuteNonQuerySQL(createMetaTable, oc);
 
-                this.schemaManager.StoreSchema(currentSchema, createTable, con, oc,true);
+                String baseInsert = TimeManager.GetStartInsertFor(newCt.Schema, newCt.TableName); ;
 
-                String baseInsert= TimeManager.GetStartInsertFor(newCt.Schema, newCt.TableName);
-                con.ExecuteNonQuerySQL(baseInsert, oc);
+                String[] Statements = new String[]
+                {
+                    createBaseTable,
+                    createHistTable,
+                    createMetaTable,
+                    baseInsert
+                };
 
-                foreach (var stmt in cleanup)
-                    con.ExecuteSQLScript(stmt, oc);
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchemaInfo.Schema,
+                    UpdateStatements = Statements
+                };
+            };
 
-            });  
+
+            IntegratedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.con,
+                 this.schemaManager,
+                 createTable,
+                 f,
+                 (s) =>  System.Diagnostics.Debug.WriteLine(s));
+            //con.AquiereOpenConnection(oc =>
+            //{
+
+
+
+            //    //Aquiered Lock
+            //    //Get Schema
+
+
+
+            //    //Actual CreateTableCode
+            //    CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
+            //    String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+            //    String createMetaTable = TimeManager.GetCreateMetaTableFor(newCt.Schema, newCt.TableName);
+            //    Table metaTable = TimeManager.GetMetaTableFor(newCt.Schema, newCt.TableName);
+            //    //Manage Schema Statement
+            //    currentSchema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
+            //    //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
+
+            //    //Add tables
+            //    con.ExecuteNonQuerySQL(createBaseTable, oc);
+            //    con.ExecuteNonQuerySQL(createHistTable, oc);
+            //    con.ExecuteNonQuerySQL(createMetaTable, oc);
+            //    String baseInsert = TimeManager.GetStartInsertFor(newCt.Schema, newCt.TableName);
+            //    con.ExecuteNonQuerySQL(baseInsert, oc);
+
+            //    String[] Statements = new String[]
+            //    {
+            //        createBaseTable,
+            //        createHistTable,
+            //        createMetaTable
+            //    };
+
+            //    this.schemaManager.StoreSchema(currentSchema, createTable, con, oc,true);
+
+
+
+
+            //});  
+
+
         }
+
+
 
         private static CreateTable CreateHistTable(CreateTable createTable, SchemaInfo xy)
         {
