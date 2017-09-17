@@ -26,26 +26,26 @@ namespace QubaDC.Integrated.CRUD
         internal void HandleInsert(InsertOperation insertOperation)
         {
             Func<String[]> renderStaetement = () =>
-       {
-           String insertTimeVariable = "insertTime";
-           String setInsertTime =  this.CRUDRenderer.RenderNowToVariable(insertTimeVariable);
-
-           insertOperation.ColumnNames = insertOperation.ColumnNames.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).ToArray();
-           insertOperation.ValueLiterals = insertOperation.ValueLiterals.Concat(new String[]
            {
-                                this.CRUDRenderer.GetSQLVariable(insertTimeVariable),
-                                 "null"
-           }).ToArray();
-           String insertToTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
-           String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(insertOperation.InsertTable, this.CRUDRenderer.GetSQLVariable(insertTimeVariable));
+               String insertTimeVariable = "insertTime";
+               String setInsertTime = this.CRUDRenderer.RenderNowToVariable(insertTimeVariable);
 
-           return new String[]
-           {
-                            setInsertTime,
-                            insertToTable,
-                            updateLastUpdate
+               insertOperation.ColumnNames = insertOperation.ColumnNames.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).ToArray();
+               insertOperation.ValueLiterals = insertOperation.ValueLiterals.Concat(new String[]
+               {
+                                    this.CRUDRenderer.GetSQLVariable(insertTimeVariable),
+                                     "null"
+               }).ToArray();
+               String insertToTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
+               String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(insertOperation.InsertTable, this.CRUDRenderer.GetSQLVariable(insertTimeVariable));
+
+               return new String[]
+               {
+                                setInsertTime,
+                                insertToTable,
+                                updateLastUpdate
+               };
            };
-       };            
             SchemaInfo currentSchemaInfo = this.SchemaManager.GetCurrentSchema();
             TableSchema hist = currentSchemaInfo.Schema.FindHistTable(insertOperation.InsertTable);
 
@@ -67,7 +67,7 @@ namespace QubaDC.Integrated.CRUD
                 true,
                 false
             };
-            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer,this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, metaManager);
+            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer,this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, metaManager, IntegratedCRUDExecuter.DefLog);
         }
 
       

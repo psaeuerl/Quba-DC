@@ -10,16 +10,22 @@ namespace QubaDC.Integrated.CRUD
 {
     public class IntegratedCRUDExecuter
     {
-        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables,Boolean[]lockAsWrite, DataConnection DataConnection, CRUDRenderer crudRenderer, SchemaManager schemaManager, SchemaInfo expectedSchema, Table changingTable, TableLastUpdateManager metaManager)
+        public static void DefLog(String s )
+        {
+            ;
+        }
+        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables,Boolean[]lockAsWrite, DataConnection DataConnection, CRUDRenderer crudRenderer, SchemaManager schemaManager, SchemaInfo expectedSchema, Table changingTable, TableLastUpdateManager metaManager,
+            Action<String> logStatements
+        )
         {
 
             DataConnection.AquiereOpenConnection(con =>
             {
                 String[] beforeLock = crudRenderer.RenderAutoCommitZero();
-                ExecuteStatements(DataConnection, con, beforeLock);
+                ExecuteStatements(DataConnection, con, beforeLock,logStatements);
 
                 String[] lockTable = crudRenderer.RenderLockTables(locktables, lockAsWrite);
-                ExecuteStatements(DataConnection, con, lockTable);
+                ExecuteStatements(DataConnection, con, lockTable, logStatements);
 
                 //Ensure Hist has not changed
                 SchemaInfo schemaDuringInsert = schemaManager.GetCurrentSchema(con);
@@ -37,17 +43,20 @@ namespace QubaDC.Integrated.CRUD
                     throw new InvalidOperationException("Table cannot be queried currently as SMO is in effect");
                 }
                 String[] insertStatements = RenderStatements();
-                ExecuteStatements(DataConnection, con, insertStatements);
+                ExecuteStatements(DataConnection, con, insertStatements, logStatements);
 
                 String[] commitUnlock = crudRenderer.RenderCommitAndUnlock();
-                ExecuteStatements(DataConnection, con, commitUnlock);
+                ExecuteStatements(DataConnection, con, commitUnlock, logStatements);
             });
         }
 
-        private static void ExecuteStatements(DataConnection DataConnection, System.Data.Common.DbConnection con, string[] beforeLock)
+        private static void ExecuteStatements(DataConnection DataConnection, System.Data.Common.DbConnection con, string[] beforeLock, Action<String> logStatements)
         {
             foreach (var stmt in beforeLock)
+            {
+                logStatements(stmt);
                 DataConnection.ExecuteNonQuerySQL(stmt, con);
+            }
         }
     }
 }

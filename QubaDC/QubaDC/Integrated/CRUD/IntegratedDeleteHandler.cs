@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace QubaDC.Integrated.CRUD
             this.DataConnection = c;
             this.SchemaManager = schemaManager;
             this.CRUDRenderer = crudRender;
-            this.timeManager = timeManager;
+            this.metaManager = timeManager;
         }
 
         public CRUDRenderer CRUDRenderer { get; private set; }
         public DataConnection DataConnection { get; private set; }
         public SchemaManager SchemaManager { get; private set; }
-        public TableLastUpdateManager timeManager { get; private set; }
+        public TableLastUpdateManager metaManager { get; private set; }
 
         internal void HandleDelete(DeleteOperation deleteOperation)
         {
@@ -29,35 +30,83 @@ namespace QubaDC.Integrated.CRUD
             //String updateTableSetEndTs = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
             //this.DataConnection.ExecuteQuery(updateTableSetEndTs);
 
-            Func<String[]> renderStatement = () =>
+            //    Func<String[]> renderStatement = () =>
+            //    {
+            //        DateTime t = System.DateTime.Now;
+            //UpdateOperation uo = new UpdateOperation()
+            //{
+            //    ColumnNames = new String[] { IntegratedConstants.EndTS },
+            //    ValueLiterals = new String[] { this.CRUDRenderer.renderDateTime(t) },
+            //    Restriction = deleteOperation.Restriction,
+            //    Table = deleteOperation.Table
+            //};
+            //        String updateOperation = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
+
+            //        String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.timeManager.GetTable(),
+            //new String[] { "Operation", "Timestamp" },
+            //new String[] { String.Format("'delete on {0}'", this.timeManager.GetTable().TableName), this.CRUDRenderer.renderDateTime(t) }
+            //);
+
+            //        return new String[]
+            //        {
+            //            updateOperation,
+            //            insertToGlobalUpdate
+            //        };
+            //    };
+            //    String[] lockTables = new string[]
+            //    {
+            //                   deleteOperation.Table.TableSchema+"."+deleteOperation.Table.TableName,
+            //                   timeManager.GetTableName()
+            //    };
+            //        //IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStatement, lockTables, this.DataConnection, this.CRUDRenderer);
+
+            Func<String[]> renderStaetement = () =>
             {
-                DateTime t = System.DateTime.Now;
+                String insertTimeVariable = "insertTime";
+                String setInsertTime = this.CRUDRenderer.RenderNowToVariable(insertTimeVariable);
+
                 UpdateOperation uo = new UpdateOperation()
                 {
                     ColumnNames = new String[] { IntegratedConstants.EndTS },
-                    ValueLiterals = new String[] { this.CRUDRenderer.renderDateTime(t) },
+                    ValueLiterals = new String[] { this.CRUDRenderer.GetSQLVariable(insertTimeVariable) },
                     Restriction = deleteOperation.Restriction,
                     Table = deleteOperation.Table
                 };
-                String updateOperation = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
 
-                String insertToGlobalUpdate = this.CRUDRenderer.RenderInsert(this.timeManager.GetTable(),
-        new String[] { "Operation", "Timestamp" },
-        new String[] { String.Format("'delete on {0}'", this.timeManager.GetTable().TableName), this.CRUDRenderer.renderDateTime(t) }
-        );
+
+                String updateOperation = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
+                String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(deleteOperation.Table, this.CRUDRenderer.GetSQLVariable(insertTimeVariable));
 
                 return new String[]
                 {
-                    updateOperation,
-                    insertToGlobalUpdate
+                            setInsertTime,
+                            updateOperation,
+                            updateLastUpdate
                 };
             };
+            SchemaInfo currentSchemaInfo = this.SchemaManager.GetCurrentSchema();
+            TableSchema hist = currentSchemaInfo.Schema.FindHistTable(deleteOperation.Table);
+
+            String insertTable = this.CRUDRenderer.PrepareTable(deleteOperation.Table);
+            Table metaTable = metaManager.GetMetaTableFor(deleteOperation.Table.TableSchema, deleteOperation.Table.TableName);
+            String metaTableName = this.CRUDRenderer.PrepareTable(metaTable);
+            String histTable = this.CRUDRenderer.PrepareTable(hist.ToTable());
             String[] lockTables = new string[]
+                {
+                   deleteOperation.Table.TableSchema+"."+deleteOperation.Table.TableName,
+                   metaTableName,
+                   histTable,
+                   SchemaManager.GetTableName()
+                };
+            Boolean[] lockWrite = new bool[]
             {
-                           deleteOperation.Table.TableSchema+"."+deleteOperation.Table.TableName,
-                           timeManager.GetTableName()
+                true,
+                true,
+                true,
+                false
             };
-                //IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStatement, lockTables, this.DataConnection, this.CRUDRenderer);
+            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer, this.SchemaManager, currentSchemaInfo, deleteOperation.Table, metaManager
+                , (s) => System.Diagnostics.Debug.WriteLine(s));
 
         }
     }

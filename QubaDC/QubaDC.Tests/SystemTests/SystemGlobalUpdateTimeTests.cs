@@ -101,29 +101,24 @@ namespace QubaDC.Tests
         [Fact]
         public void DeleteCreatesGlobalUpdate()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             var tables = QBDC.DataConnection.GetAllTables();
-            var update1 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
 
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
-
-            var update2 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
+            DateTime timeAfterCreateTable = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
             InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
             QBDC.CRUDHandler.HandleInsert(c);
-            var update3 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-
+            DateTime timeAfterInsert = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
             DeleteOperation c2 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'asdf'");
             QBDC.CRUDHandler.HandleDeletOperation(c2);
-
-            var update4 = QBDC.GlobalUpdateTimeManager.GetLatestUpdate();
-
-            Assert.Equal(4, update4.ID);
-            Assert.True(update4.DateTime > update3.DateTime);
+            DateTime timeAfterDelete = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
+            
+            Assert.True(timeAfterInsert > timeAfterCreateTable);
+            Assert.True(timeAfterDelete > timeAfterInsert);
         }
 
         [Fact]
