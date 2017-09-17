@@ -21,6 +21,8 @@ namespace QubaDC.CRUD
             return String.Format("`{0}`", tableReference);
         }
 
+        internal abstract string[] RenderLockTables(string[] locktables, bool[] lockAsWrite);
+
         internal string RenderJoinType(JoinType join)
         {
             switch (join)
@@ -41,8 +43,7 @@ namespace QubaDC.CRUD
         internal abstract string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction);
 
         internal abstract string RenderDelete(Table table, Restriction restriction);
-        internal abstract string RenderRestriction(Restriction joinCondition);
-        internal abstract string[] RenderLockTables(string[] locktables);
+        internal abstract string RenderRestriction(Restriction joinCondition);        
         internal abstract string[] RenderCommitAndUnlock();
         internal abstract string[] RenderRollBackAndUnlock();
         internal abstract string renderDateTime(DateTime t);
