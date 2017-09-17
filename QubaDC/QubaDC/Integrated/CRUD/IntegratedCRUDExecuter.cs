@@ -1,4 +1,5 @@
 ﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,60 +10,44 @@ namespace QubaDC.Integrated.CRUD
 {
     public class IntegratedCRUDExecuter
     {
-        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables, DataConnection DataConnection, CRUDRenderer crudRenderer)
+        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables,Boolean[]lockAsWrite, DataConnection DataConnection, CRUDRenderer crudRenderer, SchemaManager schemaManager, SchemaInfo expectedSchema, Table changingTable, TableLastUpdateManager metaManager)
         {
-            List<String> parts = new List<string>();
-            parts.AddRange(crudRenderer.RenderAutoCommitZero());
-            parts.AddRange(crudRenderer.RenderLockTables(locktables));
-            parts.AddRange(RenderStatements());
-            parts.AddRange(crudRenderer.RenderCommitAndUnlock());
-            String[] toJoin = parts.Select(x => x.Last() == ';' ? x : x + ";").ToArray();
-            String script = String.Join(System.Environment.NewLine, toJoin);
 
             DataConnection.AquiereOpenConnection(con =>
             {
-                try
+                String[] beforeLock = crudRenderer.RenderAutoCommitZero();
+                ExecuteStatements(DataConnection, con, beforeLock);
+
+                String[] lockTable = crudRenderer.RenderLockTables(locktables, lockAsWrite);
+                ExecuteStatements(DataConnection, con, lockTable);
+
+                //Ensure Hist has not changed
+                SchemaInfo schemaDuringInsert = schemaManager.GetCurrentSchema(con);
+                TableSchema histDuringInsert = schemaDuringInsert.Schema.FindHistTable(changingTable);
+                TableSchema histBeforeInsert = expectedSchema.Schema.FindHistTable(changingTable);
+                if(histDuringInsert.Name != histBeforeInsert.Name)
                 {
-                    DataConnection.ExecuteSQLScript(script, con);
+                    throw new InvalidOperationException("Hist during Insert is not Hist during before lock, expected: " + histBeforeInsert.Name + " got: " + histDuringInsert.Name);
                 }
-                catch (Exception e)
+
+                //Ensure Can be queried
+                Boolean canBeQueried =  metaManager.GetCanBeQueriedFor(changingTable,con);
+                if(!canBeQueried)
                 {
-                    String[] rollbackAndUnlock = crudRenderer.RenderRollBackAndUnlock();
-                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[0],con);
-                    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[1],con);
-                    throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
+                    throw new InvalidOperationException("Table cannot be queried currently as SMO is in effect");
                 }
+                String[] insertStatements = RenderStatements();
+                ExecuteStatements(DataConnection, con, insertStatements);
 
-                //String[] lockTableStatements = crudRenderer.RenderLockTables(locktables);
-                //try
-                //{
-                //    foreach (var setupSql in lockTableStatements)
-                //        DataConnection.ExecuteNonQuerySQL(setupSql, con);
-                //}
-                //catch (Exception e)
-                //{
-                //    throw new InvalidOperationException("Could not aquire locks for:" + String.Join(",", locktables), e);
-                //}
-
-                //try
-                //{
-                //    String[] statements = RenderStatements();
-                //    String[] success = crudRenderer.RenderCommitAndUnlock();
-                //    foreach (var stmt in statements)
-                //        DataConnection.ExecuteSQLScript(stmt, con);
-                //    DataConnection.ExecuteNonQuerySQL(success[0], con);
-                //    DataConnection.ExecuteNonQuerySQL(success[1], con);
-
-                //}
-                //catch (Exception e)
-                //{
-                //    String[] rollbackAndUnlock = crudRenderer.RenderRollBackAndUnlock();
-                //    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[0]);
-                //    DataConnection.ExecuteNonQuerySQL(rollbackAndUnlock[1]);
-                //    throw new InvalidOperationException("Got exception after Table Locks, rolled back and unlocked", e);
-                //}
-
+                String[] commitUnlock = crudRenderer.RenderCommitAndUnlock();
+                ExecuteStatements(DataConnection, con, commitUnlock);
             });
+        }
+
+        private static void ExecuteStatements(DataConnection DataConnection, System.Data.Common.DbConnection con, string[] beforeLock)
+        {
+            foreach (var stmt in beforeLock)
+                DataConnection.ExecuteNonQuerySQL(stmt, con);
         }
     }
 }
