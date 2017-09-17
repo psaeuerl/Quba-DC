@@ -145,7 +145,7 @@ namespace QubaDC.Integrated.CRUD
                    updateOperation.Table.TableSchema+"."+updateOperation.Table.TableName,
                    GlobalUpdateTImeManager.GetTableName()
                 };
-            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, this.DataConnection, this.CRUDRenderer);
+            //IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, this.DataConnection, this.CRUDRenderer,);
         }
     }
 }

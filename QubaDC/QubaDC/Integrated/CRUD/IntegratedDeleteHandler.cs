@@ -57,7 +57,7 @@ namespace QubaDC.Integrated.CRUD
                            deleteOperation.Table.TableSchema+"."+deleteOperation.Table.TableName,
                            timeManager.GetTableName()
             };
-                IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStatement, lockTables, this.DataConnection, this.CRUDRenderer);
+                //IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStatement, lockTables, this.DataConnection, this.CRUDRenderer);
 
         }
     }
