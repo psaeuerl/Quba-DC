@@ -102,9 +102,10 @@ namespace QubaDC
             return result;
         }
 
-        internal override string[] RenderLockTables(string[] locktables)
+        internal override string[] RenderLockTables(string[] locktables,Boolean[] lockAsWrite)
         {
-            String[] tablesWithWrite = locktables.Select(x => x + " WRITE").ToArray();
+            var lockWithWrite = locktables.Zip(lockAsWrite,(s,b) =>  new { table = s, write = b });
+            String[] tablesWithWrite = lockWithWrite.Select(x => { return x.table + (x.write ? " WRITE" : " READ"); }).ToArray();
             String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
             String[] setupAndAquireLock = new String[] {               
                 lockTables
