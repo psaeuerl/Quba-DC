@@ -18,7 +18,7 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedDropColumnHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableMetadataManager mm)
+        public IntegratedDropColumnHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer, TableMetadataManager mm)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
@@ -69,7 +69,7 @@ namespace QubaDC.Separated.SMO
                 Guard.StateTrue(copiedHistSchema.ColumnDefinitions.Count() + 1 == originalHistTable.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
                 Table metaTable = this.MetaManager.GetMetaTableFor(copiedTableSchema);
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
-                currentSchema.AddTable(copiedTableSchema, copiedHistSchema,metaTable);
+                currentSchema.AddTable(copiedTableSchema, copiedHistSchema, metaTable);
 
                 String dropOriginalHistTable = SMORenderer.RenderDropTable(originalHistTable.Schema, originalHistTable.Name);
                 //con.ExecuteNonQuerySQL(dropOriginalHistTable);
@@ -83,8 +83,8 @@ namespace QubaDC.Separated.SMO
                 });
                 //con.ExecuteNonQuerySQL(renameTableSQL);
 
-                String copyBaseTable =  CopyTable(originalHistTable, copiedTableSchema, false);
-                String copyHistTable = CopyTable( copiedTableSchema, copiedHistSchema, false);
+                String copyBaseTable = CopyTable(originalHistTable, copiedTableSchema, false);
+                String copyHistTable = CopyTable(copiedTableSchema, copiedHistSchema, false);
 
 
                 //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
@@ -127,7 +127,9 @@ namespace QubaDC.Separated.SMO
                 return new UpdateSchema()
                 {
                     newSchema = currentSchema,
-                    UpdateStatements = Statements
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { originalTable.ToTable() },
+                    TablesToUnlock = new Table[] { originalTable.ToTable() }
                 };
             };
 
@@ -145,7 +147,7 @@ namespace QubaDC.Separated.SMO
         }
 
 
-        private String CopyTable( TableSchema originalTable, TableSchema copiedTableSchema, Boolean includeold)
+        private String CopyTable(TableSchema originalTable, TableSchema copiedTableSchema, Boolean includeold)
         {
             SelectOperation s = new SelectOperation()
             {
@@ -156,7 +158,7 @@ namespace QubaDC.Separated.SMO
                     RHS = new LiteralOperand() { Literal = "2" }
                 },
                 Columns = copiedTableSchema.Columns.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
-                FromTable = new FromTable() { TableAlias = "t1", TableName = originalTable.Name + (includeold ? "_old": ""), TableSchema = originalTable.Schema }
+                FromTable = new FromTable() { TableAlias = "t1", TableName = originalTable.Name + (includeold ? "_old" : ""), TableSchema = originalTable.Schema }
             };
             String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
 

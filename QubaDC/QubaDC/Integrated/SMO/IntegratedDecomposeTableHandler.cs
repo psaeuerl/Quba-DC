@@ -108,6 +108,7 @@ namespace QubaDC.Integrated.SMO
 
 
                 String dropOriginalHistTable = SMORenderer.RenderDropTable(originalHistTable.Schema, originalHistTable.Name);
+                String dropOriginalMetaTable = SMORenderer.RenderDropTable(originalTable.MetaTableSchema, originalTable.MetaTableName);
 
                 String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
                 {
@@ -135,20 +136,21 @@ namespace QubaDC.Integrated.SMO
                     insertTrueFromTable,
                     insertFromSecondTable,
                     dropOriginalHistTable,
+                    dropOriginalMetaTable,
                     renameTableSQL,
                     createFirstMetaTable,
                     createSecondMetaTable,
                     insertMetadataFirstTable,
                     insertMetadataSecondTable
-
-
                 }).ToArray();
                 
 
                 return new UpdateSchema()
                 {
                     newSchema = currentSchema,
-                    UpdateStatements = Statements
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { originalTable.ToTable() },
+                    TablesToUnlock = new Table[] { }
                 };
             };
 
@@ -160,7 +162,7 @@ namespace QubaDC.Integrated.SMO
                  partitionTable,
                  f,
                  (s) => System.Diagnostics.Debug.WriteLine(s)
-                 , MetaManager);
+                 ,this.MetaManager);
 
         }
 

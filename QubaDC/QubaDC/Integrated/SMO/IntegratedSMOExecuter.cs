@@ -107,9 +107,6 @@ namespace QubaDC.Integrated.SMO
                 if (setCanBeQueriedTrue.Length > 0)
                 {
                     ExecuteStatements(DataConnection, con, setCanBeQueriedTrue, logStatements);
-                } else if(op.GetType() != typeof(CreateTable))
-                {
-                    throw new InvalidOperationException("Only create table needs no unlock");
                 }
 
 

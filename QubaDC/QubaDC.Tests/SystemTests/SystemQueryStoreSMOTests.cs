@@ -528,6 +528,9 @@ namespace QubaDC.Tests.Separated
 
             var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
+
+            SelectOperation sNew = SelectOperation.FromCreateTable(t);
+            var sNewResult = QBDC.QueryStore.ExecuteSelect(sNew);
             this.Succcess = true;
         }
 
@@ -673,6 +676,9 @@ namespace QubaDC.Tests.Separated
 
             var r3 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, r3);
+
+            var tables =  QBDC.DataConnection.GetAllTables().Select(x => x.Name).ToArray();
+            Assert.False(tables.Contains("basictable_metadata"));
             this.Succcess = true;
         }
 
