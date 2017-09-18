@@ -462,7 +462,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void DropColumnWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);

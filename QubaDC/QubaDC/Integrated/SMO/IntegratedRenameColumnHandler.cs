@@ -43,8 +43,10 @@ namespace QubaDC.Separated.SMO
 
             Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
-                Schema currentSchema = currentSchemaInfo.Schema;
 
+                String updateTime = this.SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
+
+                Schema currentSchema = currentSchemaInfo.Schema;
 
                 TableSchemaWithHistTable originalTable = currentSchemaInfo.Schema.FindTable(renameColumn.Schema, renameColumn.TableName);
                 TableSchema originalHistTable = currentSchemaInfo.Schema.FindHistTable(originalTable.Table.ToTable());
@@ -102,7 +104,7 @@ namespace QubaDC.Separated.SMO
                 {
                     Columns = originalTable.Table.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
                     LiteralColumns = new LiteralColumn[] {
-                        new LiteralColumn() { ColumnLiteral = "NOW(3)", ColumnName = IntegratedConstants.StartTS },
+                        new LiteralColumn() { ColumnLiteral = updateTime, ColumnName = IntegratedConstants.StartTS },
                         new LiteralColumn() { ColumnLiteral = "NULL", ColumnName = IntegratedConstants.EndTS }},
                     FromTable = new FromTable() { TableAlias = "t1", TableName = originalHistTable.Name, TableSchema = originalTable.Table.Schema }
                 };
@@ -115,11 +117,8 @@ namespace QubaDC.Separated.SMO
                     Schema = copiedTableSchema.Schema
                 };
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(isnertWithStartts, select);
-    //            con.ExecuteNonQuerySQL(insertFromTable, c);
+                String updateLastUpdate = this.MetaManager.GetSetLastUpdateStatement(new Table() { TableName = renameColumn.TableName, TableSchema = renameColumn.Schema }, updateTime);
 
-                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, renameColumn);
-                //con.ExecuteNonQuerySQL(updateSchema, c);
-                //this.schemaManager.StoreSchema(currentSchema, renameColumn, con, c);
 
 
                 String[] Statements = new String[]
@@ -131,9 +130,7 @@ namespace QubaDC.Separated.SMO
                     renameColumnSQL,
                     renameColumnSQLHist,
                     insertFromTable,
-                    //createHistTable,
-                    //createMetaTable,
-                    //baseInsert
+                    updateLastUpdate
                 };
 
                 return new UpdateSchema()

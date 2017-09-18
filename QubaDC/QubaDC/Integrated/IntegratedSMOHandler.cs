@@ -103,7 +103,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(DropColumn dropColumn)
         {
-            var h = new IntegratedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(dropColumn);
         }
 
