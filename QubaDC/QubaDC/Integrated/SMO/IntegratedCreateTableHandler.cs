@@ -21,12 +21,12 @@ namespace QubaDC.Integrated.SMO
             this.con = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
-            this.TimeManager = timeManager;
+            this.MetaManager = timeManager;
         }
 
         public DataConnection con { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
-        public TableMetadataManager TimeManager { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
 
         internal void Handle(CreateTable createTable)
         {
@@ -42,14 +42,14 @@ namespace QubaDC.Integrated.SMO
 
                 CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
                 String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
-                String createMetaTable = TimeManager.GetCreateMetaTableFor(newCt.Schema, newCt.TableName);
-                Table metaTable = TimeManager.GetMetaTableFor(newCt.Schema, newCt.TableName);
+                String createMetaTable = MetaManager.GetCreateMetaTableFor(newCt.Schema, newCt.TableName);
+                Table metaTable = MetaManager.GetMetaTableFor(newCt.Schema, newCt.TableName);
                 //Manage Schema Statement
                 currentSchemaInfo.Schema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
                 //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
 
 
-                String baseInsert = TimeManager.GetStartInsertFor(newCt.Schema, newCt.TableName); ;
+                String baseInsert = MetaManager.GetStartInsertFor(newCt.Schema, newCt.TableName); ;
 
                 String[] Statements = new String[]
                 {
@@ -62,7 +62,9 @@ namespace QubaDC.Integrated.SMO
                 return new UpdateSchema()
                 {
                     newSchema = currentSchemaInfo.Schema,
-                    UpdateStatements = Statements
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { },
+                    TablesToUnlock = new Table[] { }
                 };
             };
 
@@ -73,7 +75,8 @@ namespace QubaDC.Integrated.SMO
                  this.schemaManager,
                  createTable,
                  f,
-                 (s) =>  System.Diagnostics.Debug.WriteLine(s));
+                 (s) =>  System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
         }
 
 
