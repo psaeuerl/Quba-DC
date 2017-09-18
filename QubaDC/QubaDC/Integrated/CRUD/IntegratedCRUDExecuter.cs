@@ -14,7 +14,7 @@ namespace QubaDC.Integrated.CRUD
         {
             ;
         }
-        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables,Boolean[]lockAsWrite, DataConnection DataConnection, CRUDRenderer crudRenderer, SchemaManager schemaManager, SchemaInfo expectedSchema, Table changingTable, TableLastUpdateManager metaManager,
+        public static void ExecuteStatementsOnLockedTables(Func<String[]> RenderStatements, String[] locktables,Boolean[]lockAsWrite, DataConnection DataConnection, CRUDRenderer crudRenderer, SchemaManager schemaManager, SchemaInfo expectedSchema, Table changingTable, TableMetadataManager metaManager,
             Action<String> logStatements
         )
         {

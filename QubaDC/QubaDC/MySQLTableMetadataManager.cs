@@ -9,7 +9,7 @@ using QubaDC.CRUD;
 
 namespace QubaDC
 {
-    public class MySQLTableMetadataManager : TableLastUpdateManager
+    public class MySQLTableMetadataManager : TableMetadataManager
     {
         private MySQLDataConnection Connection { get; set; }
 

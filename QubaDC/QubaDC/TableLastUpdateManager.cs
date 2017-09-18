@@ -8,7 +8,7 @@ using QubaDC.CRUD;
 
 namespace QubaDC
 {
-    public abstract class TableLastUpdateManager
+    public abstract class TableMetadataManager
     {
         public abstract String GetCreateUpdateTimeTableStatement();
         public abstract TableLastUpdate GetLatestUpdate();

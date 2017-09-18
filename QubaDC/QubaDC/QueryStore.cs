@@ -31,7 +31,7 @@ namespace QubaDC
 
         public SchemaManager SchemaManager { get; set; }
 
-        public TableLastUpdateManager TimeManager { get; set; }
+        public TableMetadataManager TimeManager { get; set; }
         public CRUDVisitor CRUDHandler { get; internal set; }
 
         public QueryStore(DataConnection dataConnection,QueryStoreSelectHandler handler)

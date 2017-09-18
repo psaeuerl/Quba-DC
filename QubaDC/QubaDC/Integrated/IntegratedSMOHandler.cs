@@ -79,7 +79,7 @@ namespace QubaDC.Integrated
         //}
         internal override void Visit(RenameTable renameTable)
         {
-            var h = new IntegratedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(renameTable);
         }
 
@@ -97,7 +97,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(CreateTable createTable)
         {
-            IntegratedCreateTableHandler h = new IntegratedCreateTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.GlobalUpdateTimeManager);
+            IntegratedCreateTableHandler h = new IntegratedCreateTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(createTable);
         }
 
@@ -139,7 +139,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(AddColum addColum)
         {
-            IntegratedAddColumnHandler h = new IntegratedAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.GlobalUpdateTimeManager);
+            IntegratedAddColumnHandler h = new IntegratedAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(addColum);
         }
     }

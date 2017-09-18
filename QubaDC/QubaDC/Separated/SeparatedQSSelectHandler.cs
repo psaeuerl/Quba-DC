@@ -12,7 +12,7 @@ namespace QubaDC.Separated
 {
     public class SeparatedQSSelectHandler : QueryStoreSelectHandler
     {
-        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, TableLastUpdateManager timemanager, CRUDVisitor cRUDHandler,QueryStore qs)
+        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager manager, DataConnection con, TableMetadataManager timemanager, CRUDVisitor cRUDHandler,QueryStore qs)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.

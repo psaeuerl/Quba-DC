@@ -51,7 +51,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void RenameTableWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);

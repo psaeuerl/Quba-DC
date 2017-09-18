@@ -8,6 +8,8 @@ using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
 using QubaDC.CRUD;
+using QubaDC.Integrated.SMO;
+using QubaDC.Integrated;
 
 namespace QubaDC.Separated.SMO
 {
@@ -15,14 +17,16 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedRenameTableHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer)
+        public IntegratedRenameTableHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer, TableMetadataManager metaManager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = metaManager;
         }
 
         public DataConnection DataConnection { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
 
         internal void Handle(RenameTable renameTable)
@@ -33,33 +37,57 @@ namespace QubaDC.Separated.SMO
             //b.) Schemamanager => Add that new table points to old table
             //c.) Triggers can stay
 
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+            //var con = (MySQLDataConnection)DataConnection;
+            //con.DoTransaction((transaction, c) =>
+            //{
+
+
+
+
+            //    //Renameing Table
+            //    con.ExecuteQuery(renameTableSQL, c);
+
+            //    this.schemaManager.StoreSchema(x, renameTable, con, c);
+
+            //    transaction.Commit();
+
+            //});
+
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
-
-
-
                 String renameTableSQL = SMORenderer.RenderRenameTable(renameTable);
 
                 //Change Shchema    
                 //take old table, remove it, add it with new names
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema();
-                Schema x = xy.Schema;
+                SchemaInfo xy = currentSchemaInfo;
+                Schema updatedSchema = xy.Schema;
                 Table oldTable = new Table() { TableSchema = renameTable.OldSchema, TableName = renameTable.OldTableName };
-                TableSchemaWithHistTable table = x.FindTable(oldTable);
-                TableSchema tableHist = x.FindHistTable(oldTable);
-                var actualTable = x.FindTable(oldTable);
+                TableSchemaWithHistTable table = updatedSchema.FindTable(oldTable);
+                TableSchema tableHist = updatedSchema.FindHistTable(oldTable);
+                var actualTable = updatedSchema.FindTable(oldTable);
                 actualTable.Table.Name = renameTable.NewTableName;
                 actualTable.Table.Schema = renameTable.NewSchema;
 
-                //Renameing Table
-                con.ExecuteQuery(renameTableSQL, c);
+                String[] Statements = new String[]
+                {
+                    renameTableSQL
+                };
 
-                this.schemaManager.StoreSchema(x, renameTable, con, c);
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchemaInfo.Schema,
+                    UpdateStatements = Statements
+                };
+            };
 
-                transaction.Commit();
 
-            });
+            IntegratedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.DataConnection,
+                 this.schemaManager,
+                 renameTable,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s));
         }
 
     }

@@ -14,7 +14,7 @@ namespace QubaDC
 
         public SMORenderer SMORenderer { get; internal set; }
 
-        public TableLastUpdateManager GlobalUpdateTimeManager { get; internal set; }
+        public TableMetadataManager MetaManager { get; internal set; }
 
         internal abstract void Visit(AddColum addColum);
         internal abstract void Visit(MergeTable mergeTable);
