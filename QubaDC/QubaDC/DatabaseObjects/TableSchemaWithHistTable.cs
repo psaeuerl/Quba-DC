@@ -16,5 +16,11 @@ namespace QubaDC.DatabaseObjects
         {
             return this.Table.Name == t.TableName && this.Table.Schema == t.TableSchema;
         }
+
+
+        internal Table ToTable()
+        {
+            return Table.ToTable();
+        }
     }
 }
