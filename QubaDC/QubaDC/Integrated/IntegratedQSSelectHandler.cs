@@ -251,14 +251,14 @@ namespace QubaDC.Integrated
 
             //What to do here:
             //0.) Get last updated Timestamp
-            var lastGlobalUpdate = timeManager.GetLatestUpdate();
-            var queryTime = lastGlobalUpdate.DateTime;
+            var lastGlobalUpdate = timeManager.GetLatestUpdate(s.GetAllSelectedTables().Select(x=> new Table() { TableName = x.TableName, TableSchema = x.TableSchema }).ToArray());
+            var queryTime = lastGlobalUpdate;
 
             //a.) copy the operation
             var newOperation = JsonSerializer.CopyItem(s);
             //b.) change all tables to the respective history ones + build restrictions for it
             List<Restriction> TimeStampRestrictions = new List<Restriction>();
-            SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(lastGlobalUpdate.DateTime);
+            SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(queryTime);
             Dictionary<String, Guid?> table_to_ids = new Dictionary<String, Guid?>();
 
             foreach (var selectedTable in newOperation.GetAllSelectedTables())

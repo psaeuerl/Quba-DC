@@ -51,7 +51,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void ReexecutingAfterInsertWorks()
         {
-            throw new NotImplementedException("Needs review");
+
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -91,7 +91,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void ReexecutingAfterDeleteWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -127,7 +126,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void ReexecutingAfterUpdateWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
