@@ -91,7 +91,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(DropTable dropTable)
         {
-            var h = new IntegratedDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(dropTable);
         }
 

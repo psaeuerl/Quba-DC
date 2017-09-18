@@ -110,7 +110,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void DropTableWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -151,6 +150,11 @@ namespace QubaDC.Tests.Separated
             Assert.False(newSchemaInfo.Schema.ContainsTable(dt.Schema, dt.TableName));
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+
+            var tables = QBDC.DataConnection.GetAllTables().Select(x => x.Name).ToArray();
+            Assert.False(tables.Contains("basictable_metadata"));
+
+
             this.Succcess = true;
         }
 
@@ -529,8 +533,6 @@ namespace QubaDC.Tests.Separated
             var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
 
-            SelectOperation sNew = SelectOperation.FromCreateTable(t);
-            var sNewResult = QBDC.QueryStore.ExecuteSelect(sNew);
             this.Succcess = true;
         }
 
@@ -602,6 +604,9 @@ namespace QubaDC.Tests.Separated
 
             var reexecuteResult = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, reexecuteResult);
+
+            SelectOperation sNew = SelectOperation.FromCreateTable(t);
+            var sNewResult = QBDC.QueryStore.ExecuteSelect(sNew);
             this.Succcess = true;
         }
 

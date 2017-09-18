@@ -8,6 +8,7 @@ using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
 using QubaDC.CRUD;
+using QubaDC.Integrated.SMO;
 
 namespace QubaDC.Separated.SMO
 {
@@ -15,14 +16,16 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedDropTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public IntegratedDropTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableMetadataManager MetaManager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = MetaManager;
         }
 
         public DataConnection DataConnection { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
 
         internal void Handle(DropTable dropTable)
@@ -31,17 +34,18 @@ namespace QubaDC.Separated.SMO
             //a.) Drop Table
             //b.) Schemamanager => RemoveTable            
 
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+
+
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemainfo) =>
             {
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
 
 
-                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(dropTable.Schema, dropTable.TableName);
-                TableSchema originalHistTable = xy.Schema.FindHistTable(originalTable.Table.ToTable());
+
+
+                TableSchemaWithHistTable originalTable = currentSchemainfo.Schema.FindTable(dropTable.Schema, dropTable.TableName);
+                TableSchema originalHistTable = currentSchemainfo.Schema.FindHistTable(originalTable.Table.ToTable());
 
                 String dropOriginalHistTable = SMORenderer.RenderDropTable(originalHistTable.Schema, originalHistTable.Name);
-                con.ExecuteNonQuerySQL(dropOriginalHistTable);
 
                 String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
                 {
@@ -50,17 +54,39 @@ namespace QubaDC.Separated.SMO
                     OldSchema = originalTable.Table.Schema,
                     OldTableName = originalTable.Table.Name
                 });
-                con.ExecuteNonQuerySQL(renameTableSQL);
 
-                Schema x = xy.Schema;
+                String dropOriginalMetaTable = SMORenderer.RenderDropTable(originalTable.MetaTableSchema, originalTable.MetaTableName);
+
+                Schema x = currentSchemainfo.Schema;
                 Table oldTable = new Table() { TableSchema = dropTable.Schema, TableName = dropTable.TableName };
                 x.RemoveTable(oldTable);
 
-                //Storing Schema
-                this.schemaManager.StoreSchema(x, dropTable, con, c);
-                transaction.Commit();
+                String[] Statements = new String[]
+                {
+                    dropOriginalHistTable,
+                    renameTableSQL
+                    ,dropOriginalMetaTable
 
-            });
+                };
+
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchemainfo.Schema,
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { originalTable.ToTable() },
+                    TablesToUnlock = new Table[] { }
+                };
+            };
+
+
+            IntegratedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.DataConnection,
+                 this.schemaManager,
+                 dropTable,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
         }
 
     }
