@@ -79,7 +79,7 @@ namespace QubaDC.Separated.SMO
                      NewSchema = actualTable.MetaTableSchema,
                      NewTableName = actualTable.MetaTableName,
                       OldSchema = actualTable.MetaTableSchema,
-                       
+                        OldTableName = this.MetaManager.GetMetaTableFor(oldTable.TableSchema,oldTable.TableName).TableName
                 });
 
                 String[] Statements = new String[]
