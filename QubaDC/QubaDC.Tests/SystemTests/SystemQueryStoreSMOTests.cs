@@ -94,6 +94,15 @@ namespace QubaDC.Tests.Separated
             Assert.False(newSchemaInfo.Schema.ContainsTable(rt.OldSchema, rt.OldTableName));
             Assert.Throws<InvalidOperationException>(() => newSchemaInfo.Schema.FindTable(rt.OldSchema, rt.OldTableName));
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+            var tables = QBDC.DataConnection.GetAllTables().Select(x => x.Name).ToArray();
+            Assert.Contains(newSchemaInfo.Schema.Tables.First().MetaTableName, tables);
+            Assert.Contains("new_basic_table", tables);
+
+            SelectOperation sNew = SelectOperation.FromCreateTable(t);
+            sNew.FromTable.TableName = rt.NewTableName;
+            var sNewResult = QBDC.QueryStore.ExecuteSelect(sNew);
+
+            Assert.Equal("98dec3754faa19997a14b0b27308bb63", sNewResult.Hash);
             this.Succcess = true;
         }
 
