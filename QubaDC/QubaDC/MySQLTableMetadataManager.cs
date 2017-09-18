@@ -141,5 +141,21 @@ true);";
         {
             return _GetMetaTableFor(copiedTableSchema.ToTable());
         }
+
+        internal override string SetCanBeQueriedFalse(Table x)
+        {
+            Table t = _GetMetaTableFor(x);
+            String query = "UPDATE `{0}`.`{1}` SET canBeQueried = false;";
+            String resQuery = String.Format(query, t.TableSchema, t.TableName);
+            return resQuery;
+        }
+
+        internal override string SetCanBeQueriedTrue(Table x)
+        {
+            Table t = _GetMetaTableFor(x);
+            String query = "UPDATE `{0}`.`{1}` SET canBeQueried = true;";
+            String resQuery = String.Format(query, t.TableSchema, t.TableName);
+            return resQuery;
+        }
     }
 }

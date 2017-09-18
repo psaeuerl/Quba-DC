@@ -23,5 +23,7 @@ namespace QubaDC
         internal abstract bool GetCanBeQueriedFor(Table changingTable, DbConnection con);
         internal abstract string GetSetLastUpdateStatement(Table insertTable, string v);
         internal abstract Table GetMetaTableFor(TableSchema copiedTableSchema);
+        internal abstract string SetCanBeQueriedFalse(Table x);
+        internal abstract string SetCanBeQueriedTrue(Table x);
     }
 }
