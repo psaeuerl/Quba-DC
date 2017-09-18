@@ -109,7 +109,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(CopyTable copyTable)
         {
-            var h = new IntegratedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(copyTable);
         }
 
