@@ -120,7 +120,7 @@ namespace QubaDC.Separated.SMO
 
 
                 //Insert data from old to new                
-                String[] allColumns = originalTable.Table.Columns;
+                String[] allColumns = originalTable.Table.Columns;                                             
                 var StartEndTs = new String[] { updateTime, "NULL" };
                 var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, updateTime);
 
@@ -155,7 +155,8 @@ namespace QubaDC.Separated.SMO
                  this.schemaManager,
                  copyTable,
                  f,
-                 (s) => System.Diagnostics.Debug.WriteLine(s));
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 ,this.MetaManager);
 
         }
 

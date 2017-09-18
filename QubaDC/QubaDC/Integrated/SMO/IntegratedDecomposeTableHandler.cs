@@ -159,7 +159,8 @@ namespace QubaDC.Integrated.SMO
                  this.schemaManager,
                  partitionTable,
                  f,
-                 (s) => System.Diagnostics.Debug.WriteLine(s));
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
 
         }
 

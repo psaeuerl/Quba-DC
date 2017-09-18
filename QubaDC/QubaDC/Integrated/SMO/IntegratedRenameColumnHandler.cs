@@ -147,7 +147,8 @@ namespace QubaDC.Separated.SMO
                  this.schemaManager,
                  renameColumn,
                  f,
-                 (s) => System.Diagnostics.Debug.WriteLine(s));
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
 
         }
 
