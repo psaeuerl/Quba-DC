@@ -127,7 +127,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            var h = new IntegratedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(renameColumn);
         }
 

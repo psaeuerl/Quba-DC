@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 
 namespace QubaDC
 {
@@ -21,5 +22,6 @@ namespace QubaDC
         public abstract DateTime GetLatestUpdate(params Table[] tables);
         internal abstract bool GetCanBeQueriedFor(Table changingTable, DbConnection con);
         internal abstract string GetSetLastUpdateStatement(Table insertTable, string v);
+        internal abstract Table GetMetaTableFor(TableSchema copiedTableSchema);
     }
 }

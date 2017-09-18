@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 
 namespace QubaDC
 {
@@ -125,15 +126,20 @@ true);";
 
         internal override string GetSetLastUpdateStatement(Table insertTable, string v)
         {
-            Table t = GetMetaTableFor(insertTable);
+            Table t = _GetMetaTableFor(insertTable);
             String query = "UPDATE `{0}`.`{1}` SET lastUpdate = {2};";
             String resQuery = String.Format(query, t.TableSchema, t.TableName, v);
             return resQuery;
         }
 
-        private Table GetMetaTableFor(Table insertTable)
+        private Table _GetMetaTableFor(Table insertTable)
         {
             return GetMetaTableFor(insertTable.TableSchema, insertTable.TableName);
+        }
+
+        internal override Table GetMetaTableFor(TableSchema copiedTableSchema)
+        {
+            return _GetMetaTableFor(copiedTableSchema.ToTable());
         }
     }
 }
