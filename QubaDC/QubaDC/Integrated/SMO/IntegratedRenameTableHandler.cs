@@ -68,15 +68,33 @@ namespace QubaDC.Separated.SMO
                 actualTable.Table.Name = renameTable.NewTableName;
                 actualTable.Table.Schema = renameTable.NewSchema;
 
+                actualTable.MetaTableName = this.MetaManager.GetMetaTableFor(actualTable.Table).TableName;
+                actualTable.MetaTableSchema = actualTable.Table.Schema;
+
+                String updateTime = this.SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
+
+                String updateLastUpdate = this.MetaManager.GetSetLastUpdateStatement(actualTable.ToTable(), updateTime);
+                String renameUpdateTable = SMORenderer.RenderRenameTable(new RenameTable()
+                {
+                     NewSchema = actualTable.MetaTableSchema,
+                     NewTableName = actualTable.MetaTableName,
+                      OldSchema = actualTable.MetaTableSchema,
+                       
+                });
+
                 String[] Statements = new String[]
                 {
-                    renameTableSQL
+                    renameTableSQL,
+                    renameUpdateTable,
+                    updateLastUpdate
                 };
 
                 return new UpdateSchema()
                 {
                     newSchema = currentSchemaInfo.Schema,
-                    UpdateStatements = Statements
+                    UpdateStatements = Statements,
+                     MetaTablesToLock = new Table[] { oldTable },
+                      TablesToUnlock = new Table[] { actualTable.ToTable() }
                 };
             };
 
@@ -87,7 +105,9 @@ namespace QubaDC.Separated.SMO
                  this.schemaManager,
                  renameTable,
                  f,
-                 (s) => System.Diagnostics.Debug.WriteLine(s));
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager
+                 );
         }
 
     }
