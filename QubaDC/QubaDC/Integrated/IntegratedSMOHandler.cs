@@ -133,7 +133,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(MergeTable mergeTable)
         {
-            var h = new IntegratedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(mergeTable);
         }
 

@@ -301,7 +301,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void MergeTableWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -373,6 +372,10 @@ namespace QubaDC.Tests.Separated
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+
+            var tables = QBDC.DataConnection.GetAllTables().Select(x => x.Name).ToArray();
+            Assert.False(tables.Contains(t.TableName + "_metadata"));
+            Assert.False(tables.Contains(t2.TableName + "_metadata"));
 
             this.Succcess = true;
         }
