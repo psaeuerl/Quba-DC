@@ -228,7 +228,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void PartitionTableWorks()
         {
-            throw new NotImplementedException("Needs review");
             //Create Basic Table
             QBDC.Init();
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
@@ -294,6 +293,8 @@ namespace QubaDC.Tests.Separated
 
             var result2 = QBDC.QueryStore.ReExecuteSelect(result.GUID);
             QueryStoreAsserts.ReexcuteIsCorrect(result, result2);
+            var tables = QBDC.DataConnection.GetAllTables().Select(x => x.Name).ToArray();
+            Assert.False(tables.Contains("basictable_metadata"));
             this.Succcess = true;
         }
 
@@ -747,7 +748,6 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void RenamingOneColumnToAnotherAndBackWorks()
         {
-            throw new NotImplementedException("Needs review");
             //TODO:
             //Create Table x(a,b)
             //Drop column b
@@ -812,7 +812,7 @@ namespace QubaDC.Tests.Separated
         [Fact]
         public void CreateTableOfDroppedOneWorks()
         {
-            throw new NotImplementedException("Needs review");
+
             //TODO:
             //Create Table a
             //Drop Table a

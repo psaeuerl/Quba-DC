@@ -85,7 +85,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(PartitionTable partitionTable)
         {
-            var h = new IntegratedPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(partitionTable);
         }
 

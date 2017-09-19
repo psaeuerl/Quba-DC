@@ -8,6 +8,7 @@ using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
 using QubaDC.Restrictions;
+using QubaDC.CRUD;
 
 namespace QubaDC.Integrated.SMO
 {
@@ -15,15 +16,17 @@ namespace QubaDC.Integrated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedPartitionTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public IntegratedPartitionTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableMetadataManager manager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = manager;
         }
 
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
 
         internal void Handle(PartitionTable partitionTable)
         {
@@ -34,16 +37,14 @@ namespace QubaDC.Integrated.SMO
             //d.) Recreate Trigger on the table with correct hist table
             //e.) Copy Data
 
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
+                String updateTime = this.SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
+                Schema currentSchema = currentSchemaInfo.Schema;
 
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-                Schema currentSchema = xy.Schema;
-
-
-                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(partitionTable.BaseSchema, partitionTable.BaseTableName);
-                TableSchema originalHistTable = xy.Schema.FindHistTable(originalTable.Table.ToTable());
+                TableSchemaWithHistTable originalTable = currentSchemaInfo.Schema.FindTable(partitionTable.BaseSchema, partitionTable.BaseTableName);
+                TableSchema originalHistTable = currentSchemaInfo.Schema.FindHistTable(originalTable.Table.ToTable());
 
                 var trueTableSchema = new TableSchema()
                 {
@@ -56,12 +57,13 @@ namespace QubaDC.Integrated.SMO
                 var trueTableHist = new TableSchema()
                 {
                     Columns = originalHistTable.Columns,
-                    Name = partitionTable.TrueConditionTableName + "_" + xy.ID,
+                    Name = partitionTable.TrueConditionTableName + "_" + currentSchemaInfo.ID,
                     Schema = partitionTable.TrueConditionSchema,
                     ColumnDefinitions = originalHistTable.ColumnDefinitions
 
                 };
-                currentSchema.AddTable(trueTableSchema, trueTableHist);
+                Table firstTableMeta = this.MetaManager.GetMetaTableFor(trueTableSchema);
+                currentSchema.AddTable(trueTableSchema, trueTableHist,firstTableMeta);
 
                 var falseTableSchema = new TableSchema()
                 {
@@ -74,72 +76,106 @@ namespace QubaDC.Integrated.SMO
                 var falseTableSchemaHist = new TableSchema()
                 {
                     Columns = originalHistTable.Columns,
-                    Name = partitionTable.FalseConditionTableName + "_" + xy.ID,
+                    Name = partitionTable.FalseConditionTableName + "_" + currentSchemaInfo.ID,
                     Schema = partitionTable.FalseConditionSchema,
                     ColumnDefinitions = originalHistTable.ColumnDefinitions
 
                 };
-                currentSchema.AddTable(falseTableSchema, falseTableSchemaHist);
+                Table secondTableMeta = this.MetaManager.GetMetaTableFor(falseTableSchema);
+                currentSchema.AddTable(falseTableSchema, falseTableSchemaHist, secondTableMeta);
 
                 ////Copy Tables without Triggers
                 String copyTrueTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, trueTableSchema.Schema, trueTableSchema.Name);
-                con.ExecuteNonQuerySQL(copyTrueTable, c);
 
                 //Copy Hist Table without Triggers
                 String copyTrueHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, trueTableHist.Schema, trueTableHist.Name);
-                con.ExecuteNonQuerySQL(copyTrueHistTableSQL, c);
 
 
                 String copyFalseTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, falseTableSchema.Schema, falseTableSchema.Name);
-                con.ExecuteNonQuerySQL(copyFalseTable, c);
 
                 //Copy Hist Table without Triggers
                 String copyFalseHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, falseTableSchemaHist.Schema, falseTableSchemaHist.Name);
-                con.ExecuteNonQuerySQL(copyFalseHistTableSQL, c);
 
 
-                String setNow = SMORenderer.CRUDRenderer.RenderNowToVariable("ct");
+                String nowVariable = SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
                 String[] allColumns = originalTable.Table.Columns;
-                var StartEndTs = new String[] { SMORenderer.CRUDRenderer.GetSQLVariable("ct"), "NULL" };
+                var StartEndTs = new String[] { nowVariable, "NULL" };
 
 
-                var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, "NOW(3)");
+                var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, nowVariable /* or NOW(3)?*/);
                 //Insert data from old to true
                 Restriction trueRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "TRUE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
                 Restriction trueRestAll = new AndRestriction() { Restrictions = new Restriction[] { Restriction, trueRestriction } };
                 String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, trueTableSchema, trueRestAll, allColumns, null, StartEndTs);
-                
+
 
                 //Insert data from old to false
                 Restriction falseRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "FALSE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
                 Restriction falseRestAll = new AndRestriction() { Restrictions = new Restriction[] { Restriction, falseRestriction } };
                 String insertFalseFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, falseTableSchema, falseRestAll, allColumns, null, StartEndTs);
 
-                String inserts = new string[]
-                {
-                    setNow, insertTrueFromTable,insertFalseFromTable
-                }.AsScript();
-
-                con.ExecuteSQLScript(inserts, c);
 
 
-                DropHistTableRenameCurrentToHist(con, originalTable);
-                
+
+               String[] dropOriginalHist =  DropHistTableRenameCurrentToHist( originalTable);
+
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
+                String dropOriginalMetaTable = SMORenderer.RenderDropTable(originalTable.MetaTableSchema, originalTable.MetaTableName);
 
-                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, partitionTable);
-                //con.ExecuteNonQuerySQL(updateSchema, c);
-                this.schemaManager.StoreSchema(currentSchema, partitionTable, con, c);
-                transaction.Commit();
-            });
-        
+             
+                
+
+                //con.ExecuteNonQuerySQL(insertFromTable);
+                // String updateLastUpdate = this.MetaManager.GetSetLastUpdateStatement(new Table() { TableName = addColumn.TableName, TableSchema = addColumn.Schema }, updateTime);
+
+                String createFirstMetaTable = this.MetaManager.GetCreateMetaTableFor(trueTableSchema.Schema, trueTableSchema.Name);
+                String createSecondMetaTable = this.MetaManager.GetCreateMetaTableFor(falseTableSchema.Schema, falseTableSchema.Name);
+
+                String insertMetadataFirstTable = this.MetaManager.GetStartInsertFor(trueTableSchema.Schema, trueTableSchema.Name);
+                String insertMetadataSecondTable = this.MetaManager.GetStartInsertFor(falseTableSchema.Schema, falseTableSchema.Name);
+
+                String[] Statements = new String[]
+                {
+                    copyTrueTable,
+                    copyTrueHistTableSQL,
+                    copyFalseTable,
+                    copyFalseHistTableSQL,
+                    insertTrueFromTable,
+                    insertFalseFromTable,
+                    dropOriginalMetaTable,
+                    createFirstMetaTable,
+                    insertMetadataFirstTable,
+                    createSecondMetaTable,
+                    insertMetadataSecondTable
+                }
+                .Concat(dropOriginalHist)
+                .ToArray();
+
+
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchema,
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { originalTable.ToTable() },
+                    TablesToUnlock = new Table[] { }
+                };
+            };
+
+
+            IntegratedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.DataConnection,
+                 this.schemaManager,
+                 partitionTable,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , this.MetaManager);
 
         }
 
-        private void DropHistTableRenameCurrentToHist(MySQLDataConnection con, TableSchemaWithHistTable firstTable)
+        private String[] DropHistTableRenameCurrentToHist(TableSchemaWithHistTable firstTable)
         {
-            String dropOriginalHistTable = SMORenderer.RenderDropTable(firstTable.HistTableSchema, firstTable.HistTableName);
-            con.ExecuteNonQuerySQL(dropOriginalHistTable);
+            String dropOriginalHistTable = SMORenderer.RenderDropTable(firstTable.HistTableSchema, firstTable.HistTableName);         
             String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
             {
                 NewSchema = firstTable.HistTableSchema,
@@ -147,7 +183,11 @@ namespace QubaDC.Integrated.SMO
                 OldSchema = firstTable.Table.Schema,
                 OldTableName = firstTable.Table.Name
             });
-            con.ExecuteNonQuerySQL(renameTableSQL);
+            return new String[]
+            {
+                 dropOriginalHistTable,
+                  renameTableSQL
+            };
         }
 
         private void CreateTriggers(System.Data.Common.DbConnection c, MySQLDataConnection con, Schema currentSchema, TableSchema trueTableSchema, TableSchema trueTableHist)
