@@ -121,7 +121,7 @@ namespace QubaDC.Integrated
 
         internal override void Visit(JoinTable joinTable)
         {
-            var h = new IntegratedJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            var h = new IntegratedJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(joinTable);
         }
 

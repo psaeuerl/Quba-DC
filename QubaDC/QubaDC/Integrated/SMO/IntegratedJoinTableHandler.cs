@@ -10,6 +10,7 @@ using QubaDC.Utility;
 using QubaDC.CRUD;
 using QubaDC.Restrictions;
 using QubaDC.Integrated;
+using QubaDC.Integrated.SMO;
 
 namespace QubaDC.Separated.SMO
 {
@@ -17,15 +18,17 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public IntegratedJoinTableHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer)
+        public IntegratedJoinTableHandler(DataConnection c, SchemaManager schemaManager, SMORenderer renderer, TableMetadataManager metaManager)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = metaManager;
         }
 
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
 
         internal void Handle(JoinTable jointable)
         {
@@ -37,19 +40,16 @@ namespace QubaDC.Separated.SMO
             //d.) Recreate Trigger on the table with correct hist table
             //e.) Copy Data twice!
 
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
+                String updateTime = this.SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
+                Schema currentSchema = currentSchemaInfo.Schema;
 
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-                Schema currentSchema = xy.Schema;
+                TableSchemaWithHistTable firstTable = currentSchemaInfo.Schema.FindTable(jointable.FirstSchema, jointable.FirstTableName);
+                TableSchema firstHistTable = currentSchemaInfo.Schema.FindHistTable(firstTable.Table.ToTable());
 
-
-                TableSchemaWithHistTable firstTable = xy.Schema.FindTable(jointable.FirstSchema, jointable.FirstTableName);
-                TableSchema firstHistTable = xy.Schema.FindHistTable(firstTable.Table.ToTable());
-
-                TableSchemaWithHistTable secondTable = xy.Schema.FindTable(jointable.FirstSchema, jointable.SecondTableName);
-                TableSchema secondHistTable = xy.Schema.FindHistTable(secondTable.Table.ToTable());
+                TableSchemaWithHistTable secondTable = currentSchemaInfo.Schema.FindTable(jointable.FirstSchema, jointable.SecondTableName);
+                TableSchema secondHistTable = currentSchemaInfo.Schema.FindHistTable(secondTable.Table.ToTable());
 
 
                 var joinedTableSchema = new TableSchema()
@@ -62,23 +62,25 @@ namespace QubaDC.Separated.SMO
                 var joinedTableHistSchema = new TableSchema()
                 {
                     Columns = firstTable.Table.Columns.Union(secondHistTable.Columns).Distinct().ToArray(),
-                    Name = jointable.ResultTableName + "_" + xy.ID,
+                    Name = jointable.ResultTableName + "_" + currentSchemaInfo.ID,
                     Schema = jointable.ResultSchema,
                     ColumnDefinitions = firstTable.Table.ColumnDefinitions.Union(secondHistTable.ColumnDefinitions).GroupBy(x => x.ColumName).Select(x => x.First()).ToArray()
                 };
-                currentSchema.AddTable(joinedTableSchema, joinedTableHistSchema);
+
+                Table firstTableMeta = this.MetaManager.GetMetaTableFor(joinedTableSchema);
+                currentSchema.AddTable(joinedTableSchema, joinedTableHistSchema, firstTableMeta);
                 currentSchema.RemoveTable(firstTable.Table.ToTable());
                 currentSchema.RemoveTable(secondTable.Table.ToTable());
 
-                CreateJoinedTable(c, con, firstTable.Table, secondTable.Table, joinedTableSchema);
-                CreateJoinedTable(c, con, firstTable.Table, secondTable.Table, joinedTableHistSchema);
+                String createJoinTable = CreateJoinedTable(firstTable.Table, secondTable.Table, joinedTableSchema);
+                String createHistJoinedTable =  CreateJoinedTable(firstTable.Table, secondTable.Table, joinedTableHistSchema);
 
                 ////Insert data from old to new
-                var RestrictionT1 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(jointable.FirstTableAlias, "NOW(3)");
-                var RestrictionT2 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(jointable.SecondTableAlias, "NOW(3)");
+                var RestrictionT1 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(jointable.FirstTableAlias, updateTime);
+                var RestrictionT2 = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(jointable.SecondTableAlias, updateTime);
                 var Restriction = new AndRestriction() { Restrictions = new QubaDC.Restriction[] { RestrictionT1, RestrictionT1, jointable.JoinRestriction } };
 
-                var StartEndTs = new LiteralColumn[] { new LiteralColumn() { ColumnLiteral = "NOW(3)", ColumnName = IntegratedConstants.StartTS },
+                var StartEndTs = new LiteralColumn[] { new LiteralColumn() { ColumnLiteral = updateTime, ColumnName = IntegratedConstants.StartTS },
                                         new LiteralColumn() { ColumnLiteral = "NULL", ColumnName = IntegratedConstants.EndTS } };
 
                 TableSchema isnertWithStartts = new TableSchema()
@@ -89,24 +91,67 @@ namespace QubaDC.Separated.SMO
                 };
                 String select = CreateSelectForTables(firstTable.Table, secondTable.Table, jointable.FirstTableAlias, jointable.SecondTableAlias, Restriction, StartEndTs);
                 String insertFromFirstTable = SMORenderer.RenderInsertToTableFromSelect(isnertWithStartts, select);
-                con.ExecuteNonQuerySQL(insertFromFirstTable);
 
-                DropHistTableRenameCurrentToHist(con, firstTable);
-                DropHistTableRenameCurrentToHist(con, secondTable);
-               
+                String[] renameFirstToHist = DropHistTableRenameCurrentToHist( firstTable);
+                String[] renameSecondToHist = DropHistTableRenameCurrentToHist( secondTable);
 
-                this.schemaManager.StoreSchema(currentSchema, jointable, con, c);
 
-                transaction.Commit();
-            });
 
+
+                //con.ExecuteNonQuerySQL(insertFromTable);
+                // String updateLastUpdate = this.MetaManager.GetSetLastUpdateStatement(new Table() { TableName = addColumn.TableName, TableSchema = addColumn.Schema }, updateTime);
+
+                String createJoinedMeta = this.MetaManager.GetCreateMetaTableFor(joinedTableSchema.Schema, joinedTableSchema.Name);
+                String InsertJoinedMeta = this.MetaManager.GetStartInsertFor(joinedTableSchema.Schema, joinedTableSchema.Name);
+
+                String dropFirstMetaTable = SMORenderer.RenderDropTable(firstTable.MetaTableSchema, firstTable.MetaTableName);
+                String dropSecondlMetaTable = SMORenderer.RenderDropTable(secondTable.MetaTableSchema, secondTable.MetaTableName);
+
+
+                String[] Statements = new String[]
+                {
+                    createJoinTable,
+                    createHistJoinedTable,
+                    insertFromFirstTable
+                }
+                .Concat(renameFirstToHist)
+                .Concat(renameSecondToHist)
+                .Concat(new String[]
+                {
+                    createJoinedMeta,
+                    InsertJoinedMeta,
+                    dropFirstMetaTable,
+                    dropSecondlMetaTable
+                }).ToArray();
+                //.Concat(dropOriginalHist)
+
+                ;
+
+
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchema,
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { firstTable.ToTable(), secondTable.ToTable() },
+                    TablesToUnlock = new Table[] { }
+                };
+            };
+
+
+            IntegratedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.DataConnection,
+                 this.schemaManager,
+                 jointable,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , this.MetaManager);
 
         }
 
-        private void DropHistTableRenameCurrentToHist(MySQLDataConnection con, TableSchemaWithHistTable firstTable)
+        private String[] DropHistTableRenameCurrentToHist( TableSchemaWithHistTable firstTable)
         {
             String dropOriginalHistTable = SMORenderer.RenderDropTable(firstTable.HistTableSchema, firstTable.HistTableName);
-            con.ExecuteNonQuerySQL(dropOriginalHistTable);
             String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
             {
                 NewSchema = firstTable.HistTableSchema,
@@ -114,10 +159,14 @@ namespace QubaDC.Separated.SMO
                 OldSchema = firstTable.Table.Schema,
                 OldTableName = firstTable.Table.Name
             });
-            con.ExecuteNonQuerySQL(renameTableSQL);
+            return new String[]
+            {
+                dropOriginalHistTable,
+                renameTableSQL
+            };
         }
 
-        private void CreateJoinedTable(System.Data.Common.DbConnection c, MySQLDataConnection con, TableSchema firstTable, TableSchema secondTable, TableSchema joinedTableSchema)
+        private String CreateJoinedTable(TableSchema firstTable, TableSchema secondTable, TableSchema joinedTableSchema)
         {
             string select = CreateSelectForTables(firstTable, secondTable, "t1", "t2", new OperatorRestriction()
             {
@@ -129,7 +178,7 @@ namespace QubaDC.Separated.SMO
 
             ////Copy Table without Triggers
             String copyTableSQL = SMORenderer.RenderCopyTable(joinedTableSchema.Schema, joinedTableSchema.Name, select);
-            con.ExecuteNonQuerySQL(copyTableSQL, c);
+            return copyTableSQL;            
         }
 
         private string CreateSelectForTables(TableSchema firstTable, TableSchema secondTable, String firstTableRename, String SecondTableRename, Restriction r, LiteralColumn[] literalColumns)
