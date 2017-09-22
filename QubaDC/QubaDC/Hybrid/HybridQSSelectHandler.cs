@@ -34,14 +34,14 @@ namespace QubaDC.Separated
             {
                 //What to do here:
                 //0.) Get last updated Timestamp
-                var lastGlobalUpdate = timeManager.GetLatestUpdate();
-                var queryTime = lastGlobalUpdate.DateTime;
+                var lastGlobalUpdate = timeManager.GetLatestUpdate(s.GetAllSelectedTables().Select(x => new Table() { TableName = x.TableName, TableSchema = x.TableSchema }).ToArray());
+                var queryTime = lastGlobalUpdate;
 
                 //a.) copy the operation
                 var newOperation = JsonSerializer.CopyItem(s);
                 //b.) add, that we only query the current table
                 List<Restriction> TimeStampRestrictions = new List<Restriction>();
-                SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(lastGlobalUpdate.DateTime);
+                SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(queryTime);
                 System.Diagnostics.Debug.WriteLine(String.Join(",", SchemaInfo.Schema.Tables.Select(x => x.Table.AddTimeSetGuid)));
 
                 Dictionary<String, Guid?> table_to_ids = new Dictionary<String, Guid?>();

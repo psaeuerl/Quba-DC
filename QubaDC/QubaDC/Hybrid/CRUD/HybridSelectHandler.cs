@@ -162,7 +162,6 @@ FROM {1}
 
         private string RenderHybridFromTable(FromTable fromTable, ColumnReference[] columns, TableSchema histTableSchema, Boolean currentSchemaContainsTable, TableSchemaWithHistTable currentSchema)
         {
-            throw new NotImplementedException("Not Implemented");
             String baseFormat = "({0}) {1}";
             String originalTableSelect = null;
             if(currentSchemaContainsTable)
