@@ -106,6 +106,7 @@ FROM {1}
 
         private string RenderHybridFromPart(SelectOperation selectOperation, SchemaInfo exeuctionTimeSchema, SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
+
             var histTable = exeuctionTimeSchema.Schema.FindHistTable(selectOperation.FromTable);
             var expectedGuid = TableRefToGuidMapping[selectOperation.FromTable.TableAlias];
 
@@ -128,7 +129,7 @@ FROM {1}
 
         private object RenderHybridJoinedTable(SelectOperation selectOperation, JoinedTable x, SchemaInfo s,SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
-
+            throw new NotImplementedException("Not Implemented");
             String Format = "{0} {1} {2}";
             //0 => condition
             //1 => tablename
@@ -161,6 +162,7 @@ FROM {1}
 
         private string RenderHybridFromTable(FromTable fromTable, ColumnReference[] columns, TableSchema histTableSchema, Boolean currentSchemaContainsTable, TableSchemaWithHistTable currentSchema)
         {
+            throw new NotImplementedException("Not Implemented");
             String baseFormat = "({0}) {1}";
             String originalTableSelect = null;
             if(currentSchemaContainsTable)

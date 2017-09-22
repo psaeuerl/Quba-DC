@@ -22,6 +22,7 @@ namespace QubaDC.Hybrid.CRUD
 
         internal void HandleInsert(InsertOperation insertOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             //Actually, just insert the statement
             String insertIntoBaseTable = this.CRUDRenderer.RenderInsert(insertOperation.InsertTable, insertOperation.ColumnNames, insertOperation.ValueLiterals);
             this.DataConnection.ExecuteQuery(insertIntoBaseTable);

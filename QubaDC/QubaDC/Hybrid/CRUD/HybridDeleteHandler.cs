@@ -22,6 +22,7 @@ namespace QubaDC.Separated.CRUD
 
         internal void HandleDelete(DeleteOperation deleteOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             //Actually, just insert the statement
             String insertIntoBaseTable = this.CRUDRenderer.RenderDelete(deleteOperation.Table, deleteOperation.Restriction);
             this.DataConnection.ExecuteQuery(insertIntoBaseTable);

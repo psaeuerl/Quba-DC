@@ -14,12 +14,14 @@ namespace QubaDC.Hybrid
     {
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridDeleteHandler h = new HybridDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             h.HandleDelete(deleteOperation);
         }
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridInsertHandler h = new HybridInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             h.HandleInsert(insertOperation);
         }
@@ -32,6 +34,7 @@ namespace QubaDC.Hybrid
 
         public override string RenderSelectOperation(SelectOperation selectOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(selectOperation, false);
             return select;
@@ -39,6 +42,7 @@ namespace QubaDC.Hybrid
 
         internal override string RenderHashSelect(SelectOperation newOperation)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(newOperation, true);
             return select;
@@ -46,6 +50,7 @@ namespace QubaDC.Hybrid
 
         internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s,SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleHybridSelect(newOperation, s, s2,true, TableRefToGuidMapping);
             return select;
@@ -53,6 +58,7 @@ namespace QubaDC.Hybrid
 
         internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
+            throw new NotImplementedException("Not Implemented");
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleHybridSelect(originalSelect, s,s2,false, TableRefToGuidMapping);
             return select;
