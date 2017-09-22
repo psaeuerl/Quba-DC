@@ -24,11 +24,17 @@ namespace QubaDC
             con.ExecuteInsert(stmt, c);
         }
 
-        public abstract SchemaInfo GetCurrentSchema(DbConnection openConnection);
+        public abstract SchemaInfo GetCurrentSchema(DbConnection openConnection, Action<String> log);
         public abstract SchemaInfo[] GetAllSchemataOrderdByIdDescending();
         public abstract string GetInsertToGlobalUpdateTrigger();
         internal abstract string GetTableName();
         public abstract SchemaInfo GetSchemaActiveAt(DateTime dateTime);
+
+        internal SchemaInfo GetCurrentSchema(DbConnection c)
+        {
+            return GetCurrentSchema(c, (x) => {; });
+        }
+
         internal abstract string RenderEnsureSchema(SchemaInfo xy);
         internal abstract string GetStoredProcedureExistsStatement();
         internal abstract string GetCreateEnsureIDCreateProcedure();

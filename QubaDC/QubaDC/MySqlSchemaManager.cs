@@ -56,15 +56,13 @@ VALUES(
             return result;
         }
 
-        public override SchemaInfo GetCurrentSchema(DbConnection openConnection)
-        {
-            return ExecuteGetCurrentSchema(x => this.Connection.ExecuteQuery(x,openConnection));
-        }
 
-        private SchemaInfo ExecuteGetCurrentSchema(Func<String,DataTable> ExecuteQuery)
+
+        private SchemaInfo ExecuteGetCurrentSchema(Func<String,DataTable> ExecuteQuery, Action<String> log)
         {
             String QueryFormat =  GetSelectFormat() + " LIMIT 0, 1";
             String Query = String.Format(QueryFormat, this.Connection.DataBase);
+            log(Query);
             DataTable t = ExecuteQuery(Query);
             Guard.StateEqual(true, t.Rows.Count <= 1);
             if (t.Rows.Count == 0)
@@ -90,7 +88,7 @@ VALUES(
 
         public override SchemaInfo GetCurrentSchema()
         {
-            return ExecuteGetCurrentSchema(x => this.Connection.ExecuteQuery(x));          
+            return ExecuteGetCurrentSchema(x => this.Connection.ExecuteQuery(x), (x)=> {; });          
         }
 
         public override SchemaInfo[] GetAllSchemataOrderdByIdDescending()
@@ -200,6 +198,11 @@ delimiter ;";
             String res = String.Format(stmt, this.Connection.DataBase);
             return res;
         }
-        
+
+        public override SchemaInfo GetCurrentSchema(DbConnection openConnection, Action<string> log)
+        {
+            return ExecuteGetCurrentSchema(x => this.Connection.ExecuteQuery(x, openConnection),log);
+
+        }
     }
 }
