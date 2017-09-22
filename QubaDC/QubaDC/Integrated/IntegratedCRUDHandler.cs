@@ -16,19 +16,19 @@ namespace QubaDC.Integrated
 
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            IntegratedDeleteHandler h = new IntegratedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer, this.GlobalUpdateTimeManager);
+            IntegratedDeleteHandler h = new IntegratedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer, this.MetaManager);
             h.HandleDelete(deleteOperation);
         }
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
-            IntegratedInsertHandler h = new IntegratedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.GlobalUpdateTimeManager);
+            IntegratedInsertHandler h = new IntegratedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.MetaManager);
             h.HandleInsert(insertOperation);
         }
 
         public override void HandleUpdateOperation(UpdateOperation c2)
         {
-            IntegratedUpdateHandler h = new IntegratedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.GlobalUpdateTimeManager);
+            IntegratedUpdateHandler h = new IntegratedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.MetaManager);
             h.HandleUpdate(c2);
         }
 

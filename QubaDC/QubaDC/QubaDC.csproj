@@ -54,6 +54,7 @@
     <Compile Include="Hybrid\CRUD\HybridSelectHandler.cs" />
     <Compile Include="Hybrid\CRUD\HybridDeleteHandler.cs" />
     <Compile Include="Hybrid\CRUD\HybridUpdateHandler.cs" />
+    <Compile Include="Hybrid\CRUD\HybridCRUDExecuter.cs" />
     <Compile Include="Hybrid\HybridSMOHandler.cs" />
     <Compile Include="Hybrid\HybridCRUDHandler.cs" />
     <Compile Include="Hybrid\HybridQSSelectHandler.cs" />

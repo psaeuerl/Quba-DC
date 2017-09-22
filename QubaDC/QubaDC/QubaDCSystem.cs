@@ -52,7 +52,7 @@ namespace QubaDC
             CRUDHandler.CRUDRenderer = this.CRUDRenderer;
             CRUDHandler.SchemaManager = this.SchemaManager;
             CRUDHandler.DataConnection = this.DataConnection;
-            CRUDHandler.GlobalUpdateTimeManager = this.GlobalUpdateTimeManager;
+            CRUDHandler.MetaManager = this.GlobalUpdateTimeManager;
         }
 
        

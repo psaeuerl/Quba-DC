@@ -114,15 +114,6 @@ true);";
             return resDatetime;
         }
 
-        internal override bool GetCanBeQueriedFor(Table changingTable, DbConnection con)
-        {
-            string stmt = "SELECT canBeQueried FROM {0}";
-            String part = String.Format("`{0}`.`{1}`", changingTable.TableSchema, changingTable.TableName + "_metadata");
-            String result = String.Format(stmt, part);
-            DataTable res = this.Connection.ExecuteQuery(result, con);
-            Boolean resDatetime = res.Select().First().Field<Boolean>(0);
-            return resDatetime;
-        }
 
         internal override string GetSetLastUpdateStatement(Table insertTable, string v)
         {
@@ -156,6 +147,17 @@ true);";
             String query = "UPDATE `{0}`.`{1}` SET canBeQueried = true;";
             String resQuery = String.Format(query, t.TableSchema, t.TableName);
             return resQuery;
+        }
+
+        internal override bool GetCanBeQueriedFor(Table changingTable, DbConnection con, Action<string> log)
+        {
+            string stmt = "SELECT canBeQueried FROM {0}";
+            String part = String.Format("`{0}`.`{1}`", changingTable.TableSchema, changingTable.TableName + "_metadata");
+            String result = String.Format(stmt, part);
+            log(result);
+            DataTable res = this.Connection.ExecuteQuery(result, con);
+            Boolean resDatetime = res.Select().First().Field<Boolean>(0);
+            return resDatetime;
         }
     }
 }
