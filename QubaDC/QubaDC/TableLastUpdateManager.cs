@@ -20,7 +20,7 @@ namespace QubaDC
         internal abstract string GetStartInsertFor(string schema, string tableName);
 
         public abstract DateTime GetLatestUpdate(params Table[] tables);
-        internal abstract bool GetCanBeQueriedFor(Table changingTable, DbConnection con);
+        internal abstract bool GetCanBeQueriedFor(Table changingTable, DbConnection con, Action<String> log);
         internal abstract string GetSetLastUpdateStatement(Table insertTable, string v);
         internal abstract Table GetMetaTableFor(TableSchema copiedTableSchema);
         internal abstract string SetCanBeQueriedFalse(Table x);
