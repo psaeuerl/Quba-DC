@@ -50,8 +50,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(DecomposeTable decomposeTable)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridDecomposeTableHandler h = new HybridDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridDecomposeTableHandler h = new HybridDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(decomposeTable);
         }
 
