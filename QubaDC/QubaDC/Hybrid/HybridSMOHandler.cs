@@ -26,9 +26,8 @@ namespace QubaDC.Hybrid
         }
 
         internal override void Visit(DropTable dropTable)
-        {
-            throw new NotImplementedException("Not Implemented");
-            HybridDropTableHandler h = new HybridDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+        {            
+            HybridDropTableHandler h = new HybridDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(dropTable);
         }
 
@@ -46,8 +45,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(CopyTable copyTable)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridCopyTableHandler h = new HybridCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridCopyTableHandler h = new HybridCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(copyTable);
         }
 

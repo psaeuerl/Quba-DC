@@ -203,12 +203,6 @@ namespace QubaDC.Tests.Separated
             var xy = newSchemaInfo.Schema.FindTable(ct.CopiedSchema, ct.CopiedTableName);
             Assert.True(newSchemaInfo.Schema.ContainsTable(ct.CopiedSchema, ct.CopiedTableName));
 
-            if (CheckTriggersCopied)
-            {
-                String[] triggersOnCopeidTable = this.Fixture.GetTriggersForTable(ct.CopiedSchema, ct.CopiedTableName);
-                Assert.Equal(3, triggersOnCopeidTable.Length);
-            }
-
             //Check that they contain the same data
             SelectOperation s2 = SelectOperation.FromCreateTable(t);
             var result2 = QBDC.QueryStore.ExecuteSelect(s2);
