@@ -41,8 +41,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(DropColumn dropColumn)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridDropColumnHandler h = new HybridDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridDropColumnHandler h = new HybridDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(dropColumn);
         }
 
