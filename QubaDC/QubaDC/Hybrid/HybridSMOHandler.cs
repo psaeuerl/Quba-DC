@@ -13,9 +13,8 @@ namespace QubaDC.Hybrid
     {
 
         internal override void Visit(RenameTable renameTable)
-        {
-            throw new NotImplementedException("Not Implemented");
-            HybridRenameTableHandler h = new HybridRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+        {            
+            HybridRenameTableHandler h = new HybridRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(renameTable);            
         }
 
