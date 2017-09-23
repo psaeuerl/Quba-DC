@@ -20,9 +20,8 @@ namespace QubaDC.Hybrid
         }
 
         internal override void Visit(PartitionTable partitionTable)
-        {
-            throw new NotImplementedException("Not Implemented");
-            HybridPartitionTableHandler h = new HybridPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+        {            
+            HybridPartitionTableHandler h = new HybridPartitionTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(partitionTable);
         }
 
@@ -68,8 +67,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridRenameColumnHandler h = new HybridRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridRenameColumnHandler h = new HybridRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(renameColumn);            
         }
 

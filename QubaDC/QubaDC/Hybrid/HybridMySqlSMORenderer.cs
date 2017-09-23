@@ -243,8 +243,15 @@ RenderColumnDefinition(IncludeAdditionalInformation, x))
         {
             String baseFormat = "INSERT {0} {4} SELECT {3} FROM {1} {2};";
             String columnString = "*";
-            if (columns != null)
-                columnString = String.Join(",", columns.Select(x => Quote(x)));
+            if (columns != null || literals != null)
+            {
+                IEnumerable<String> parts = new String[] { };
+                if (columns != null)
+                    parts = parts.Concat(columns.Select(x => Quote(x)));
+                if (literals != null)
+                    parts = parts.Concat(literals);
+                columnString = String.Join(", ", parts);
+            }
             String oldTable = GetQuotedTable(table);
             String target = GetQuotedTable(copiedTableSchema);
 
