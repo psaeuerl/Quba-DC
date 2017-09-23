@@ -82,9 +82,8 @@ namespace QubaDC.Hybrid
         }
 
         internal override void Visit(AddColum addColum)
-        {
-            throw new NotImplementedException("Not Implemented");
-            HybridAddColumnHandler h = new HybridAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+        {            
+            HybridAddColumnHandler h = new HybridAddColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(addColum);
         }
     }
