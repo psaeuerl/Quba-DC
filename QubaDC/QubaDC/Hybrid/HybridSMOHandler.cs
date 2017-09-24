@@ -56,8 +56,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(JoinTable joinTable)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridJoinTableHandler h = new HybridJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridJoinTableHandler h = new HybridJoinTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(joinTable);
         }
 
