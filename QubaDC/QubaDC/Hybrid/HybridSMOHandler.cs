@@ -68,8 +68,7 @@ namespace QubaDC.Hybrid
 
         internal override void Visit(MergeTable mergeTable)
         {
-            throw new NotImplementedException("Not Implemented");
-            HybridMergeTableHandler h = new HybridMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            HybridMergeTableHandler h = new HybridMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(mergeTable);
         }
 

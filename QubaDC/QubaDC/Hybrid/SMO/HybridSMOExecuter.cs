@@ -78,6 +78,20 @@ namespace QubaDC.Hybrid.SMO
                 String[] tablesToLock = updateSchema.MetaTablesToLock.Select(x => metaManager.GetMetaTableFor(x.TableSchema, x.TableName))
                                                                     .Select(x => SMORenderer.CRUDRenderer.PrepareTable(x))
                                                                     .ToArray();
+                if (new Type[] { typeof(MergeTable), typeof(JoinTable) }.Contains(op.GetType()))
+                {
+                    if (tablesToLock.Length != 2)
+                        throw new InvalidOperationException("mergetable and jointable need two tables to lock");
+                }
+                else if (typeof(CreateTable) == op.GetType())
+                {
+                    if (tablesToLock.Length != 0)
+                        throw new InvalidOperationException("Only Create Table needs no tablesToLock");
+                }
+                else if (tablesToLock.Length != 1)
+                {
+                    throw new InvalidOperationException("Expected one table for lock at: " + op.GetType().Name);
+                }
                 if (tablesToLock.Length > 0)
                 {
                     Boolean[] lockAsWrite = tablesToLock.Select(x => true).ToArray();
