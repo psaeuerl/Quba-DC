@@ -94,27 +94,12 @@ namespace QubaDC.Separated.SMO
                 String[] copyTablesSecond = CreateCopiedTables( originalTable, originalHistTable, secondTableSchema, secondTableHistSchema);
 
 
-                //TableSchema copiedFirstSchema = new TableSchema()
-                //{
-                //    Columns = firstTableSchema.Columns.Concat(new String[] { HybridConstants.StartTS, }).ToArray(),
-                //    Name = firstTableSchema.Name,
-                //    Schema = firstTableSchema.Schema
-                //};
+
                 String insertFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, firstTableSchema, null,
                     firstTableSchema.Columns,
                    null, startTsValue);
-                //Insert data from old to true                
-                //String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, firstTableSchema, null, firstTableSchema.Columns);
-
-
-
-                //TableSchema copiedSecondSchema = new TableSchema()
-                //{
-                //    Columns = secondTableSchema.Columns.Concat(new String[] { HybridConstants.StartTS, }).ToArray(),
-                //    Name = secondTableSchema.Name,
-                //    Schema = secondTableSchema.Schema
-                //};
-                //Insert data from old to true                
+  
+            
                 String insertFromSeconDtable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, secondTableSchema, null,
                     firstTableSchema.Columns,
                    null, startTsValue);
@@ -123,87 +108,7 @@ namespace QubaDC.Separated.SMO
                 String dropOriginalTable = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name);
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
 
-                //var trueTableSchema = new TableSchema()
-                //{
-                //    Columns = originalTable.Table.Columns,
-                //    Name = partitionTable.TrueConditionTableName,
-                //    Schema = partitionTable.TrueConditionSchema,
-                //    ColumnDefinitions = originalTable.Table.ColumnDefinitions
 
-                //};
-                //var trueTableHist = new TableSchema()
-                //{
-                //    Columns = originalHistTable.Columns,
-                //    Name = partitionTable.TrueConditionTableName + "_" + currentSchemaInfo.ID,
-                //    Schema = partitionTable.TrueConditionSchema,
-                //    ColumnDefinitions = originalHistTable.ColumnDefinitions
-
-                //};
-                //Table firstTableMeta = this.MetaManager.GetMetaTableFor(trueTableSchema);
-                //currentSchema.AddTable(trueTableSchema, trueTableHist, firstTableMeta);
-
-                //var falseTableSchema = new TableSchema()
-                //{
-                //    Columns = originalTable.Table.Columns,
-                //    Name = partitionTable.FalseConditionTableName,
-                //    Schema = partitionTable.FalseConditionSchema,
-                //    ColumnDefinitions = originalTable.Table.ColumnDefinitions
-
-                //};
-                //var falseTableSchemaHist = new TableSchema()
-                //{
-                //    Columns = originalHistTable.Columns,
-                //    Name = partitionTable.FalseConditionTableName + "_" + currentSchemaInfo.ID,
-                //    Schema = partitionTable.FalseConditionSchema,
-                //    ColumnDefinitions = originalHistTable.ColumnDefinitions
-
-                //};
-                //Table falseTableMeta = this.MetaManager.GetMetaTableFor(falseTableSchema);
-                //currentSchema.AddTable(falseTableSchema, falseTableSchemaHist, falseTableMeta);
-
-                //////Copy Tables without Triggers
-                //String copyTrueTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, trueTableSchema.Schema, trueTableSchema.Name);
-
-                ////Copy Hist Table without Triggers
-                //String copyTrueHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, trueTableHist.Schema, trueTableHist.Name);
-
-
-                //String copyFalseTable = SMORenderer.RenderCopyTable(originalTable.Table.Schema, originalTable.Table.Name, falseTableSchema.Schema, falseTableSchema.Name);
-
-                ////Copy Hist Table without Triggers
-                //String copyFalseHistTableSQL = SMORenderer.RenderCopyTable(originalHistTable.Schema, originalHistTable.Name, falseTableSchemaHist.Schema, falseTableSchemaHist.Name);
-
-
-                //String nowVariable = SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
-                //String[] allColumns = originalTable.Table.Columns;
-                //var startTsValue = new String[] { nowVariable };
-
-
-                //var Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction(originalTable.Table.Name, nowVariable /* or NOW(3)?*/);
-                ////Insert data from old to true
-                //Restriction trueRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "TRUE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                //TableSchema copiedTrueWithTS = new TableSchema()
-                //{
-                //    Columns = trueTableSchema.Columns.Concat(new String[] { HybridConstants.StartTS, }).ToArray(),
-                //    Name = trueTableSchema.Name,
-                //    Schema = trueTableSchema.Schema
-                //};
-                //String insertTrueFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, copiedTrueWithTS, trueRestriction, allColumns, null, startTsValue);
-
-
-                ////Insert data from old to false
-                //Restriction falseRestriction = new OperatorRestriction() { LHS = new LiteralOperand() { Literal = "FALSE" }, Op = RestrictionOperator.Equals, RHS = new RestrictionRestrictionOperand() { Restriciton = partitionTable.Restriction } };
-                //TableSchema copiedFalseWithSchema = new TableSchema()
-                //{
-                //    Columns = falseTableSchema.Columns.Concat(new String[] { HybridConstants.StartTS, }).ToArray(),
-                //    Name = falseTableSchema.Name,
-                //    Schema = falseTableSchema.Schema
-                //};
-                //String insertFalseFromTable = SMORenderer.RenderInsertFromOneTableToOther(originalTable.Table, copiedFalseWithSchema, falseRestriction, allColumns, null, startTsValue);
-
-
-
-                //currentSchema.RemoveTable(originalTable.Table.ToTable());
                 String dropOriginalMetaTable = SMORenderer.RenderDropTable(originalTable.MetaTableSchema, originalTable.MetaTableName);
 
 
