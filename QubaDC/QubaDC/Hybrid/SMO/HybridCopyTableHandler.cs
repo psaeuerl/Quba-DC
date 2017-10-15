@@ -106,7 +106,7 @@ namespace QubaDC.Separated.SMO
                     newSchema = currentSchema,
                     UpdateStatements = Statements,
                     MetaTablesToLock = new Table[] { originalTable.ToTable() },
-                    TablesToUnlock = new Table[] { }
+                    TablesToUnlock = new Table[] { originalTable.ToTable() }
                 };
             };
 

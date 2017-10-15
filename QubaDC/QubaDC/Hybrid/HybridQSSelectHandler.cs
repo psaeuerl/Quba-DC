@@ -7,12 +7,13 @@ using QubaDC.CRUD;
 using QubaDC.Utility;
 using QubaDC.Restrictions;
 using System.Data;
+using QubaDC.Hybrid;
 
 namespace QubaDC.Separated
 {
     public class HybridQSSelectHandler : QueryStoreSelectHandler
     {
-        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager schemaManager, DataConnection con, TableMetadataManager timeManager, CRUDVisitor cRUDHandler, QueryStore qs)
+        public override QueryStoreSelectResult HandleSelect(SelectOperation s, SchemaManager schemaManager, DataConnection con, TableMetadataManager metaManager, CRUDVisitor cRUDHandler, QueryStore qs)
         {
             //3.Open transaction and lock tables(I)
             //4.Execute(original) query and retrieve subset.
@@ -27,27 +28,175 @@ namespace QubaDC.Separated
             //Question is ... if we do not lock what is global update timestamp?
             //We query the global update timestampt and get the max from it
             //Then we get which schema was active there and get the history tables for this one            
-            QueryStoreSelectResult execResult = null;
+
             if (s.GetAllSelectedTables().Any(x => String.IsNullOrWhiteSpace(x.TableAlias)))
                 throw new InvalidOperationException("Table Alias needed on all tables in hybrid");
-            con.DoTransaction((trans, c) =>
+            //con.DoTransaction((trans, c) =>
+            //{
+               
+
+            //    //What to do here:
+            //    //0.) Get last updated Timestamp
+              
+
+            //    normResult = con.ExecuteQuery(select, c);
+            //    hashTable = con.ExecuteQuery(selectHash, c);
+            //    hash = hashTable.Select().First().Field<String>(0);
+            //    String additionalInfos = JsonSerializer.SerializeObject(table_to_ids);
+            //    String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid, selectHash, selectHashSerialized, additionalInfos);
+            //    long? id = con.ExecuteInsert(insert, c);
+            //    System.Diagnostics.Debug.WriteLine(id.Value);
+            //    trans.Commit();
+            //    execResult = new QueryStoreSelectResult()
+            //    {
+            //        RewrittenSerialized = JsonSerializer.SerializeObject(newOperation),
+            //        RewrittenRenderd = select,
+            //        Result = normResult,
+            //        TimeStampOfExecution = queryTime
+            //    ,
+            //        Hash = hash
+            //    ,
+            //        GUID = guid
+            //    };
+            //});
+
+
+
+
+
+            TableToLock[] aliasTables = s.GetAllSelectedTables().Select(x => new TableToLock { Alias = x.TableAlias, LockAsWrite = false, Name = cRUDHandler.CRUDRenderer.PrepareTable(x) }).ToArray();
+            TableToLock[] metaTables = s.GetAllSelectedTables().Select(x => metaManager.GetMetaTableFor(x.TableSchema, x.TableName))
+                                                               .Select(x => new TableToLock { Alias = null, LockAsWrite = false, Name = cRUDHandler.CRUDRenderer.PrepareTable(x) })
+                                                               .ToArray();
+
+            TableToLock[] tablesToLock = aliasTables.Union(metaTables).ToArray();
+
+            Table[] MetaTables = s.GetAllSelectedTables()//.Select(x => metaManager.GetMetaTableFor(x.TableSchema, x.TableName))
+                                .ToArray();
+
+            // String[] tablesToLock = s.GetAllSelectedTables().Select(x => new String[] { cRUDHandler.CRUDRenderer.PrepareTable(x));
+
+            //0.) Get last updated Timestamp
+
+            Dictionary<String, Guid?> table_to_ids = null;
+            DateTime queryTime = DateTime.Now;
+            String originalrenderd = "";
+            String originalSerialized = "";
+            String RewrittenSerialized = "";
+            String select = "";
+            String selectHash = "";
+            String selectHashSerialized = "";
+            SelectOperation newOperation = null;
+            DataTable normResult = null;
+            Func<SchemaInfo, DateTime, String[]> RenderSelectStatements = (schema, dt) =>
             {
-                //What to do here:
-                //0.) Get last updated Timestamp
-                var lastGlobalUpdate = timeManager.GetLatestUpdate(s.GetAllSelectedTables().Select(x => new Table() { TableName = x.TableName, TableSchema = x.TableSchema }).ToArray());
-                var queryTime = lastGlobalUpdate;
+                //            queryTime = dt;
+
+                //            //a.) copy the operation
+                //            newOperation = JsonSerializer.CopyItem(s);
+                //            //b.) change all tables to the respective history ones + build restrictions for it
+                //            List<Restriction> TimeStampRestrictions = new List<Restriction>();
+                //            SchemaInfo SchemaInfo = schema;
+                //            table_to_ids = new Dictionary<String, Guid?>();
+
+                //            foreach (var selectedTable in newOperation.GetAllSelectedTables())
+                //            {
+                //                var foundTabl = SchemaInfo.Schema.FindTable(selectedTable);
+                //                table_to_ids.Add(selectedTable.TableAlias, foundTabl.Table.AddTimeSetGuid);
+                //                //var histTable = SchemaInfo.Schema.FindHistTable(selectedTable).ToTable();
+                //                //selectedTable.TableName = histTable.TableName;
+                //                //selectedTable.TableSchema = histTable.TableSchema;
+                //                OperatorRestriction startTs = new OperatorRestriction()
+                //                {
+                //                    LHS = new ColumnOperand()
+                //                    {
+                //                        Column = new ColumnReference()
+                //                        {
+                //                            ColumnName = IntegratedConstants.StartTS,
+                //                            TableReference = selectedTable.TableAlias
+                //                        }
+                //                    },
+                //                    Op = RestrictionOperator.LET
+                //                     ,
+                //                    RHS = new DateTimeRestrictionOperand()
+                //                    {
+                //                        Value = queryTime
+                //                    },
+                //                };
+
+                //                OperatorRestriction endTsLt = new OperatorRestriction()
+                //                {
+                //                    LHS = new DateTimeRestrictionOperand()
+                //                    {
+                //                        Value = queryTime
+                //                    },
+                //                    Op = RestrictionOperator.LT
+                //    ,
+                //                    RHS = new ColumnOperand()
+                //                    {
+                //                        Column = new ColumnReference()
+                //                        {
+                //                            ColumnName = IntegratedConstants.EndTS,
+                //                            TableReference = selectedTable.TableAlias
+                //                        }
+                //                    },
+                //                };
+                //                OperatorRestriction endTSNull = new OperatorRestriction()
+                //                {
+                //                    LHS = new ColumnOperand()
+                //                    {
+                //                        Column = new ColumnReference()
+                //                        {
+                //                            ColumnName = IntegratedConstants.EndTS,
+                //                            TableReference = selectedTable.TableAlias
+                //                        }
+                //                    },
+                //                    Op = RestrictionOperator.IS
+                //,
+                //                    RHS = new LiteralOperand()
+                //                    {
+                //                        Literal = "NULL"
+                //                    }
+                //                };
+                //                var OrRestriction = new OrRestriction();
+                //                OrRestriction.Restrictions = new Restriction[] { endTsLt, endTSNull };
+                //                var AndRestriction = new AndRestriction();
+                //                AndRestriction.Restrictions = new Restriction[] { startTs, OrRestriction };
+                //                TimeStampRestrictions.Add(AndRestriction);
+                //            }
+                //            //c.) add timestamp parts to it
+                //            if (newOperation.Restriction != null)
+                //                TimeStampRestrictions.Add(newOperation.Restriction);
+
+                //            newOperation.Restriction = new AndRestriction() { Restrictions = TimeStampRestrictions.ToArray() };
+
+                //            //d.) render it and return
+
+
+
+                //            originalSerialized = JsonSerializer.SerializeObject(s);
+                //            originalrenderd = cRUDHandler.RenderSelectOperation(s);
+
+                //            select = cRUDHandler.RenderSelectOperation(newOperation);
+                //            RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
+
+                //            selectHash = cRUDHandler.RenderHashSelect(newOperation);
+                //            selectHashSerialized = JsonSerializer.SerializeObject(newOperation);
+
+                //            return new String[] { selectHash, select };
+                queryTime = dt;
 
                 //a.) copy the operation
-                var newOperation = JsonSerializer.CopyItem(s);
+                newOperation = JsonSerializer.CopyItem(s);
                 //b.) add, that we only query the current table
                 List<Restriction> TimeStampRestrictions = new List<Restriction>();
                 SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(queryTime);
                 System.Diagnostics.Debug.WriteLine(String.Join(",", SchemaInfo.Schema.Tables.Select(x => x.Table.AddTimeSetGuid)));
 
-                Dictionary<String, Guid?> table_to_ids = new Dictionary<String, Guid?>();
+                table_to_ids = new Dictionary<String, Guid?>();
                 foreach (var selectedTable in newOperation.GetAllSelectedTables())
                 {
-                    var foundTabl =  SchemaInfo.Schema.FindTable(selectedTable);
+                    var foundTabl = SchemaInfo.Schema.FindTable(selectedTable);
                     table_to_ids.Add(selectedTable.TableAlias, foundTabl.Table.AddTimeSetGuid);
                     OperatorRestriction startTs = new OperatorRestriction()
                     {
@@ -77,47 +226,58 @@ namespace QubaDC.Separated
 
                 //d.) render it and return
 
-                String select = cRUDHandler.RenderSelectOperation(newOperation);
+                 select = cRUDHandler.RenderSelectOperation(newOperation);
 
-                String originalSerialized = JsonSerializer.SerializeObject(s);
-                String originalrenderd = cRUDHandler.RenderSelectOperation(s);
+                 originalSerialized = JsonSerializer.SerializeObject(s);
+                 originalrenderd = cRUDHandler.RenderSelectOperation(s);
 
-                String RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
+                 RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
 
 
                 //Build Hash-Select
 
 
-                String selectHash = cRUDHandler.RenderHashSelect(newOperation);
-                String selectHashSerialized = cRUDHandler.RenderHashSelect(newOperation);
+                 selectHash = cRUDHandler.RenderHashSelect(newOperation);
+                 selectHashSerialized = JsonSerializer.SerializeObject(newOperation);
 
                 //f.) Execute it
-                DataTable normResult = null;
-                DataTable hashTable = null;
-                String hash = null;
-                Guid guid = Guid.NewGuid();
-                String time = cRUDHandler.CRUDRenderer.SerializeDateTime(queryTime);
+                return new String[] { selectHash, select };
+            };
 
-                normResult = con.ExecuteQuery(select, c);
-                hashTable = con.ExecuteQuery(selectHash, c);
+            //f.) Execute it
+
+            String hash = null;
+            Guid guid = Guid.NewGuid();
+            String time = cRUDHandler.CRUDRenderer.SerializeDateTime(queryTime);
+
+
+            Func<DataTable, DataTable, String> RenderInsert = (hashTable, SelectTable) =>
+            {
+                normResult = SelectTable;
                 hash = hashTable.Select().First().Field<String>(0);
                 String additionalInfos = JsonSerializer.SerializeObject(table_to_ids);
+
                 String insert = qs.RenderInsert(originalrenderd, originalSerialized, RewrittenSerialized, select, time, hash, guid, selectHash, selectHashSerialized, additionalInfos);
-                long? id = con.ExecuteInsert(insert, c);
-                System.Diagnostics.Debug.WriteLine(id.Value);
-                trans.Commit();
-                execResult = new QueryStoreSelectResult()
-                {
-                    RewrittenSerialized = JsonSerializer.SerializeObject(newOperation),
-                    RewrittenRenderd = select,
-                    Result = normResult,
-                    TimeStampOfExecution = queryTime
+                return insert;
+            };
+
+            Action<String> log = (logst) => { System.Diagnostics.Debug.WriteLine(logst); };
+            HybridQSSelectExecuter executer = new HybridQSSelectExecuter();
+            long id = executer.ExecuteStatementsOnLockedTables(RenderInsert, RenderSelectStatements, tablesToLock, con, cRUDHandler.CRUDRenderer, schemaManager, MetaTables, metaManager, log);
+
+
+            QueryStoreSelectResult execResult = new QueryStoreSelectResult()
+            {
+                RewrittenSerialized = JsonSerializer.SerializeObject(newOperation),
+                RewrittenRenderd = select,
+                Result = normResult,
+                TimeStampOfExecution = queryTime
                 ,
-                    Hash = hash
+                Hash = hash
                 ,
-                    GUID = guid
-                };
-            });
+                GUID = guid
+
+            };
 
             return execResult;
         }
