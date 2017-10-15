@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace QubaDC.CRUD
 {
+
+    public class TableToLock
+    {
+        public String Name { get; set; }
+        public String Alias { get; set; }
+        public Boolean LockAsWrite { get; set; }
+           
+    }
     public abstract class CRUDRenderer
     {
         public abstract string RenderInsert(Table insertTable, string[] columnNames, string[] valueLiterals);
@@ -22,6 +30,8 @@ namespace QubaDC.CRUD
         }
 
         internal abstract string[] RenderLockTables(string[] locktables, bool[] lockAsWrite);
+
+        internal abstract string[] RenderLockTablesAliased(TableToLock[] tablesToLock);
 
         internal string RenderJoinType(JoinType join)
         {

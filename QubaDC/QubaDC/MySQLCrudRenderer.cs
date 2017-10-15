@@ -163,5 +163,16 @@ namespace QubaDC
         {
             return String.Format("DROP TEMPORARY TABLE {0};", this.PrepareTable(tmpTable));
         }
+
+        internal override string[] RenderLockTablesAliased(TableToLock[] tables)
+        {
+
+            String[] tablesWithWrite = tables.Select(x => { return x.Name +  (String.IsNullOrWhiteSpace(x.Alias) ? "" : (" AS " + x.Alias)) + (x.LockAsWrite ? " WRITE" : " READ"); }).ToArray();
+            String lockTables = String.Format("LOCK TABLES {0}", String.Join(",", tablesWithWrite)) + ";";
+            String[] setupAndAquireLock = new String[] {
+                lockTables
+            };
+            return setupAndAquireLock;
+        }
     }
 }
