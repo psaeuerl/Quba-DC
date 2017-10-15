@@ -77,6 +77,7 @@
     <Compile Include="Integrated\CRUD\IntegratedSelectHandler.cs" />
     <Compile Include="Integrated\CRUD\IntegratedDeleteHandler.cs" />
     <Compile Include="Integrated\CRUD\IntegratedUpdateHandler.cs" />
+    <Compile Include="Integrated\IntegratedQSSelectExecuter.cs" />
     <Compile Include="Integrated\IntegratedCRUDHandler.cs" />
     <Compile Include="Integrated\IntegratedMySqlSMORenderer.cs" />
     <Compile Include="Integrated\IntegratedQSSelectHandler.cs" />
