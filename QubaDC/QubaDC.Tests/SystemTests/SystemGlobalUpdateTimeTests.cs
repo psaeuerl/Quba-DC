@@ -61,7 +61,7 @@ namespace QubaDC.Tests
 
             DateTime timeAfterCreateTable = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'John'","'Developer'");
             QBDC.CRUDHandler.HandleInsert(c);
             DateTime timeAfterInsert = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
@@ -79,11 +79,11 @@ namespace QubaDC.Tests
             QBDC.SMOHandler.HandleSMO(t);
             DateTime timeAfterCreateTable = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'John'", "'Developer'");
             QBDC.CRUDHandler.HandleInsert(c);
             DateTime timeAfterInsert = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
-            DeleteOperation c2 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'asdf'");
+            DeleteOperation c2 = CreateTableBuilder.GetBasicTableDelete(this.currentDatabase, "1", "'John'");
             QBDC.CRUDHandler.HandleDeletOperation(c2);
             DateTime timeAfterDelete = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
             
@@ -101,12 +101,12 @@ namespace QubaDC.Tests
             QBDC.SMOHandler.HandleSMO(t);
             DateTime timeAfterCreateTable = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
-            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'asdf'");
+            InsertOperation c = CreateTableBuilder.GetBasicTableInsert(this.currentDatabase, "1", "'John'", "'Developer'");
             QBDC.CRUDHandler.HandleInsert(c);
             DateTime timeAfterInsert = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());
 
 
-            UpdateOperation c2 = CreateTableBuilder.GetBasicTableUpdate(this.currentDatabase, "1", "asdfxyz");
+            UpdateOperation c2 = CreateTableBuilder.GetBasicTableUpdate(this.currentDatabase, "1", "McJohn");
             QBDC.CRUDHandler.HandleUpdateOperation(c2);
 
             DateTime timeAfterUpdate = QBDC.GlobalUpdateTimeManager.GetLatestUpdate(t.ToTable());

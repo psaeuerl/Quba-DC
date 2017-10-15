@@ -11,7 +11,7 @@ namespace QubaDC.Tests.DataBuilder
 {
     public class CreateTableBuilder
     {
-        public const String BasicTableName = "basictable";
+        public const String BasicTableName = "employees";
         public const String BasicTableForJoinName = "jointable";
         public static CreateTable BuildBasicTable(String schema)
         {
@@ -32,8 +32,8 @@ namespace QubaDC.Tests.DataBuilder
                 Schema = schema,
                 Columns = new ColumnDefinition[] {
                     new ColumnDefinition() {  ColumName = "ID",  DataType =" INT", Nullable = false },
-                    new ColumnDefinition() {  ColumName = "Schema",  DataType =" MediumText", Nullable = false },
-                     new ColumnDefinition() {  ColumName = "Info",  DataType =" MediumText", Nullable = true }
+                    new ColumnDefinition() {  ColumName = "Name",  DataType =" MediumText", Nullable = false },
+                     new ColumnDefinition() {  ColumName = "Job",  DataType =" MediumText", Nullable = true }
 
                 },
                 PrimaryKey = new String[] { }//new String[] { "ID" }
@@ -95,7 +95,7 @@ namespace QubaDC.Tests.DataBuilder
                           },
                                                     new OperatorRestriction()
                           {
-                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "Schema", TableReference =BasicTableName } },
+                                LHS = new ColumnOperand() { Column = new ColumnReference() { ColumnName = "Name", TableReference =BasicTableName } },
                                  Op = RestrictionOperator.Equals,
                                  RHS = new LiteralOperand() { Literal = schema }
                           }
@@ -124,7 +124,7 @@ namespace QubaDC.Tests.DataBuilder
                           }
                      }
                 },
-                ColumnNames = new string[] { "Schema" },
+                ColumnNames = new string[] { "Name" },
                  ValueLiterals = new string[] {"'"+newvalue+"'"}
             };
         }

@@ -61,14 +61,14 @@ namespace QubaDC.Tests.SystemTests
             CreateTable t = CreateTableBuilder.BuildBasicTable(this.currentDatabase);
             QBDC.SMOHandler.HandleSMO(t);
             var allTablesAfterCreateTable = Fixture.DataConnection.GetAllTables();
-            Assert.Contains("basictable", allTablesAfterCreateTable.Select(x => x.Name));
-            Assert.Contains("basictable_1", allTablesAfterCreateTable.Select(x => x.Name));
-            Assert.Contains("basictable_metadata", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("employees", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("employees_1", allTablesAfterCreateTable.Select(x => x.Name));
+            Assert.Contains("employees_metadata", allTablesAfterCreateTable.Select(x => x.Name));
             var schemaInfo = QBDC.SchemaManager.GetCurrentSchema();
             var schema = schemaInfo.Schema;
             Assert.Equal(1, schema.HistTables.Count());
             Assert.Equal(1, schema.Tables.Count());
-            Assert.Equal("basictable_metadata", schema.Tables.First().MetaTableName);
+            Assert.Equal("employees_metadata", schema.Tables.First().MetaTableName);
         }
 
 

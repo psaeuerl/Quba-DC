@@ -492,7 +492,7 @@ namespace QubaDC.Tests.Separated
             {
                 Schema = t.Schema,
                 TableName = t.TableName,
-                Column = "Info"
+                Column = "Job"
             };
 
 
@@ -562,7 +562,7 @@ namespace QubaDC.Tests.Separated
                 Schema = t.Schema,
                 TableName = t.TableName,
                 Column = new ColumnDefinition() { ColumName = "NewSchema", DataType = " MediumText", Nullable = false },
-                InitalValue = "CONCAT('new',`Schema`)"
+                InitalValue = "CONCAT('new',`Name`)"
             };
 
 
@@ -637,8 +637,8 @@ namespace QubaDC.Tests.Separated
                 SecondSchema = t.Schema,
                 SecondTableName = "secondTable",
 
-                FirstColumns = new String[] { "Schema" },
-                SecondColumns = new String[] { "Info" },
+                FirstColumns = new String[] { "Name" },
+                SecondColumns = new String[] { "Job" },
                 SharedColumns = new String[] { "ID" },
             };
 
@@ -763,7 +763,7 @@ namespace QubaDC.Tests.Separated
             ////Make a Request
             var schema = QBDC.SchemaManager.GetCurrentSchema();
             SelectOperation s = SelectOperation.FromCreateTable(t);
-            s.Columns = s.Columns.Where(x => x.ColumnName != "Schema").ToArray();
+            s.Columns = s.Columns.Where(x => x.ColumnName != "Name").ToArray();
             var result = QBDC.QueryStore.ExecuteSelect(s);
             Assert.Equal("c191fe8b5b35c9e8b64caeae6463852b", result.Hash);
 
@@ -771,14 +771,14 @@ namespace QubaDC.Tests.Separated
             {
                 Schema = t.Schema,
                 TableName = t.TableName,
-                Column = "Info"
+                Column = "Job"
             };
             QBDC.SMOHandler.HandleSMO(mt);
 
             RenameColumn rc = new RenameColumn()
             {
-                ColumnName = "Schema",
-                RenameName = "Info",
+                ColumnName = "Name",
+                RenameName = "Job",
                 Schema = t.Schema,
                 TableName = t.TableName
 
