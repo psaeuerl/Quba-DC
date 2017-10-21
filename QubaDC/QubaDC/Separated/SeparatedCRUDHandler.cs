@@ -21,7 +21,7 @@ namespace QubaDC.Separated
 
         public override void HandleInsert(InsertOperation insertOperation)
         {
-            SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            SeparatedInsertHandler h = new SeparatedInsertHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.MetaManager);
             h.HandleInsert(insertOperation);
         }
 
