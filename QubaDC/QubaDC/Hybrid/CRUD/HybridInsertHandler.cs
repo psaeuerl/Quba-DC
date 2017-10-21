@@ -70,7 +70,9 @@ namespace QubaDC.Hybrid.CRUD
                 true,
                 false
             };
-            HybridCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer, this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, this.MetaManager, HybridCRUDExecuter.DefLog);
+            Action<String> x = (s) => System.Diagnostics.Debug.WriteLine(s);
+            //x = HybridCRUDExecuter.DefLog;
+            HybridCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer, this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, this.MetaManager,x );
         }
     
     }

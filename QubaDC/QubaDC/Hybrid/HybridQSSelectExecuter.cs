@@ -60,7 +60,7 @@ namespace QubaDC.Hybrid
                 foreach (var changingTable in changingTables)
                 {
                     Boolean canBeQueried = metaManager.GetCanBeQueriedFor(changingTable, con, logStatements);
-                    logStatements("-- C# Code checking canBeQueried");
+                    logStatements("-- C# Code checking canBeQueried, throwing exception if one is false");
                     if (!canBeQueried)
                     {
                         throw new InvalidOperationException("Table cannot be queried currently as SMO is in effect");

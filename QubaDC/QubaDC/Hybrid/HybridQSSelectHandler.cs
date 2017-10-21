@@ -250,7 +250,7 @@ namespace QubaDC.Separated
             Guid guid = Guid.NewGuid();
             String time = cRUDHandler.CRUDRenderer.SerializeDateTime(queryTime);
 
-
+            Action<String> log = (logst) => { System.Diagnostics.Debug.WriteLine(logst); };
             Func<DataTable, DataTable, String> RenderInsert = (hashTable, SelectTable) =>
             {
                 normResult = SelectTable;
@@ -261,8 +261,9 @@ namespace QubaDC.Separated
                 return insert;
             };
 
-            Action<String> log = (logst) => { System.Diagnostics.Debug.WriteLine(logst); };
+        
             HybridQSSelectExecuter executer = new HybridQSSelectExecuter();
+
             long id = executer.ExecuteStatementsOnLockedTables(RenderInsert, RenderSelectStatements, tablesToLock, con, cRUDHandler.CRUDRenderer, schemaManager, MetaTables, metaManager, log);
 
 
