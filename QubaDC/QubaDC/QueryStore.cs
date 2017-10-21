@@ -68,11 +68,14 @@ namespace QubaDC
             //(R8).If so: (b)Persist metadata and query(R9)
 
             SelectOperation opInProgress = JsonSerializer.CopyItem<SelectOperation>(s);
+            
             //1.Ensure stable sorting and normalise query(R5). 
             EnsureSorting(opInProgress);
             //2.Compute query hash (R4). 
             //Open if needed .... really ... query is stored completly
             //3-4-5-6-7-8 handeld here
+            //String s1 = CRUDHandler.RenderSelectOperation(opInProgress);
+            //String s2 = CRUDHandler.RenderSelectOperation(s);
             QueryStoreSelectResult res = SelectHandler.HandleSelect(opInProgress, SchemaManager,DataConnection, TimeManager, CRUDHandler,this);
 
 
