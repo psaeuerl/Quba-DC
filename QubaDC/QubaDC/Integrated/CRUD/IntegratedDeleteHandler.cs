@@ -1,5 +1,6 @@
 ﻿using QubaDC.CRUD;
 using QubaDC.DatabaseObjects;
+using QubaDC.Restrictions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,11 +31,32 @@ namespace QubaDC.Integrated.CRUD
                 String nowVariable = "deleteTime";
                 String setNowVariableStmt = this.CRUDRenderer.RenderNowToVariable(nowVariable);
 
+                //Only Set ENDTS of those that have no ENDTS set == currently active
+                OperatorRestriction endTSNull = new OperatorRestriction()
+                {
+                    LHS = new ColumnOperand()
+                    {
+                        Column = new ColumnReference()
+                        {
+                            ColumnName = IntegratedConstants.EndTS,
+                            TableReference = deleteOperation.Table.TableName
+                        }
+                    },
+                    Op = RestrictionOperator.IS
+   ,
+                    RHS = new LiteralOperand()
+                    {
+                        Literal = "NULL"
+                    }
+                };
+
+                AndRestriction a = new QubaDC.AndRestriction() { Restrictions = new Restriction[] { endTSNull, deleteOperation.Restriction } };
+
                 UpdateOperation uo = new UpdateOperation()
                 {
                     ColumnNames = new String[] { IntegratedConstants.EndTS },
                     ValueLiterals = new String[] { this.CRUDRenderer.GetSQLVariable(nowVariable) },
-                    Restriction = deleteOperation.Restriction,
+                    Restriction = a,
                     Table = deleteOperation.Table
                 };
 
