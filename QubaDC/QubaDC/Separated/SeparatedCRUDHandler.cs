@@ -27,7 +27,7 @@ namespace QubaDC.Separated
 
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            SeparatedDeleteHandler h = new SeparatedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            SeparatedDeleteHandler h = new SeparatedDeleteHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer,this.MetaManager);
             h.HandleDelete(deleteOperation);
         }
 
