@@ -16,6 +16,12 @@ namespace QubaDC.Utility
             return output;
         }
 
+        public static String SerializeBasic(Object o)
+        {
+            string output = JsonConvert.SerializeObject(o);
+            return output;
+        }
+
         public static T DeserializeObject<T>(String obj)
         {
             object result = JsonConvert.DeserializeObject(obj, settings);
