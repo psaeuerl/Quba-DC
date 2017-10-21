@@ -30,7 +30,7 @@ namespace QubaDC.Separated
 
         internal override void Visit(CreateTable createTable)
         {
-            SeparatedCreateTableHandler h = new SeparatedCreateTableHandler(this.DataConnection,this.SchemaManager, this.SMORenderer);
+            SeparatedCreateTableHandler h = new SeparatedCreateTableHandler(this.DataConnection,this.SchemaManager, this.SMORenderer,this.MetaManager);
             h.Handle(createTable);
         }
 

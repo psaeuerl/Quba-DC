@@ -7,6 +7,7 @@ using QubaDC.SMO;
 using QubaDC;
 using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
+using QubaDC.CRUD;
 
 namespace QubaDC.Separated.SMO
 {
@@ -14,67 +15,79 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public SeparatedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public SeparatedCreateTableHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableMetadataManager metaManager)
         {
-            this.DataConnection = c;
+            this.con = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = metaManager;
         }
 
-        public DataConnection DataConnection { get; private set; }
+        public DataConnection con { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
 
         internal void Handle(CreateTable createTable)
         {
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
-                //What to do?
-                //Create Table normal
-                //Create Table Hist
-                //Create Trigger on normal
                 String createBaseTable = SMORenderer.RenderCreateTable(createTable);
                 ////Create History Table
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-                Schema x = xy.Schema;
-                if (xy.ID == null)
+              
+                Schema x = currentSchemaInfo.Schema;
+                if (currentSchemaInfo.ID == null)
                 {
                     x = new Schema();
-                    xy.ID = 0;
+                    currentSchemaInfo.ID = 0;
                 }
 
-                CreateTable ctHistTable = CreateHistTable(createTable, xy);
+                CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
 
                 String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
 
 
+                //ColumnDefinition[] histColumns = IntegratedConstants.GetHistoryTableColumns();
+                //CreateTable newCt = JsonSerializer.CopyItem<CreateTable>(createTable);
+                //newCt.Columns = createTable.Columns.Union(histColumns).ToArray();
+                //String createBaseTable = SMORenderer.RenderCreateTable(newCt);
 
+                //CreateTable ctHistTable = CreateHistTable(createTable, currentSchemaInfo);
+                //String createHistTable = SMORenderer.RenderCreateTable(ctHistTable, true);
+                String createMetaTable = MetaManager.GetCreateMetaTableFor(createTable.Schema, createTable.TableName);
+                Table metaTable = MetaManager.GetMetaTableFor(createTable.Schema, createTable.TableName);
                 //Manage Schema Statement
-                x.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                currentSchemaInfo.Schema.AddTable(createTable.ToTableSchema(), ctHistTable.ToTableSchema(), metaTable);
+                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(x, createTable);
 
 
+                String baseInsert = MetaManager.GetStartInsertFor(createTable.Schema, createTable.TableName); ;
 
-                //Add tables
-                con.ExecuteNonQuerySQL(createBaseTable, c);
-                con.ExecuteNonQuerySQL(createHistTable, c);
+                String[] Statements = new String[]
+                {
+                    createBaseTable,
+                    createHistTable,
+                    createMetaTable,
+                    baseInsert
+                };
 
-                //INsert Trigger 
-                String trigger = SMORenderer.RenderCreateInsertTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                //Delete Trigger
-                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
-                //Update Trigger
-                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(createTable.ToTableSchema(), ctHistTable.ToTableSchema());
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchemaInfo.Schema,
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { },
+                    TablesToUnlock = new Table[] { }
+                };
+            };
 
-                //Add Trigger
-                con.ExecuteSQLScript(trigger, c);
-                con.ExecuteSQLScript(deleteTrigger, c);
-                con.ExecuteSQLScript(UpdateTrigger, c);
 
-                //Store Schema                
-                this.schemaManager.StoreSchema(x, createTable, con, c);
-
-                transaction.Commit();
-            });
+            SeparatedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.con,
+                 this.schemaManager,
+                 createTable,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
         }
 
         private static CreateTable CreateHistTable(CreateTable createTable, SchemaInfo xy)

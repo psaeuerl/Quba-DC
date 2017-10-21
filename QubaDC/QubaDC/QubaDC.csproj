@@ -122,6 +122,7 @@
     <Compile Include="DatabaseObjects\TableSchema.cs" />
     <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
     <Compile Include="DataConnection.cs" />
+    <Compile Include="Separated\SMO\SeparatedSMOExecuter.cs" />
     <Compile Include="TableLastUpdate.cs" />
     <Compile Include="TableLastUpdateManager.cs" />
     <Compile Include="MySQLCrudRenderer.cs" />
