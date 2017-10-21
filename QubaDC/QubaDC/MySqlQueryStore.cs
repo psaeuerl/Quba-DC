@@ -91,14 +91,15 @@ VALUES
                 this.TypedConnection.DataBase,
                 QueryStore.QueryStoreTable,
                 originalrenderd.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
-                originalSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
-                rewrittenSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
+                originalSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),               
                 select.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
+                rewrittenSerialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 time,
                 hash == null? "null" : hash.Replace("'", "\\'"),
                 guid.ToString(),
+                 hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
                 hashselect.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
-                hashselectserialized.Replace("'", "\\'").Replace(System.Environment.NewLine, " "),
+               
                 additionalinformation == null ? "null" : "'"+additionalinformation+"'")
                 ;
             return result;
