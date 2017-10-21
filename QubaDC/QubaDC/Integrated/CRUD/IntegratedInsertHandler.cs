@@ -67,7 +67,8 @@ namespace QubaDC.Integrated.CRUD
                 true,
                 false
             };
-            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer,this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, metaManager, IntegratedCRUDExecuter.DefLog);
+            Action<String> x = (y) => { System.Diagnostics.Debug.WriteLine(y); };
+            IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer,this.SchemaManager, currentSchemaInfo, insertOperation.InsertTable, metaManager, x);
         }
 
       

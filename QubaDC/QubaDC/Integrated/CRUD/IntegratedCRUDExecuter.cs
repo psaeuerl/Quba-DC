@@ -31,7 +31,7 @@ namespace QubaDC.Integrated.CRUD
                 SchemaInfo schemaDuringInsert = schemaManager.GetCurrentSchema(con);
                 TableSchema histDuringInsert = schemaDuringInsert.Schema.FindHistTable(changingTable);
                 TableSchema histBeforeInsert = expectedSchema.Schema.FindHistTable(changingTable);
-                logStatements("-- C# ensuring hist table has not changed");
+                logStatements("-- C# ensuring hist table has not changed since statement was rewritten");
                 if(histDuringInsert.Name != histBeforeInsert.Name)
                 {
                     throw new InvalidOperationException("Hist during Insert is not Hist during before lock, expected: " + histBeforeInsert.Name + " got: " + histDuringInsert.Name);
@@ -39,7 +39,7 @@ namespace QubaDC.Integrated.CRUD
 
                 //Ensure Can be queried
                 Boolean canBeQueried =  metaManager.GetCanBeQueriedFor(changingTable,con,logStatements);
-                logStatements("-- C# Code checking canBeQueried");
+                logStatements("-- C# Code checking canBeQueried, throwing exception if it cannot be queried");
                 if (!canBeQueried)
                 {
                     throw new InvalidOperationException("Table cannot be queried currently as SMO is in effect");

@@ -127,6 +127,7 @@ namespace QubaDC.Integrated.CRUD
                 true,
                 false
             };
+            Action<String> x = (y) => { System.Diagnostics.Debug.WriteLine(y); };
             IntegratedCRUDExecuter.ExecuteStatementsOnLockedTables(renderStaetement, lockTables, lockWrite, this.DataConnection, this.CRUDRenderer, this.SchemaManager, currentSchemaInfo, updateOperation.Table, metaManager
                 , (s) => System.Diagnostics.Debug.WriteLine(s));
         }
