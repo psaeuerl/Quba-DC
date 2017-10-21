@@ -11,7 +11,7 @@ using QubaDC.CRUD;
 using QubaDC.Integrated;
 using QubaDC.Integrated.SMO;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Integrated.SMO
 {
     class IntegratedCopyTableHandler
     {

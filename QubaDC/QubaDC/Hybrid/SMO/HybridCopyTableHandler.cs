@@ -11,7 +11,7 @@ using QubaDC.Hybrid.SMO;
 using QubaDC.CRUD;
 using QubaDC.Hybrid;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Hybrid.SMO
 {
     class HybridCopyTableHandler
     {

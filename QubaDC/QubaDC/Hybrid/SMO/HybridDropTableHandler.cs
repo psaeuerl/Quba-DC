@@ -10,7 +10,7 @@ using QubaDC.Utility;
 using QubaDC.CRUD;
 using QubaDC.Hybrid.SMO;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Hybrid.SMO
 {
     public class HybridDropTableHandler
     {

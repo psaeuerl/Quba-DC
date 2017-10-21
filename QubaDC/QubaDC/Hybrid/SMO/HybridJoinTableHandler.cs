@@ -12,7 +12,7 @@ using QubaDC.Restrictions;
 using QubaDC.Hybrid;
 using QubaDC.Hybrid.SMO;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Hybrid.SMO
 {
     class HybridJoinTableHandler
     {

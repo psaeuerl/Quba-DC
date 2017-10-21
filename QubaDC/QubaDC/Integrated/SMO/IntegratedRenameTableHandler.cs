@@ -11,7 +11,7 @@ using QubaDC.CRUD;
 using QubaDC.Integrated.SMO;
 using QubaDC.Integrated;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Integrated.SMO
 {
     public class IntegratedRenameTableHandler
     {

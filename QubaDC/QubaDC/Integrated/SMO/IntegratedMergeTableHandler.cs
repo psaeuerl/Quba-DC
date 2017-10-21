@@ -11,7 +11,7 @@ using QubaDC.Integrated;
 using QubaDC.Integrated.SMO;
 using QubaDC.CRUD;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Integrated.SMO
 {
     class IntegratedMergeTableHandler
     {

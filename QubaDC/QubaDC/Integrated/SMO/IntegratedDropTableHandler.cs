@@ -10,7 +10,7 @@ using QubaDC.Utility;
 using QubaDC.CRUD;
 using QubaDC.Integrated.SMO;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Integrated.SMO
 {
     public class IntegratedDropTableHandler
     {

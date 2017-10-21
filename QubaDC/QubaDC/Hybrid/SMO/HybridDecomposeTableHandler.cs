@@ -12,7 +12,7 @@ using QubaDC.CRUD;
 using QubaDC.Hybrid.SMO;
 using QubaDC.Hybrid;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Hybrid.SMO
 {
     class HybridDecomposeTableHandler
     {

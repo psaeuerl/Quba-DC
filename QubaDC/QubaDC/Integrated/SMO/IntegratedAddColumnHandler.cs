@@ -12,7 +12,7 @@ using QubaDC.Restrictions;
 using QubaDC.Integrated.SMO;
 using QubaDC.Integrated;
 
-namespace QubaDC.Separated.SMO
+namespace QubaDC.Integrated.SMO
 {
     class IntegratedAddColumnHandler
     {
