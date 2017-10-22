@@ -41,7 +41,7 @@ namespace QubaDC.Separated
 
         public override void HandleUpdateOperation(UpdateOperation c2)
         {
-            SeparatedUpdateHandler h = new SeparatedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            SeparatedUpdateHandler h = new SeparatedUpdateHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer, this.MetaManager);
             h.HandleUpdate(c2);
         }
 
