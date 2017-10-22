@@ -72,12 +72,14 @@ namespace QubaDC.Separated.CRUD
                     Restriction = a,
                     Table = hist.ToTable()
                 };
+                String updateHistTableSetENDTS = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
+                updateHistTableSetENDTS = updateHistTableSetENDTS.Replace("`" + deleteOperation.Table.TableName + "`", "`" + hist.Name + "`");
 
 
                 String deleteOriginal = this.CRUDRenderer.RenderDelete(deleteOperation.Table, deleteOperation.Restriction);
 
 
-                String updateHistTableSetENDTS = this.CRUDRenderer.RenderUpdate(uo.Table, uo.ColumnNames, uo.ValueLiterals, uo.Restriction);
+               
                 String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(deleteOperation.Table, this.CRUDRenderer.GetSQLVariable(nowVariable));
 
                 return new String[]

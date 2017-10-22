@@ -123,6 +123,7 @@
     <Compile Include="DatabaseObjects\TableSchemaWithHistTable.cs" />
     <Compile Include="DataConnection.cs" />
     <Compile Include="Separated\CRUD\SeparatedCRUDExecuter.cs" />
+    <Compile Include="Separated\SeparatedQSSelectExecuter.cs" />
     <Compile Include="Separated\SMO\SeparatedSMOExecuter.cs" />
     <Compile Include="TableLastUpdate.cs" />
     <Compile Include="TableLastUpdateManager.cs" />
