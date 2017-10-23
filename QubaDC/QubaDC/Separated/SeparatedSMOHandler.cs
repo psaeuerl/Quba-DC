@@ -36,7 +36,7 @@ namespace QubaDC.Separated
 
         internal override void Visit(CopyTable copyTable)
         {
-            SeparatedCopyTableHandler h = new SeparatedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedCopyTableHandler h = new SeparatedCopyTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(copyTable);
         }
 
