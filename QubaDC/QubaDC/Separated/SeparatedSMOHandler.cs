@@ -54,13 +54,15 @@ namespace QubaDC.Separated
 
         internal override void Visit(RenameColumn renameColumn)
         {
-            SeparatedRenameColumnHandler h = new SeparatedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedRenameColumnHandler h = new SeparatedRenameColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(renameColumn);
         }
 
         internal override void Visit(MergeTable mergeTable)
         {
-            SeparatedMergeTableHandler h = new SeparatedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedMergeTableHandler h = new SeparatedMergeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer
+                //, this.MetaManager
+                );
             h.Handle(mergeTable);
         }
 
@@ -72,7 +74,7 @@ namespace QubaDC.Separated
 
         internal override void Visit(DropColumn dropColumn)
         {
-            SepearatedDropColumnHandler h = new SepearatedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SepearatedDropColumnHandler h = new SepearatedDropColumnHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(dropColumn);            
         }
     }

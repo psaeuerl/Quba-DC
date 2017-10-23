@@ -16,15 +16,17 @@ namespace QubaDC.Separated.SMO
     {
         private SchemaManager schemaManager;
 
-        public SepearatedDropColumnHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer)
+        public SepearatedDropColumnHandler(DataConnection c, SchemaManager schemaManager,SMORenderer renderer, TableMetadataManager mm)
         {
             this.DataConnection = c;
             this.schemaManager = schemaManager;
             this.SMORenderer = renderer;
+            this.MetaManager = mm;
         }
 
         public DataConnection DataConnection { get; private set; }
         public SMORenderer SMORenderer { get; private set; }
+        public TableMetadataManager MetaManager { get; private set; }
 
         internal void Handle(DropColumn dropColumn)
         {
@@ -35,28 +37,27 @@ namespace QubaDC.Separated.SMO
             //d.) Recreate Trigger on the table with correct hist table
             //e.) Copy Data
 
-            var con = (MySQLDataConnection)DataConnection;
-            con.DoTransaction((transaction, c) =>
+            Func<SchemaInfo, UpdateSchema> f = (currentSchemaInfo) =>
             {
+                String updateTime = this.SMORenderer.CRUDRenderer.GetSQLVariable("updateTime");
+                Schema currentSchema = currentSchemaInfo.Schema;
 
-                SchemaInfo xy = this.schemaManager.GetCurrentSchema(c);
-                Schema currentSchema = xy.Schema;
 
 
-                TableSchemaWithHistTable originalTable = xy.Schema.FindTable(dropColumn.Schema, dropColumn.TableName);
-                TableSchema originalHistTable = xy.Schema.FindHistTable(originalTable.Table.ToTable());
+                TableSchemaWithHistTable originalTable = currentSchemaInfo.Schema.FindTable(dropColumn.Schema, dropColumn.TableName);
+                TableSchema originalHistTable = currentSchemaInfo.Schema.FindHistTable(originalTable.Table.ToTable());
 
                 var copiedTableSchema = new TableSchema()
                 {
                     Columns = originalTable.Table.Columns.Where(x => x != dropColumn.Column).ToArray(),
                     Name = originalTable.Table.Name,
                     Schema = originalTable.Table.Schema,
-                     ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
+                    ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
                 };
                 var copiedHistSchema = new TableSchema()
                 {
                     Columns = originalHistTable.Columns.Where(x => x != dropColumn.Column).ToArray(),
-                    Name = originalTable.Table.Name + "_" + xy.ID,
+                    Name = originalTable.Table.Name + "_" + currentSchemaInfo.ID,
                     Schema = originalTable.Table.Schema,
                     ColumnDefinitions = originalHistTable.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
 
@@ -66,8 +67,9 @@ namespace QubaDC.Separated.SMO
                 Guard.StateTrue(copiedTableSchema.ColumnDefinitions.Count() + 1 == originalTable.Table.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
                 Guard.StateTrue(copiedHistSchema.ColumnDefinitions.Count() + 1 == originalHistTable.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
 
+                Table metaTable = this.MetaManager.GetMetaTableFor(copiedTableSchema);
                 currentSchema.RemoveTable(originalTable.Table.ToTable());
-                currentSchema.AddTable(copiedTableSchema, copiedHistSchema);
+                currentSchema.AddTable(copiedTableSchema, copiedHistSchema, metaTable);
 
                 String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
                 {
@@ -77,39 +79,13 @@ namespace QubaDC.Separated.SMO
                     OldTableName = originalTable.Table.Name
                 });
 
-                con.ExecuteNonQuerySQL(renameTableSQL);
+               
 
-                CopyTable(c, con, originalTable.Table, copiedTableSchema,true);
-                CopyTable(c, con, originalHistTable, copiedHistSchema,false);
-
-
-                String dropInsertTrigger = SMORenderer.RenderDropInsertTrigger(copiedTableSchema, originalHistTable);
-                String dropUpdaterigger = SMORenderer.RenderDropUpdaterigger(copiedTableSchema, originalHistTable);
-                String dropDeleteTrigger = SMORenderer.RenderDropDeleteTrigger(copiedTableSchema, originalHistTable);
-
-                con.ExecuteSQLScript(dropInsertTrigger, c);
-                con.ExecuteSQLScript(dropUpdaterigger, c);
-                con.ExecuteSQLScript(dropDeleteTrigger, c);
+                String copyOriginalTable = CopyTable( originalTable.Table, copiedTableSchema, true);
+                String copyHistTable = CopyTable(originalHistTable, copiedHistSchema, false);
 
 
-
-                //INsert Trigger 
-                String trigger = SMORenderer.RenderCreateInsertTrigger(copiedTableSchema, copiedHistSchema);
-                //Delete Trigger
-                String deleteTrigger = SMORenderer.RenderCreateDeleteTrigger(copiedTableSchema, copiedHistSchema);
-                //Update Trigger
-                String UpdateTrigger = SMORenderer.RenderCreateUpdateTrigger(copiedTableSchema, copiedHistSchema);
-
-                //Add Trigger
-                con.ExecuteSQLScript(trigger, c);
-                con.ExecuteSQLScript(deleteTrigger, c);
-                con.ExecuteSQLScript(UpdateTrigger, c);
-
-                //String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
-
-                //con.ExecuteNonQuerySQL(updateSchema, c);
-                this.schemaManager.StoreSchema(currentSchema, dropColumn, con, c);
-
+          
 
                 //Insert data from old to new
                 SelectOperation s = new SelectOperation()
@@ -119,18 +95,137 @@ namespace QubaDC.Separated.SMO
                 };
                 String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
                 String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(copiedTableSchema, select);
-                con.ExecuteNonQuerySQL(insertFromTable);
+
+                SelectOperation sHist = new SelectOperation()
+                {
+                    Columns = copiedTableSchema.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
+                    LiteralColumns = new LiteralColumn[] {
+                            new LiteralColumn() { ColumnLiteral = updateTime, ColumnName = SeparatedConstants.StartTS },
+                            new LiteralColumn() { ColumnLiteral = "NULL", ColumnName = SeparatedConstants.EndTS }},
+                    FromTable = new FromTable() { TableAlias = "t1", TableName = originalTable.Table.Name + "_old", TableSchema = originalTable.Table.Schema }
+                };
+                String selectHist = this.SMORenderer.CRUDHandler.RenderSelectOperation(sHist);
+                String insertIntoHist = SMORenderer.RenderInsertToTableFromSelect(copiedHistSchema, selectHist);
+
 
                 String dropTableSql = SMORenderer.RenderDropTable(originalTable.Table.Schema, originalTable.Table.Name + "_old");
-                con.ExecuteNonQuerySQL(dropTableSql);
 
-                transaction.Commit();
-            });
-        
+
+
+
+                //TableSchemaWithHistTable originalTable = currentSchemaInfo.Schema.FindTable(dropColumn.Schema, dropColumn.TableName);
+                //TableSchema originalHistTable = currentSchemaInfo.Schema.FindHistTable(originalTable.Table.ToTable());
+
+                //var copiedTableSchema = new TableSchema()
+                //{
+                //    Columns = originalTable.Table.Columns.Where(x => x != dropColumn.Column).ToArray(),
+                //    Name = originalTable.Table.Name,
+                //    Schema = originalTable.Table.Schema,
+                //    ColumnDefinitions = originalTable.Table.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
+                //};
+                //var copiedHistSchema = new TableSchema()
+                //{
+                //    Columns = originalHistTable.Columns.Where(x => x != dropColumn.Column).ToArray(),
+                //    Name = originalTable.Table.Name + "_" + currentSchemaInfo.ID,
+                //    Schema = originalTable.Table.Schema,
+                //    ColumnDefinitions = originalHistTable.ColumnDefinitions.Where(x => x.ColumName != dropColumn.Column).ToArray(),
+
+                //};
+                //Guard.StateTrue(copiedTableSchema.Columns.Count() + 1 == originalTable.Table.Columns.Count(), "Could not find column: " + dropColumn.Column);
+                //Guard.StateTrue(copiedHistSchema.Columns.Count() + 1 == originalHistTable.Columns.Count(), "Could not find column: " + dropColumn.Column);
+                //Guard.StateTrue(copiedTableSchema.ColumnDefinitions.Count() + 1 == originalTable.Table.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
+                //Guard.StateTrue(copiedHistSchema.ColumnDefinitions.Count() + 1 == originalHistTable.ColumnDefinitions.Count(), "Could not find column: " + dropColumn.Column);
+                //Table metaTable = this.MetaManager.GetMetaTableFor(copiedTableSchema);
+                //currentSchema.RemoveTable(originalTable.Table.ToTable());
+                //currentSchema.AddTable(copiedTableSchema, copiedHistSchema, metaTable);
+
+                //String dropOriginalHistTable = SMORenderer.RenderDropTable(originalHistTable.Schema, originalHistTable.Name);
+                ////con.ExecuteNonQuerySQL(dropOriginalHistTable);
+
+                //String renameTableSQL = SMORenderer.RenderRenameTable(new RenameTable()
+                //{
+                //    NewSchema = originalTable.HistTableSchema,
+                //    NewTableName = originalTable.HistTableName,
+                //    OldSchema = originalTable.Table.Schema,
+                //    OldTableName = originalTable.Table.Name
+                //});
+                ////con.ExecuteNonQuerySQL(renameTableSQL);
+
+                //String copyBaseTable = CopyTable(originalHistTable, copiedTableSchema, false);
+                //String copyHistTable = CopyTable(copiedTableSchema, copiedHistSchema, false);
+
+
+                ////String updateSchema = this.schemaManager.GetInsertSchemaStatement(currentSchema, dropColumn);
+
+
+
+
+                ////Insert data from old to new
+                //SelectOperation s = new SelectOperation()
+                //{
+                //    Columns = copiedTableSchema.Columns.Select(x => new ColumnReference() { ColumnName = x, TableReference = "t1" }).ToArray(),
+                //    LiteralColumns = new LiteralColumn[] {
+                //        new LiteralColumn() { ColumnLiteral = updateTime, ColumnName = IntegratedConstants.StartTS },
+                //        new LiteralColumn() { ColumnLiteral = "NULL", ColumnName = IntegratedConstants.EndTS }},
+                //    FromTable = new FromTable() { TableAlias = "t1", TableName = originalHistTable.Name, TableSchema = originalTable.Table.Schema },
+                //    Restriction = Integrated.SMO.IntegratedSMOHelper.GetBasiRestriction("t1", updateTime)
+
+                //};
+                //String select = this.SMORenderer.CRUDHandler.RenderSelectOperation(s);
+                //TableSchema isnertWithStartts = new TableSchema()
+                //{
+                //    Columns = copiedTableSchema.Columns.Concat(new String[] { IntegratedConstants.StartTS, IntegratedConstants.EndTS }).ToArray(),
+                //    Name = copiedTableSchema.Name,
+                //    Schema = copiedTableSchema.Schema
+                //};
+                //String insertFromTable = SMORenderer.RenderInsertToTableFromSelect(isnertWithStartts, select);
+                ////con.ExecuteNonQuerySQL(insertFromTable);
+                //String updateLastUpdate = this.MetaManager.GetSetLastUpdateStatement(new Table() { TableName = dropColumn.TableName, TableSchema = dropColumn.Schema }, updateTime);
+
+                String[] Statements = new String[]
+                {
+                    renameTableSQL,
+                    copyOriginalTable,
+                    copyHistTable,
+
+                    insertFromTable,
+                    insertIntoHist,
+                    dropTableSql
+
+
+                   //dropOriginalHistTable,
+                   //renameTableSQL,
+                   //copyBaseTable,
+                   //copyHistTable,
+                   //insertFromTable,
+                   //updateLastUpdate
+                };
+
+                return new UpdateSchema()
+                {
+                    newSchema = currentSchema,
+                    UpdateStatements = Statements,
+                    MetaTablesToLock = new Table[] { originalTable.ToTable() },
+                    TablesToUnlock = new Table[] { originalTable.ToTable() }
+                };
+            };
+
+
+            SeparatedSMOExecuter.Execute(
+                this.SMORenderer,
+                this.DataConnection,
+                 this.schemaManager,
+                 dropColumn,
+                 f,
+                 (s) => System.Diagnostics.Debug.WriteLine(s)
+                 , MetaManager);
+
+
+
 
         }
 
-        private void CopyTable(System.Data.Common.DbConnection c, MySQLDataConnection con, TableSchema originalTable, TableSchema copiedTableSchema, Boolean includeold)
+        private String CopyTable(TableSchema originalTable, TableSchema copiedTableSchema, Boolean includeold)
         {
             SelectOperation s = new SelectOperation()
             {
@@ -147,7 +242,7 @@ namespace QubaDC.Separated.SMO
 
             ////Copy Table without Triggers
             String copyTableSQL = SMORenderer.RenderCopyTable(copiedTableSchema.Schema, copiedTableSchema.Name, select);
-            con.ExecuteNonQuerySQL(copyTableSQL, c);
+            return copyTableSQL;
         }
     }
 }
