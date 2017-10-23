@@ -24,7 +24,7 @@ namespace QubaDC.Separated
 
         internal override void Visit(DropTable dropTable)
         {
-            SeparatedDropTableHandler h = new SeparatedDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedDropTableHandler h = new SeparatedDropTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(dropTable);
         }
 
