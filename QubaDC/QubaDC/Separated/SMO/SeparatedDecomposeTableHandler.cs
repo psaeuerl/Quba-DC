@@ -161,8 +161,8 @@ namespace QubaDC.Separated.SMO
                 String insertMetadataSecondTable = this.MetaManager.GetStartInsertFor(secondTableSchema.Schema, secondTableSchema.Name);
 
                 var StartEndTs = new String[] { updateTime, "NULL" };
-                String insertHistFirst = SMORenderer.RenderInsertFromOneTableToOther(firstTableSchema, firstTableHistSchema, null, originalTable.Table.Columns, null, StartEndTs);
-                String insertHistSecond = SMORenderer.RenderInsertFromOneTableToOther(secondTableSchema, secondTableHistSchema, null, originalTable.Table.Columns, null, StartEndTs);
+                String insertHistFirst = SMORenderer.RenderInsertFromOneTableToOther(firstTableSchema, firstTableHistSchema, null, firstTableSchema.Columns, null, StartEndTs);
+                String insertHistSecond = SMORenderer.RenderInsertFromOneTableToOther(secondTableSchema, secondTableHistSchema, null, secondTableSchema.Columns, null, StartEndTs);
 
                 String[] Statements = copyTrueTable
                 .Concat(copyFalseTable)
