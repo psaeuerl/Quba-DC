@@ -12,7 +12,7 @@ namespace QubaDC.Separated
     {
         internal override void Visit(RenameTable renameTable)
         {
-            SeparatedRenameTableHandler h = new SeparatedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedRenameTableHandler h = new SeparatedRenameTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(renameTable);
         }
 
