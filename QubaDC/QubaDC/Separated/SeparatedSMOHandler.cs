@@ -42,7 +42,7 @@ namespace QubaDC.Separated
 
         internal override void Visit(DecomposeTable decomposeTable)
         {
-            SeparatedDecomposeTableHandler h = new SeparatedDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer);
+            SeparatedDecomposeTableHandler h = new SeparatedDecomposeTableHandler(this.DataConnection, this.SchemaManager, this.SMORenderer, this.MetaManager);
             h.Handle(decomposeTable);
         }
 
