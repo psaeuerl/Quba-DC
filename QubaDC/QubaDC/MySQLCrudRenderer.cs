@@ -29,7 +29,7 @@ namespace QubaDC
             return String.Join("," + System.Environment.NewLine, valueLiterals);
         }
 
-        internal String RenderColumn(ColumnReference column)
+        public String RenderColumn(ColumnReference column)
         {
             return QualifyObjectName(column.TableReference) + "." + QualifyObjectName(column.ColumnName);
         }
@@ -52,12 +52,12 @@ namespace QubaDC
             return MySQLDialectHelper.RenderDateTime(now);
         }
 
-        internal override string SerializeString(string v)
+        public override string SerializeString(string v)
         {
             return "'" + v + "'";
         }
 
-        internal override string RenderRestriction(Restriction joinCondition)
+        public override string RenderRestriction(Restriction joinCondition)
         {
             if (joinCondition == null)
                 return "";
@@ -66,7 +66,7 @@ namespace QubaDC
             return result;
         }
 
-        internal override string RenderDelete(Table table, Restriction restriction)
+        public override string RenderDelete(Table table, Restriction restriction)
         {
             String restrictions = RenderRestriction(restriction);
             String restPart = String.IsNullOrWhiteSpace(restrictions) ? "" : "WHERE " + restrictions;
@@ -77,7 +77,7 @@ namespace QubaDC
             return deleteResult;
         }
 
-        internal override string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction)
+        public override string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction)
         {
             String restrictions = RenderRestriction(restriction);
             String restPart = String.IsNullOrWhiteSpace(restrictions) ? "" : "WHERE " + restrictions;
@@ -102,7 +102,7 @@ namespace QubaDC
             return result;
         }
 
-        internal override string[] RenderLockTables(string[] locktables,Boolean[] lockAsWrite)
+        public override string[] RenderLockTables(string[] locktables,Boolean[] lockAsWrite)
         {
             var lockWithWrite = locktables.Zip(lockAsWrite,(s,b) =>  new { table = s, write = b });
             String[] tablesWithWrite = lockWithWrite.Select(x => { return x.table + (x.write ? " WRITE" : " READ"); }).ToArray();
@@ -113,13 +113,13 @@ namespace QubaDC
             return setupAndAquireLock;
         }
 
-        internal override string[] RenderAutoCommitZero()
+        public override string[] RenderAutoCommitZero()
         {
              return new String[] { @"SET autocommit=0;",
                 "SET SQL_SAFE_UPDATES=0;" };
         }
 
-        internal override string[] RenderCommitAndUnlock()
+        public override string[] RenderCommitAndUnlock()
         {
             return new String[]
             {
@@ -128,7 +128,7 @@ namespace QubaDC
             };
         }
 
-        internal override string[] RenderRollBackAndUnlock()
+        public override string[] RenderRollBackAndUnlock()
         {
             return new String[]
           {
@@ -137,34 +137,34 @@ namespace QubaDC
           };
         }
 
-        internal override string renderDateTime(DateTime t)
+        public override string renderDateTime(DateTime t)
         {
             return MySQLDialectHelper.RenderDateTime(t);
         }
 
-        internal override string GetSQLVariable(string v)
+        public override string GetSQLVariable(string v)
         {
             return "@"+v;
         }
 
-        internal override string RenderNowToVariable(string v)
+        public override string RenderNowToVariable(string v)
         {
             return String.Format("SET {0} = NOW(3)", this.GetSQLVariable(v));
         }
 
-        internal override string RenderTmpTableFromSelect(string tableSchema, string tableName, string select)
+        public override string RenderTmpTableFromSelect(string tableSchema, string tableName, string select)
         {
             return String.Format("CREATE TEMPORARY TABLE IF NOT EXISTS  {0} AS ({1});",
                 this.PrepareTable(new Table() { TableName = tableName, TableSchema = tableSchema }),
                 select);
         }
 
-        internal override string RenderDropTempTable(Table tmpTable)
+        public override string RenderDropTempTable(Table tmpTable)
         {
             return String.Format("DROP TEMPORARY TABLE {0};", this.PrepareTable(tmpTable));
         }
 
-        internal override string[] RenderLockTablesAliased(TableToLock[] tables)
+        public override string[] RenderLockTablesAliased(TableToLock[] tables)
         {
 
             String[] tablesWithWrite = tables.Select(x => { return x.Name +  (String.IsNullOrWhiteSpace(x.Alias) ? "" : (" AS " + x.Alias)) + (x.LockAsWrite ? " WRITE" : " READ"); }).ToArray();

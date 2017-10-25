@@ -39,21 +39,21 @@ namespace QubaDC.Integrated
             return select;
         }
 
-        internal override string RenderHashSelect(SelectOperation newOperation)
+        public override string RenderHashSelect(SelectOperation newOperation)
         {            
             IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(newOperation, true);
             return select;
         }
 
-        internal override string RenderHybridHashSelect(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridHashSelect(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleIntegratedSelect(originalSelect, s, s2, true, TableRefToGuidMapping);
             return select;
         }
 
-        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             IntegratedSelectHandler h = new IntegratedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleIntegratedSelect(originalSelect, s, s2, false, TableRefToGuidMapping);

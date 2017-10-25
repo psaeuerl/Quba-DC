@@ -37,21 +37,21 @@ namespace QubaDC.Hybrid
             return select;
         }
 
-        internal override string RenderHashSelect(SelectOperation newOperation)
+        public override string RenderHashSelect(SelectOperation newOperation)
         {
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(newOperation, true);
             return select;
         }
 
-        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s,SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo s,SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleHybridSelect(newOperation, s, s2,true, TableRefToGuidMapping);
             return select;
         }
 
-        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo s, SchemaInfo s2, Dictionary<String, Guid?> TableRefToGuidMapping)
         {
             HybridSelectHandler h = new HybridSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleHybridSelect(originalSelect, s,s2,false, TableRefToGuidMapping);
@@ -76,7 +76,7 @@ namespace QubaDC.Hybrid
         //    h.HandleDelete(deleteOperation);
         //}
 
-        //internal override string RenderHashSelect(SelectOperation newOperation)
+        //public override string RenderHashSelect(SelectOperation newOperation)
         //{
         //    SeparatedSelectHandler h = new SeparatedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
         //    String select = h.HandleSelect(newOperation, true);

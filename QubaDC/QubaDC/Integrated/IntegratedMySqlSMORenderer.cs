@@ -53,7 +53,7 @@ namespace QubaDC.Integrated
 
 
 
-        //        internal override string RenderRenameTable(RenameTable renameTable)
+        //        public override string RenderRenameTable(RenameTable renameTable)
         //        {
         //            String baseRename = "RENAME TABLE {0} TO {1}";
         //            String oldName = GetQuotedTable(renameTable.OldSchema, renameTable.OldTableName);
@@ -62,12 +62,12 @@ namespace QubaDC.Integrated
         //            return result;
         //        }
 
-        //        internal override string RenderDropTable(String Schema, String Table)
+        //        public override string RenderDropTable(String Schema, String Table)
         //        {
         //            return "DROP TABLE " + GetQuotedTable(Schema, Table);
         //        }
 
-        //        internal override string RenderCopyTable(String schema,String tablename,String newschema, String newname)
+        //        public override string RenderCopyTable(String schema,String tablename,String newschema, String newname)
         //        {
         //            String baseFormat = "CREATE TABLE {0} LIKE {1}; ";
         //            String oldTable = GetQuotedTable(schema,tablename);
@@ -76,7 +76,7 @@ namespace QubaDC.Integrated
         //            return result;
         //        }
 
-        //        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null)
+        //        public override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null)
         //        {
         //            String baseFormat = "INSERT {0} {4} SELECT {3} FROM {1} {2};";
         //            String columnString = "*";
@@ -98,7 +98,7 @@ namespace QubaDC.Integrated
         //            return result;
         //        }
 
-        //        internal override string RenderDropColumns(string schema, string name, string[] columns)
+        //        public override string RenderDropColumns(string schema, string name, string[] columns)
         //        {
         //            String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + Quote(x)));
         //            String table = GetQuotedTable(schema, name);
@@ -106,7 +106,7 @@ namespace QubaDC.Integrated
         //            return Drop;
         //        }
 
-        //        internal override string RenderCopyTable(string schema, string name, string select)
+        //        public override string RenderCopyTable(string schema, string name, string select)
         //        {
         //            String baseFormat = "CREATE TABLE {0} AS {1}; ";
         //            String newTable = GetQuotedTable(schema, name);
@@ -114,7 +114,7 @@ namespace QubaDC.Integrated
         //            return result;
         //        }
 
-        //        internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
+        //        public override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
         //        {
         //            String baseFormat = "INSERT INTO {0} ({2}) {1};";
 
@@ -126,7 +126,7 @@ namespace QubaDC.Integrated
         //            return result;
         //        }
 
-        //        internal override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
+        //        public override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
         //        {
         //            String dropcolumns ="ADD  " + RenderColumnDefinition( true,column);
         //            String table = GetQuotedTable(copiedTableSchema.Schema, copiedTableSchema.Name);
@@ -134,28 +134,28 @@ namespace QubaDC.Integrated
         //            return Drop;
         //        }
 
-        //        internal override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        //        public override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         //        {
         //            String baseFormat = "Drop TRIGGER {1}.insert_on_{0}";
         //            String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
         //            return result;
         //        }
 
-        //        internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        //        public override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         //        {
         //            String baseFormat = "Drop TRIGGER {1}.update_on_{0}"; 
         //             String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
         //            return result;
         //        }
 
-        //        internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        //        public override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         //        {
         //            String baseFormat = "Drop TRIGGER {1}.delete_on_{0}";
         //            String result = String.Format(baseFormat, copiedTableSchema.Name, Quote(ctHistTable.Schema));
         //            return result;
         //        }
 
-        //        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
+        //        public override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
         //        {
         //            String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
         //            String table = GetQuotedTable(schema.Schema, schema.Name);
@@ -236,7 +236,7 @@ namespace QubaDC.Integrated
                             + (IncludeAdditionalInformation ? x.AdditionalInformation : "");
         }
 
-        internal override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
+        public override string RenderAddColumn(TableSchema copiedTableSchema, ColumnDefinition column)
         {
             String dropcolumns = "ADD  " + RenderColumnDefinition(true, column);
             String table = GetQuotedTable(copiedTableSchema.Schema, copiedTableSchema.Name);
@@ -244,7 +244,7 @@ namespace QubaDC.Integrated
             return Drop;
         }
 
-        internal override string RenderCopyTable(string schema, string name, string select)
+        public override string RenderCopyTable(string schema, string name, string select)
         {
             String baseFormat = "CREATE TABLE {0} AS {1}; ";
             String newTable = GetQuotedTable(schema, name);
@@ -252,7 +252,7 @@ namespace QubaDC.Integrated
             return result;
         }
 
-        internal override string RenderCopyTable(string schema, string tablename, string newschema, string newname)
+        public override string RenderCopyTable(string schema, string tablename, string newschema, string newname)
         {
             String baseFormat = "CREATE TABLE {0} LIKE {1}; ";
             String oldTable = GetQuotedTable(schema, tablename);
@@ -261,7 +261,7 @@ namespace QubaDC.Integrated
             return result;
         }
 
-        internal override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
+        public override string RenderCreateDeleteTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
             throw new NotImplementedException("Cannot use Delete Trigger as we cannot update the table that is responsible for firing the trigger");
             //            String format =
@@ -316,7 +316,7 @@ namespace QubaDC.Integrated
             //            return trigger;
         }
 
-        internal override string RenderCreateUpdateTrigger(TableSchema createTable, TableSchema ctHistTable)
+        public override string RenderCreateUpdateTrigger(TableSchema createTable, TableSchema ctHistTable)
         {
 
             //  throw new NotImplementedException("will be handeld via insert+update");
@@ -362,7 +362,7 @@ DELIMITER;";
 
         }
 
-        internal override string RenderDropColumns(string schema, string name, string[] columns)
+        public override string RenderDropColumns(string schema, string name, string[] columns)
         {
             String dropcolumns = String.Join("," + System.Environment.NewLine, columns.Select(x => "DROP COLUMN " + Quote(x)));
             String table = GetQuotedTable(schema, name);
@@ -370,27 +370,27 @@ DELIMITER;";
             return Drop;
         }
 
-        internal override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        public override string RenderDropDeleteTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
             throw new NotImplementedException();
         }
 
-        internal override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        public override string RenderDropInsertTrigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
             throw new NotImplementedException();
         }
 
-        internal override string RenderDropTable(string Schema, string Table)
+        public override string RenderDropTable(string Schema, string Table)
         {
             return "DROP TABLE " + GetQuotedTable(Schema, Table);
         }
 
-        internal override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
+        public override string RenderDropUpdaterigger(TableSchema copiedTableSchema, TableSchema ctHistTable)
         {
             throw new NotImplementedException();
         }
 
-        internal override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null, string[] literals = null)
+        public override string RenderInsertFromOneTableToOther(TableSchema table, TableSchema copiedTableSchema, Restriction rc, string[] columns, string[] insertcolumns = null, string[] literals = null)
         {
             String baseFormat = "INSERT {0} SELECT {3} FROM {1} {2};";
             String columnString = "*";
@@ -414,7 +414,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
+        public override string RenderInsertToTableFromSelect(TableSchema joinedTableSchema, string select)
         {
             String baseFormat = "INSERT {0} ({2}) {1};";
 
@@ -425,7 +425,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
+        public override string RenderRenameColumn(RenameColumn renameColumn, ColumnDefinition cd, TableSchema schema)
         {
             String baseFormat = "ALTER TABLE {0} CHANGE {1} {2};";
             String table = GetQuotedTable(schema.Schema, schema.Name);
@@ -435,7 +435,7 @@ DELIMITER;";
             return result;
         }
 
-        internal override string RenderRenameTable(RenameTable renameTable)
+        public override string RenderRenameTable(RenameTable renameTable)
         {
             String baseRename = "RENAME TABLE {0} TO {1}";
             String oldName = GetQuotedTable(renameTable.OldSchema, renameTable.OldTableName);

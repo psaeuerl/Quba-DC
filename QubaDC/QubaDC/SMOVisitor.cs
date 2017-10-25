@@ -16,17 +16,17 @@ namespace QubaDC
 
         public TableMetadataManager MetaManager { get; internal set; }
 
-        internal abstract void Visit(AddColum addColum);
-        internal abstract void Visit(MergeTable mergeTable);
-        internal abstract void Visit(RenameTable renameTable);
-        internal abstract void Visit(RenameColumn renameColumn);
-        internal abstract void Visit(PartitionTable partitionTable);
-        internal abstract void Visit(JoinTable joinTable);
-        internal abstract void Visit(DropTable dropTable);
-        internal abstract void Visit(DecomposeTable decomposeTable);
-        internal abstract void Visit(CreateTable createTable);
-        internal abstract void Visit(CopyTable copyTable);
-        internal abstract void Visit(DropColumn dropColumn);
+        public abstract void Visit(AddColum addColum);
+        public abstract void Visit(MergeTable mergeTable);
+        public abstract void Visit(RenameTable renameTable);
+        public abstract void Visit(RenameColumn renameColumn);
+        public abstract void Visit(PartitionTable partitionTable);
+        public abstract void Visit(JoinTable joinTable);
+        public abstract void Visit(DropTable dropTable);
+        public abstract void Visit(DecomposeTable decomposeTable);
+        public abstract void Visit(CreateTable createTable);
+        public abstract void Visit(CopyTable copyTable);
+        public abstract void Visit(DropColumn dropColumn);
 
 
         public void HandleSMO(SchemaModificationOperator op)

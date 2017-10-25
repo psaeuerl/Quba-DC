@@ -122,7 +122,7 @@ namespace QubaDC.Integrated
         //            return execResult;
         //        }
 
-        //        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
+        //        public override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         //        {
         //            String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
         //            DataTable t = con.ExecuteQuery(selectQueryStoreROw);
@@ -408,7 +408,7 @@ namespace QubaDC.Integrated
             return execResult;
         }
 
-        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
+        public override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         {
             //Note => Need to check if current table exists at the time of execution!!
 

@@ -20,20 +20,20 @@ namespace QubaDC.CRUD
         public abstract string RenderInsertSelect(Table insertTable, string[] columnnames, string select);
 
         public abstract string SerializeDateTime(DateTime now);
-        internal abstract string SerializeString(string v);
-        internal abstract string[] RenderAutoCommitZero();
+        public abstract string SerializeString(string v);
+        public abstract string[] RenderAutoCommitZero();
 
 
-        internal string Quote(string tableReference)
+        public string Quote(string tableReference)
         {
             return String.Format("`{0}`", tableReference);
         }
 
-        internal abstract string[] RenderLockTables(string[] locktables, bool[] lockAsWrite);
+        public abstract string[] RenderLockTables(string[] locktables, bool[] lockAsWrite);
 
-        internal abstract string[] RenderLockTablesAliased(TableToLock[] tablesToLock);
+        public abstract string[] RenderLockTablesAliased(TableToLock[] tablesToLock);
 
-        internal string RenderJoinType(JoinType join)
+        public string RenderJoinType(JoinType join)
         {
             switch (join)
             {
@@ -50,17 +50,17 @@ namespace QubaDC.CRUD
             }
         }
 
-        internal abstract string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction);
+        public abstract string RenderUpdate(Table table, string[] columnNames, string[] valueLiterals, Restriction restriction);
 
-        internal abstract string RenderDelete(Table table, Restriction restriction);
-        internal abstract string RenderRestriction(Restriction joinCondition);        
-        internal abstract string[] RenderCommitAndUnlock();
-        internal abstract string[] RenderRollBackAndUnlock();
-        internal abstract string renderDateTime(DateTime t);
-        internal abstract string GetSQLVariable(string v);
-        internal abstract string RenderNowToVariable(string v);
-        internal abstract string RenderTmpTableFromSelect(string tableSchema, string tableName, string select);
-        internal abstract string RenderDropTempTable(Table tmpTable);
+        public abstract string RenderDelete(Table table, Restriction restriction);
+        public abstract string RenderRestriction(Restriction joinCondition);        
+        public abstract string[] RenderCommitAndUnlock();
+        public abstract string[] RenderRollBackAndUnlock();
+        public abstract string renderDateTime(DateTime t);
+        public abstract string GetSQLVariable(string v);
+        public abstract string RenderNowToVariable(string v);
+        public abstract string RenderTmpTableFromSelect(string tableSchema, string tableName, string select);
+        public abstract string RenderDropTempTable(Table tmpTable);
 
         public abstract string PrepareTable(Table insertTable);
 

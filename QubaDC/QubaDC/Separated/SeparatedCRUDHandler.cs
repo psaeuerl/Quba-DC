@@ -31,7 +31,7 @@ namespace QubaDC.Separated
             h.HandleDelete(deleteOperation);
         }
 
-        internal override string RenderHashSelect(SelectOperation newOperation)
+        public override string RenderHashSelect(SelectOperation newOperation)
         {
             SeparatedSelectHandler h = new SeparatedSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
             String select = h.HandleSelect(newOperation, true);
@@ -45,12 +45,12 @@ namespace QubaDC.Separated
             h.HandleUpdate(c2);
         }
 
-        internal override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)
         {
             throw new NotImplementedException();
         }
 
-        internal override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)
+        public override string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<string, Guid?> TableRefToGuidMapping)
         {
             throw new NotImplementedException();
         }

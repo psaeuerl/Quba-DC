@@ -8,8 +8,9 @@ using QubaDC.Utility;
 using QubaDC.Restrictions;
 using System.Data;
 using QubaDC.Hybrid;
+using QubaDC.Separated;
 
-namespace QubaDC.Separated
+namespace QubaDC.Hybrid
 {
     public class HybridQSSelectHandler : QueryStoreSelectHandler
     {
@@ -283,7 +284,7 @@ namespace QubaDC.Separated
             return execResult;
         }
 
-        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
+        public override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs, DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         {
             String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
             DataTable t = con.ExecuteQuery(selectQueryStoreROw);

@@ -204,7 +204,7 @@ namespace QubaDC.Separated
             return execResult;
         }
 
-        internal override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs,DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
+        public override QueryStoreReexecuteResult ReExecuteSelectFor(Guid gUID, QueryStore qs,DataConnection con, CRUDVisitor cRUDHandler, SchemaManager schemaManager)
         {
             String selectQueryStoreROw = qs.RenderSelectForQueryStore(gUID);
             DataTable t = con.ExecuteQuery(selectQueryStoreROw);

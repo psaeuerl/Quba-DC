@@ -25,9 +25,9 @@ namespace QubaDC
 
         public abstract String RenderSelectOperation(SelectOperation selectOperation);
 
-        internal abstract string RenderHashSelect(SelectOperation newOperation);
+        public abstract string RenderHashSelect(SelectOperation newOperation);
         public abstract void HandleUpdateOperation(UpdateOperation c2);
-        internal abstract string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo executiontimeSchema, SchemaInfo currentSchema,Dictionary<String,Guid?> TableRefToGuidMapping);
-        internal abstract string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping);
+        public abstract string RenderHybridSelectOperation(SelectOperation originalSelect, SchemaInfo executiontimeSchema, SchemaInfo currentSchema,Dictionary<String,Guid?> TableRefToGuidMapping);
+        public abstract string RenderHybridHashSelect(SelectOperation newOperation, SchemaInfo executiontimeSchema, SchemaInfo currentSchema, Dictionary<String, Guid?> TableRefToGuidMapping);
     }
 }
