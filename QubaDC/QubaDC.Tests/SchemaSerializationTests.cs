@@ -1,4 +1,5 @@
-﻿using QubaDC.DatabaseObjects;
+﻿using QubaDC.CRUD;
+using QubaDC.DatabaseObjects;
 using QubaDC.Utility;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace QubaDC.Tests
             Schema x = new Schema()
             { 
             };
-            x.AddTable(new TableSchema(),new TableSchema());
+            x.AddTable(new TableSchema(),new TableSchema(),new Table());
             String ser = JsonSerializer.SerializeObject(x);
             Assert.NotNull(ser);
             Schema y = JsonSerializer.DeserializeObject<Schema>(ser);
