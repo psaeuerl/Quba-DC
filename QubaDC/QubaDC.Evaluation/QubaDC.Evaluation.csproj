@@ -46,12 +46,16 @@
     <Compile Include="EvaluationCreateTable.cs" />
     <Compile Include="InsertGenerator.cs" />
     <Compile Include="Phase.cs" />
+    <Compile Include="PhaseResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectOperationGenerator.cs" />
     <Compile Include="SimpleSystem\SimpleSystemCRUDHandler.cs" />
     <Compile Include="SimpleSystem\SeparatedQSSelectHandler.cs" />
     <Compile Include="SimpleSystem\SimpleMySqlSMORenderer.cs" />
     <Compile Include="SimpleSystem\SimpleSMOHandler.cs" />
+    <Compile Include="SystemSetup.cs" />
+    <Compile Include="Testsetup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,11 +1,7 @@
 ﻿using QubaDC.Hybrid;
+using QubaDC.Integrated;
 using QubaDC.Separated;
-using QubaDC.SMO;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QubaDC.Evaluation
 {
@@ -36,6 +32,20 @@ namespace QubaDC.Evaluation
                 new SimpleSystem.SimpleQSSelectHandler(),
                 new SimpleSystem.SimpleMySqlSMORenderer());
 
+            QubaDCSystem separatedSystem = new MySQLQubaDCSystem(
+                connection,
+                  new SeparatedSMOHandler()
+                  , new SeparatedCRUDHandler()
+                , new SeparatedQSSelectHandler()
+                , new SeparatedMySqlSMORenderer()
+                );
+            QubaDCSystem integratedSystem = new MySQLQubaDCSystem(
+               connection,
+               new IntegratedSMOHandler()
+               , new IntegratedCRUDHandler()
+               , new IntegratedQSSelectHandler()
+               , new IntegratedMySqlSMORenderer()
+               );
 
             List<Phase> phases = new List<Phase>();
             Phase p1 = new Phase() {                
@@ -43,78 +53,23 @@ namespace QubaDC.Evaluation
                 Inserts = 100,
                 Updates = 0,
                 Deletes = 0,
+                 DoDelets = false,
+                  DoUPdates = false
                 //TODO => Selects
             };
             phases.Add(p1);
             Testsetup s = new Testsetup()
             {
-                systems = new SystemSetup[] { new SystemSetup() { quba = hybridSystem, name = "Hybrid" },
-                                              new SystemSetup() { quba = simpleSystem, name ="SimpleReference" } },
+                systems = new SystemSetup[] {
+                    new SystemSetup() { quba = separatedSystem, name = "Separated" },
+                    new SystemSetup() { quba = hybridSystem, name = "Hybrid" },   
+                    new SystemSetup() { quba = integratedSystem, name ="Integrated" },
+                    new SystemSetup() { quba = simpleSystem, name ="SimpleReference" } },
                 Phases = phases
             };
 
             s.Run();
 
-        }
-    }
-
-    internal class SystemSetup
-    {
-        internal string name;
-        internal QubaDCSystem quba;
-    }
-
-    internal class Testsetup
-    {
-        public Testsetup()
-        {
-        }
-
-        public List<Phase> Phases { get; internal set; }
-        public SystemSetup[] systems { get; internal set; }
-
-        internal void Run()
-        {
-            foreach(var system in systems)
-            {
-                Console.WriteLine("Starting test for system:" + system.name);
-                String dbName = String.Format("EVAL_{0}_{1}", system.name, Guid.NewGuid().ToString().Replace("-", ""));
-                Console.WriteLine("DBName: " + dbName);
-                UseDB((MySQLDataConnection)system.quba.DataConnection, dbName);
-
-                //SETUP
-                CreateTable t = EvaluationCreateTable.GetTable(dbName);
-                system.quba.CreateSMOTrackingTableIfNeeded();
-                system.quba.SMOHandler.HandleSMO(t);
-
-                foreach(var phase in Phases)
-                {
-                    phase.runFor(system.quba, dbName);
-                }
-
-
-                Console.WriteLine("Finished test for system: " + system.name);
-            }
-
-            Console.ReadLine();
-        }
-
-        private void UseDB(MySQLDataConnection dataConnection, string dbName)
-        {
-            try
-            {
-                dataConnection.ExecuteNonQuerySQL("DROP DATABASE " + dbName);
-            }
-            catch (InvalidOperationException ex)
-            {
-                var e = ex.InnerException.Message;
-                if (!(e.Contains("Can't drop database '") && e.Contains("'; database doesn't exist")))
-                {
-                    throw ex;
-                };
-            }
-            dataConnection.ExecuteNonQuerySQL("CREATE DATABASE " + dbName);
-            dataConnection.UseDatabase(dbName);
         }
     }
 }

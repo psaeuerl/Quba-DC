@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QubaDC.CRUD;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,18 +13,20 @@ namespace QubaDC.Evaluation
     {
         internal int phaseNumber;
 
+        public Boolean DoDelets { get; set;}
         public int Deletes { get; internal set; }
         public int Inserts { get; internal set; }
+        public Boolean DoUPdates { get; set; }
         public int Updates { get; internal set; }
 
-       
-        
-        internal void runFor(QubaDCSystem quba,String dbname)
+
+
+        internal PhaseResult runFor(QubaDCSystem quba, String dbname)
         {
-             List<long> insertValues = new List<long>();
+            List<long> insertValues = new List<long>();
             QubaDC.CRUD.InsertOperation[] inserts = InsertGenerator.GenerateFor(phaseNumber, Inserts, dbname);
             Stopwatch sw = new Stopwatch();
-            foreach(var insert in inserts)
+            foreach (var insert in inserts)
             {
                 sw.Start();
                 quba.CRUDHandler.HandleInsert(insert);
@@ -32,7 +35,22 @@ namespace QubaDC.Evaluation
                 sw.Reset();
             }
             long sum = insertValues.Sum();
+            if (DoDelets)
+                throw new NotImplementedException("NI DeletePhase");
+            if (DoUPdates)
+                throw new NotImplementedException("NI UpdatePhase");
 
+            //TODO NO_CACHE + FLUSH!
+            //quba.DataConnection.
+            //SelectOperation getCurrentcSelect = 
+
+
+            return new PhaseResult()
+            {
+                insertTimes = insertValues.ToArray(),
+                insertSum = insertValues.Sum()
+            };
+            
         }
     }
 }
