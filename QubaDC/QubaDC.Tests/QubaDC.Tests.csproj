@@ -78,7 +78,6 @@
     <Compile Include="Integrated\IntegratedQueryStoreCRUDTests.cs" />
     <Compile Include="Integrated\IntegratedBasicTests.cs" />
     <Compile Include="Integrated\IntegratedQueryStoreSMOTests.cs" />
-    <Compile Include="MySQLScriptTests.cs" />
     <Compile Include="Separated\SeparatedBasicTests.cs" />
     <Compile Include="Separated\SeparatedGlobalUpdateTimeTests.cs" />
     <Compile Include="MySQLCrudRendererTests.cs" />
