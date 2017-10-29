@@ -1,6 +1,8 @@
-﻿using QubaDC.Hybrid;
+﻿using QubaDC.Evaluation.Logging;
+using QubaDC.Hybrid;
 using QubaDC.Integrated;
 using QubaDC.Separated;
+using System;
 using System.Collections.Generic;
 
 namespace QubaDC.Evaluation
@@ -16,6 +18,10 @@ namespace QubaDC.Evaluation
                 Server = "localhost",
                 DataBase = "mysql"
             };
+
+            //Accurate information from information schema
+            //https://www.percona.com/blog/2011/12/23/solving-information_schema-slowness/
+            connection.ExecuteNonQuerySQL("set global innodb_stats_on_metadata=1;");
 
             QubaDCSystem hybridSystem = new MySQLQubaDCSystem(
                     connection,
@@ -47,29 +53,36 @@ namespace QubaDC.Evaluation
                , new IntegratedMySqlSMORenderer()
                );
 
-            List<Phase> phases = new List<Phase>();
-            Phase p1 = new Phase() {                
-                phaseNumber = 1,
-                Inserts = 100,
-                Updates = 0,
-                Deletes = 0,
-                 DoDelets = false,
-                  DoUPdates = false
-                //TODO => Selects
+            DateTime exec = DateTime.Now;
+            Output.WriteLine("Testrun @ " + exec.ToLongDateString());
+
+            RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem);
+
+            Output.WriteLine("--- Test Finished - Press Key to End ---");
+            Output.WriteLine("Testrun Finished @ " + exec.ToLongDateString());
+            Console.ReadLine();
+        }
+
+
+        private static void RunInsertTest(QubaDCSystem hybridSystem, QubaDCSystem simpleSystem, QubaDCSystem separatedSystem, QubaDCSystem integratedSystem)
+        {
+            InsertPhase p1 = new InsertPhase()
+            {
+                Inserts = 100000,
+                dropDb = false
             };
-            phases.Add(p1);
-            Testsetup s = new Testsetup()
+
+            Output.WriteLine("Starting InsertTest with " + p1.Inserts + " Inserts per System");
+            InsertValidationRunner s = new InsertValidationRunner()
             {
                 systems = new SystemSetup[] {
-                    new SystemSetup() { quba = separatedSystem, name = "Separated" },
-                    new SystemSetup() { quba = hybridSystem, name = "Hybrid" },   
-                    new SystemSetup() { quba = integratedSystem, name ="Integrated" },
-                    new SystemSetup() { quba = simpleSystem, name ="SimpleReference" } },
-                Phases = phases
+                    new SystemSetup() { quba = separatedSystem, name = "Separated", PrimaryKeyColumns = new String[]{ "ID" } },
+                    new SystemSetup() { quba = hybridSystem, name = "Hybrid", PrimaryKeyColumns = new String[]{ "ID" }},
+                    new SystemSetup() { quba = integratedSystem, name ="Integrated", PrimaryKeyColumns = new String[]{ "ID","startts"} },
+                    new SystemSetup() { quba = simpleSystem, name ="SimpleReference", PrimaryKeyColumns = new String[]{ "ID" } } },
+                Phase = p1
             };
-
             s.Run();
-
         }
     }
 }

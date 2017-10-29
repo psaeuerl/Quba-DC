@@ -20,7 +20,7 @@ namespace QubaDC.Evaluation
                        x.ToString(),
                        r.Next(3).ToString(),
                        5.ToString(),
-                       "'"+RandomString(1000)+"'"
+                       "'"+RandomString(10000)+"'"
                   }              
 
             });

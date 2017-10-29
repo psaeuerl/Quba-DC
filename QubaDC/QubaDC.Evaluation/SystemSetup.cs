@@ -5,5 +5,6 @@
     {
         internal string name;
         internal QubaDCSystem quba;
+        internal string[] PrimaryKeyColumns;
     }
 }

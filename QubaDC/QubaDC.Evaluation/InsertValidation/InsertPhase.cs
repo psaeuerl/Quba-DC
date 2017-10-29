@@ -9,43 +9,33 @@ using System.Threading.Tasks;
 
 namespace QubaDC.Evaluation
 {
-    public class Phase
+    public class InsertPhase
     {
-        internal int phaseNumber;
 
-        public Boolean DoDelets { get; set;}
-        public int Deletes { get; internal set; }
         public int Inserts { get; internal set; }
-        public Boolean DoUPdates { get; set; }
-        public int Updates { get; internal set; }
+        public bool dropDb { get; internal set; }
 
-
-
-        internal PhaseResult runFor(QubaDCSystem quba, String dbname)
+        internal InsertPhaseResult runFor(QubaDCSystem quba, String dbname)
         {
             List<long> insertValues = new List<long>();
-            QubaDC.CRUD.InsertOperation[] inserts = InsertGenerator.GenerateFor(phaseNumber, Inserts, dbname);
+            QubaDC.CRUD.InsertOperation[] inserts = InsertGenerator.GenerateFor(1, Inserts, dbname);
             Stopwatch sw = new Stopwatch();
+
+            int cnt = 0;
             foreach (var insert in inserts)
             {
+
                 sw.Start();
                 quba.CRUDHandler.HandleInsert(insert);
                 sw.Stop();
                 insertValues.Add(sw.ElapsedMilliseconds);
                 sw.Reset();
+                cnt++;
+                if (cnt % 1000 == 0)
+                    Console.WriteLine("Inserted " + cnt);
             }
             long sum = insertValues.Sum();
-            if (DoDelets)
-                throw new NotImplementedException("NI DeletePhase");
-            if (DoUPdates)
-                throw new NotImplementedException("NI UpdatePhase");
-
-            //TODO NO_CACHE + FLUSH!
-            //quba.DataConnection.
-            //SelectOperation getCurrentcSelect = 
-
-
-            return new PhaseResult()
+            return new InsertPhaseResult()
             {
                 insertTimes = insertValues.ToArray(),
                 insertSum = insertValues.Sum()

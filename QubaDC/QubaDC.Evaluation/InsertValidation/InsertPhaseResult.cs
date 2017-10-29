@@ -1,8 +1,8 @@
 ﻿namespace QubaDC.Evaluation
 {
-    internal class PhaseResult
+    internal class InsertPhaseResult
     {
-        public PhaseResult()
+        public InsertPhaseResult()
         {
         }
 
