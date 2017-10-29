@@ -58,7 +58,7 @@ namespace QubaDC.CRUD
                 yield return x;
         }
 
-        internal ColumnReference[] GetColumnsForTableReference(String tableAlias)
+        public ColumnReference[] GetColumnsForTableReference(String tableAlias)
         {
             if (this.GetAllSelectedTables().All(x => x.TableAlias != tableAlias))
                 throw new InvalidOperationException("Tablealias: " + tableAlias + " does not exist in Selectoperation");

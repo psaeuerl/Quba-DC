@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using QubaDC.CRUD;
 using QubaDC.Separated.CRUD;
 using System.Data;
+using QubaDC.Evaluation.SimpleSystem;
 
 namespace QubaDC.SimpleSystem
 {
@@ -67,12 +68,15 @@ namespace QubaDC.SimpleSystem
 
         public override void HandleUpdateOperation(UpdateOperation c2)
         {
-            throw new NotImplementedException();
+            String update = this.CRUDRenderer.RenderUpdate(c2.Table, c2.ColumnNames, c2.ValueLiterals, c2.Restriction);
+            this.DataConnection.ExecuteNonQuerySQL(update);
         }
 
         public override string RenderSelectOperation(SelectOperation selectOperation)
         {
-            throw new NotImplementedException();
+            SimpleSelectHandler s = new SimpleSelectHandler(this.DataConnection, this.SchemaManager, this.CRUDRenderer);
+            String result = s.HandleSelect(selectOperation, false);
+            return result;            
         }
 
         public override string RenderHashSelect(SelectOperation newOperation)

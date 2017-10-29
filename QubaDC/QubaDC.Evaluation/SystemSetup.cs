@@ -1,7 +1,7 @@
 ﻿namespace QubaDC.Evaluation
 {
 
-    internal class SystemSetup
+    public class SystemSetup
     {
         internal string name;
         internal QubaDCSystem quba;
