@@ -91,7 +91,7 @@ namespace QubaDC.Integrated.CRUD
                 String setEndtsBaseTable = this.CRUDRenderer.RenderUpdate(setEndTs.Table, setEndTs.ColumnNames, setEndTs.ValueLiterals, setEndTs.Restriction) + ";";
                 String insertIntoBaseTableFromTmpTable = this.CRUDRenderer.RenderInsertSelect(new Table() { TableSchema = updateOperation.Table.TableSchema, TableName = updateOperation.Table.TableName }, null,
                     selectFromTempTableSQL);
-                String setStartTsBaseTable = this.CRUDRenderer.RenderUpdate(setStartTs.Table, setStartTs.ColumnNames, setStartTs.ValueLiterals, setStartTs.Restriction) + ";";
+                String setStartTsBaseTmpTable = this.CRUDRenderer.RenderUpdate(tmpTable, setStartTs.ColumnNames, setStartTs.ValueLiterals, null) + ";";
                 String dropTmpTable = this.CRUDRenderer.RenderDropTempTable(tmpTable);
 
                 String updateLastUpdate = this.metaManager.GetSetLastUpdateStatement(updateOperation.Table, this.CRUDRenderer.GetSQLVariable(insertTimeVariable));
@@ -100,8 +100,8 @@ namespace QubaDC.Integrated.CRUD
                     setInsertTime,
                     CreateTmpTable,
                     setEndtsBaseTable,
-                    insertIntoBaseTableFromTmpTable,
-                    setStartTsBaseTable,                    
+                    setStartTsBaseTmpTable,
+                    insertIntoBaseTableFromTmpTable,                 
                     dropTmpTable,
                     updateLastUpdate
                 };
