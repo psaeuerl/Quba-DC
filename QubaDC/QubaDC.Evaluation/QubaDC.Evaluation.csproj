@@ -78,7 +78,9 @@
     <Compile Include="TableFlusher.cs" />
     <Compile Include="TableStatus.cs" />
     <Compile Include="TableStatusQuerier.cs" />
+    <Compile Include="UpdateValidation\UpdateEveryRowByCLOBPhaseResult.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowPhaseResult.cs" />
+    <Compile Include="UpdateValidation\UpdateEveryRowByCLOBValidationRunner.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowValidationRunner.cs" />
   </ItemGroup>
   <ItemGroup>

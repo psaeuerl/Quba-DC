@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace QubaDC.Evaluation.UpdateValidation
 {
-    public class UpdateEveryRowValidationRunner
+    public class UpdateEveryRowByCLOBValidationRunner
     {
         public void run(MySQLDataConnection con, SystemSetup system, String dbName, int expectedRows, int RowsToUpdate, Boolean addIndexHist)
         {
@@ -30,20 +30,20 @@ namespace QubaDC.Evaluation.UpdateValidation
             DataTable t = con.ExecuteQuery(select);
             if (t.Rows.Count != expectedRows)
                 throw new InvalidOperationException("Didnt get expected rows");
-            List<int> allIds = t.Select().Select(x => int.Parse(x.ItemArray[1].ToString())).ToList();
-            int[] itIteration = new int[allIds.Count];
+            List<string> allClobs = t.Select().Select(x => x.ItemArray[4].ToString()).ToList();
+            string[] itIteration = new string[allClobs.Count];
             for(int i=0;i<itIteration.Length;i++)
             {
-                int nextIndex = r.Next(allIds.Count);
-                itIteration[i] = allIds[nextIndex];
-                allIds.Remove(nextIndex);
+                int nextIndex = r.Next(allClobs.Count);
+                itIteration[i] = allClobs[nextIndex];
+                allClobs.RemoveAt(nextIndex);
             }
 
             List<long> updateValues = new List<long>();
             Stopwatch sw = new Stopwatch();
             int cnt = 0;
             int toTake = RowsToUpdate;
-            foreach (int id in itIteration.Take(toTake))
+            foreach (string clob in itIteration.Take(toTake))
             {
 
                 UpdateOperation uo = new UpdateOperation()
@@ -51,8 +51,8 @@ namespace QubaDC.Evaluation.UpdateValidation
                     ColumnNames = new String[] { "ValueToUpdate" },
                     Restriction = new QubaDC.Restrictions.OperatorRestriction()
                     {
-                        LHS = new Restrictions.ValueRestrictionOperand() { Value = "ID" },
-                        RHS = new Restrictions.ValueRestrictionOperand() { Value = id.ToString() },
+                        LHS = new Restrictions.ValueRestrictionOperand() { Value = "CLOBPayLoade" },
+                        RHS = new Restrictions.ValueRestrictionOperand() { Value = "'"+clob+"'" },
                         Op = Restrictions.RestrictionOperator.Equals
                     },
                     Table = s.FromTable,
