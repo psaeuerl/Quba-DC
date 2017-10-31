@@ -66,10 +66,11 @@ namespace QubaDC.Evaluation
             DateTime exec = DateTime.Now;
             Output.WriteLine("Testrun @ " + exec.ToUniversalTime());
 
-            //RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem, 1000);
+           // RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem, 2000, 10);
             //RunUpdateWholeTable(SystemSetups, "1k",true);
 
-            RunDeleteByIDTable(SystemSetups, "1k", true);
+            //RunDeleteByIDTable(SystemSetups, "1k", true);
+            RunDeleteBySectionTable(SystemSetups, "2k", true);
 
             // ReanalyzeSystems(SystemSetups, "100k");
             //ReanaleyzeDbs(connection, new String[] {
@@ -85,10 +86,10 @@ namespace QubaDC.Evaluation
 
 
             DBCopier dbc = new DBCopier();
-            //dbc.CopyTable(SystemSetups[0], "EVAL_Integrated_647d49a93aef4ceca9e2e481f2a7a86c", "integrated_1k", true);
-            //dbc.CopyTable(SystemSetups[0], "EVAL_Separated_1d37edec0b754e9982fd34fff8ba84a6", "separated_1k", true);
-            //dbc.CopyTable(SystemSetups[0], "EVAL_Hybrid_7de223faed4247bab1ae5a2eac824ac5", "hybrid_1k", true);
-            //dbc.CopyTable(SystemSetups[0], "EVAL_SimpleReference_ae65a9f5bb074e02867e89bcfea6c5be", "simple_1k", true);
+           // dbc.CopyTable(SystemSetups[0], "EVAL_Integrated_e52944fd0bea4f6c97822aa21a01f34d", "integrated_2k", true);
+            //dbc.CopyTable(SystemSetups[0], "EVAL_Separated_7b042a9e2bad4e57a385e15968320e37", "separated_2k", true);
+           // dbc.CopyTable(SystemSetups[0], "EVAL_Hybrid_6f9dfc1079dd4b8a83e73dfd62d70cca", "hybrid_2k", true);
+           // dbc.CopyTable(SystemSetups[0], "EVAL_SimpleReference_4d45570ec5534e71a7e342ff7605ee85", "simple_2k", true);
 
             Output.WriteLine("--- Test Finished - Press Key to End ---");
             Output.WriteLine("Testrun Finished @ " + exec.ToLongDateString());
@@ -159,6 +160,25 @@ namespace QubaDC.Evaluation
                 runner.run(con, system, dbName,  addIndex);
 
                 Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
+        }
+
+        private static void RunDeleteBySectionTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+
+                DeleteEveryRowBySectionValidationRunner runner = new DeleteEveryRowBySectionValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, tablesuffix, 5, addIndex);
+
+
                 Output.WriteLine("##############################################################");
             }
         }
@@ -267,7 +287,7 @@ namespace QubaDC.Evaluation
             }
         }
 
-        private static void RunInsertTest(QubaDCSystem hybridSystem, QubaDCSystem simpleSystem, QubaDCSystem separatedSystem, QubaDCSystem integratedSystem, int rows)
+        private static void RunInsertTest(QubaDCSystem hybridSystem, QubaDCSystem simpleSystem, QubaDCSystem separatedSystem, QubaDCSystem integratedSystem, int rows, int numbersections)
         {
             InsertPhase p1 = new InsertPhase()
             {
@@ -283,7 +303,8 @@ namespace QubaDC.Evaluation
                     new SystemSetup() { quba = separatedSystem, name = "Separated", PrimaryKeyColumns = new String[]{ "ID" } },
                     new SystemSetup() { quba = hybridSystem, name = "Hybrid", PrimaryKeyColumns = new String[]{ "ID" }},
                     new SystemSetup() { quba = simpleSystem, name ="SimpleReference", PrimaryKeyColumns = new String[]{ "ID" } } },
-                Phase = p1
+                Phase = p1,
+                Sections = numbersections
             };
             s.Run();
         }
