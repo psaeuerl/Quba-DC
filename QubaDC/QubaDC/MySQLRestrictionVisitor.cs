@@ -80,7 +80,7 @@ namespace QubaDC
 
         internal override string Visit(AndRestriction andRestriction)
         {
-            var children = andRestriction.Restrictions.Select(x => x.Accept<String>(this)).ToArray();
+            var children = andRestriction.Restrictions.Where(x=> x!=null).Select(x => x.Accept<String>(this)).ToArray();
             String joined = String.Join(" AND ", children);
             String result = "(" + joined + ")";
             return result;
