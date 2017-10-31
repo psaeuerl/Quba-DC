@@ -15,10 +15,10 @@ namespace QubaDC.Evaluation
         public int Inserts { get; internal set; }
         public bool dropDb { get; internal set; }
 
-        internal InsertPhaseResult runFor(QubaDCSystem quba, String dbname)
+        internal InsertPhaseResult runFor(QubaDCSystem quba, String dbname, int Sections)
         {
             List<long> insertValues = new List<long>();
-            QubaDC.CRUD.InsertOperation[] inserts = InsertGenerator.GenerateFor(1, Inserts, dbname);
+            QubaDC.CRUD.InsertOperation[] inserts = InsertGenerator.GenerateFor(1, Inserts, dbname, Sections);
             Stopwatch sw = new Stopwatch();
 
             int cnt = 0;

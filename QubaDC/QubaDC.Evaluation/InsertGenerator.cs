@@ -7,7 +7,7 @@ namespace QubaDC.Evaluation
     internal class InsertGenerator
     {
 
-        internal static InsertOperation[] GenerateFor(int phaseNumber, int inserts, String dbName)
+        internal static InsertOperation[] GenerateFor(int phaseNumber, int inserts, String dbName, int sections)
         {
             Random r = new Random(10);
             var res = Enumerable.Range(0, inserts).Select(x => new InsertOperation()
@@ -18,7 +18,7 @@ namespace QubaDC.Evaluation
                   {
                        phaseNumber.ToString(),
                        x.ToString(),
-                       r.Next(3).ToString(),
+                       r.Next(sections).ToString(),
                        5.ToString(),
                        "'"+RandomString(10000)+"'"
                   }              

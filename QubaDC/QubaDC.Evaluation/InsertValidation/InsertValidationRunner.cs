@@ -15,6 +15,7 @@ namespace QubaDC.Evaluation
 
         public InsertPhase Phase { get; internal set; }
         public SystemSetup[] systems { get; internal set; }
+        public int Sections { get; internal set; }
 
         internal void Run()
         {
@@ -37,7 +38,7 @@ namespace QubaDC.Evaluation
                 String stmt = String.Format("ALTER TABLE {0}.{1} ADD PRIMARY KEY({2});", dbName, t.TableName, String.Join(",", system.PrimaryKeyColumns));
                 system.quba.DataConnection.ExecuteNonQuerySQL(stmt);
 
-                var phaseResult = Phase.runFor(system.quba, dbName);
+                var phaseResult = Phase.runFor(system.quba, dbName, Sections);
                 Output.WriteLine("Insert Time ms: " + phaseResult.insertSum);
                 Output.WriteLine("MAX/MIN/MEAN " + phaseResult.insertTimes.Max() + "/" + phaseResult.insertTimes.Min() + "/" + phaseResult.insertTimes.Average());
 
