@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBCopier.cs" />
+    <Compile Include="EndtimestampIndexer.cs" />
     <Compile Include="EvaluationCreateTable.cs" />
     <Compile Include="InsertGenerator.cs" />
     <Compile Include="InsertValidation\InsertPhase.cs" />
@@ -78,7 +79,11 @@
     <Compile Include="TableFlusher.cs" />
     <Compile Include="TableStatus.cs" />
     <Compile Include="TableStatusQuerier.cs" />
+    <Compile Include="UpdateValidation\UpdateWholeTablePhaseResult.cs" />
+    <Compile Include="UpdateValidation\UpdateBySectionPhaseResult.cs" />
+    <Compile Include="UpdateValidation\UpdateWholeTableValidationRunner.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowByCLOBPhaseResult.cs" />
+    <Compile Include="UpdateValidation\UpdateBySectionValidationRunner.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowPhaseResult.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowByCLOBValidationRunner.cs" />
     <Compile Include="UpdateValidation\UpdateEveryRowValidationRunner.cs" />

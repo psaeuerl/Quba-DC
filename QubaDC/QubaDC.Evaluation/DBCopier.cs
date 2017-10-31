@@ -13,8 +13,8 @@ namespace QubaDC.Evaluation
         public void CopyTable(SystemSetup system, String sourceDB, String targetDB, Boolean skipFixingSchema)
         {
             var con = (MySQLDataConnection)system.quba.DataConnection;
-            sourceDB = sourceDB.Replace("SimpleReference", "simple");
-            Output.WriteLine(String.Format("Copying: {0} to {1}", sourceDB, targetDB));
+            //sourceDB = sourceDB.Replace("SimpleReference", "simple");
+            Output.WriteLine(String.Format("Copying: {0} to {1}", sourceDB.ToLowerInvariant(), targetDB));
             CreateEmptyDB(con, targetDB);
             string strCmdText = "/C mysqldump.exe -u root --password=rootpw {0} | mysql.exe -u root --password=rootpw {1}";
             
