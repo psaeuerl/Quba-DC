@@ -6,11 +6,11 @@ namespace QubaDC.Evaluation
 {
     internal class InsertGenerator
     {
-        private static Random r = new Random(10);
 
         internal static InsertOperation[] GenerateFor(int phaseNumber, int inserts, String dbName)
         {
-           var res = Enumerable.Range(0, inserts).Select(x => new InsertOperation()
+            Random r = new Random(10);
+            var res = Enumerable.Range(0, inserts).Select(x => new InsertOperation()
             {
                 ColumnNames = EvaluationCreateTable.GetTable(dbName).Columns.Select(y => y.ColumName).ToArray(),
                  InsertTable = EvaluationCreateTable.GetTable(dbName).ToTable(),
