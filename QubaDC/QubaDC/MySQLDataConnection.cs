@@ -17,6 +17,8 @@ namespace QubaDC
         public NetworkCredential Credentials { get; set; } 
         public String Server { get; set; }
 
+        public int? CommandTimeout { get; set; }
+
         public MySQLDataConnection Clone()
         {
             return new MySQLDataConnection()
@@ -102,7 +104,9 @@ namespace QubaDC
         {
                 MySqlCommand com = (MySqlCommand)openconnection.CreateCommand();
                 com.CommandType = System.Data.CommandType.Text;
-                com.CommandText = SQL;            
+                com.CommandText = SQL;
+            if (this.CommandTimeout.HasValue)
+                com.CommandTimeout = CommandTimeout.Value;
                 com.ExecuteNonQuery();               
         }
 
@@ -110,12 +114,13 @@ namespace QubaDC
         {
             //Otherwise, Delimiter is not support @ MySQL and we need it for Triggers
             MySqlScript m = new MySqlScript((MySql.Data.MySqlClient.MySqlConnection)openconnection, SQL);
+
             m.Execute();
         }
 
         public override TableSchema[] GetAllTables()
         {
-            String query = String.Format("select TABLE_SCHEMA, TABLE_NAME from information_schema.tables WHERE TABLE_SCHEMA = '{0}'", this.DataBase);
+            String query = String.Format("select TABLE_SCHEMA, TABLE_NAME from information_schema.tables WHERE TABLE_SCHEMA = '{0}'", this.DataBase.ToLowerInvariant());
             var result = this.ExecuteQuery(query)
                 .Select()
                 .Select(x => 
@@ -142,6 +147,8 @@ namespace QubaDC
             MySqlCommand cmd = (MySqlCommand)c.CreateCommand();
             cmd.CommandText = statement;
             cmd.CommandType = CommandType.Text;
+            if (this.CommandTimeout.HasValue)
+                cmd.CommandTimeout = CommandTimeout.Value;
             long lastinsertedBefore = cmd.LastInsertedId;
             long inserted = cmd.ExecuteNonQuery();
             long newId = cmd.LastInsertedId;
@@ -156,7 +163,9 @@ namespace QubaDC
                 MySqlCommand com = (MySqlCommand)openconnection.CreateCommand();
                 com.CommandType = System.Data.CommandType.Text;
                 com.CommandText = SQL;
-                using (MySqlDataReader reader = com.ExecuteReader())
+                if (this.CommandTimeout.HasValue)
+                    com.CommandTimeout = CommandTimeout.Value;
+            using (MySqlDataReader reader = com.ExecuteReader())
                 {
                     result.Load(reader);
                 }
