@@ -59,6 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBCopier.cs" />
+    <Compile Include="DeleteValidation\DeleteEveryRowByIDPhaseResult.cs" />
+    <Compile Include="DeleteValidation\DeleteEveryRowByIDValidationRunner.cs" />
     <Compile Include="EndtimestampIndexer.cs" />
     <Compile Include="EvaluationCreateTable.cs" />
     <Compile Include="InsertGenerator.cs" />

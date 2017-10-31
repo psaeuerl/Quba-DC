@@ -1,4 +1,5 @@
-﻿using QubaDC.Evaluation.Logging;
+﻿using QubaDC.Evaluation.DeleteValidation;
+using QubaDC.Evaluation.Logging;
 using QubaDC.Evaluation.UpdateValidation;
 using QubaDC.Hybrid;
 using QubaDC.Integrated;
@@ -66,8 +67,9 @@ namespace QubaDC.Evaluation
             Output.WriteLine("Testrun @ " + exec.ToUniversalTime());
 
             //RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem, 1000);
-            RunUpdateWholeTable(SystemSetups, "1k",true);
+            //RunUpdateWholeTable(SystemSetups, "1k",true);
 
+            RunDeleteByIDTable(SystemSetups, "1k", true);
 
             // ReanalyzeSystems(SystemSetups, "100k");
             //ReanaleyzeDbs(connection, new String[] {
@@ -130,6 +132,35 @@ namespace QubaDC.Evaluation
                 Output.WriteLine("##############################################################");
             }
 
+        }
+
+        private static void RunDeleteByIDTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                String baseTable = system.name + "_" + tablesuffix;
+                String dbName = "upd_" + system.name + "_" + Guid.NewGuid().ToString().Replace("-", "");
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+                cp.CopyTable(system, baseTable, dbName, system.name == "SimpleReference");
+                con.UseDatabase(dbName);
+
+                if (addendtimestampIndexes)
+                {
+                    EndtimestampIndexer endtimestampIndexer = new EndtimestampIndexer();
+                    endtimestampIndexer.AddEndTimestampIndex(system);
+                }
+
+                DeleteEveryRowByIDValidationRunner runner = new DeleteEveryRowByIDValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, dbName,  addIndex);
+
+                Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
         }
 
         private static void RunUpdateWholeTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)

@@ -57,7 +57,8 @@ namespace QubaDC.SimpleSystem
         //}
         public override void HandleDeletOperation(DeleteOperation deleteOperation)
         {
-            throw new NotImplementedException();
+            String insert = this.CRUDRenderer.RenderDelete(deleteOperation.Table, deleteOperation.Restriction);
+            this.DataConnection.ExecuteInsert(insert);
         }
 
         public override void HandleInsert(InsertOperation insertOperation)
