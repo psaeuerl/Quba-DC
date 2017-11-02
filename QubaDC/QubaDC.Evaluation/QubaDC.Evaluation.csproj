@@ -59,9 +59,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBCopier.cs" />
+    <Compile Include="DeleteValidation\DeleteEveryRowPhaseResult.cs" />
     <Compile Include="DeleteValidation\DeleteEveryRowBySectionPhaseResult.cs" />
     <Compile Include="DeleteValidation\DeleteEveryRowByIDPhaseResult.cs" />
     <Compile Include="DeleteValidation\DeleteEveryRowBySectionValidationRunner.cs" />
+    <Compile Include="DeleteValidation\DeleteEveryRowValidationRunner.cs" />
     <Compile Include="DeleteValidation\DeleteEveryRowByIDValidationRunner.cs" />
     <Compile Include="EndtimestampIndexer.cs" />
     <Compile Include="EvaluationCreateTable.cs" />
@@ -72,6 +74,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectOperationGenerator.cs" />
+    <Compile Include="SelectValidation\SelectActualPhaseResult.cs" />
+    <Compile Include="SelectValidation\SelectActualValidationRunner.cs" />
     <Compile Include="SimpleSystem\SimpleSelectHandler.cs" />
     <Compile Include="SimpleSystem\SimpleSystemCRUDHandler.cs" />
     <Compile Include="SimpleSystem\SeparatedQSSelectHandler.cs" />

@@ -1,5 +1,6 @@
 ﻿using QubaDC.Evaluation.DeleteValidation;
 using QubaDC.Evaluation.Logging;
+using QubaDC.Evaluation.SelectValidation;
 using QubaDC.Evaluation.UpdateValidation;
 using QubaDC.Hybrid;
 using QubaDC.Integrated;
@@ -58,7 +59,7 @@ namespace QubaDC.Evaluation
                );
 
             var SystemSetups = new SystemSetup[] {
-                   new SystemSetup() { quba = simpleSystem, name ="Simple", PrimaryKeyColumns = new String[]{ "ID" } },
+                  new SystemSetup() { quba = simpleSystem, name ="Simple", PrimaryKeyColumns = new String[]{ "ID" } },
                     new SystemSetup() { quba = separatedSystem, name = "Separated", PrimaryKeyColumns = new String[]{ "ID" } },
                    new SystemSetup() { quba = hybridSystem, name = "Hybrid", PrimaryKeyColumns = new String[]{ "ID" }},
                     new SystemSetup() { quba = integratedSystem, name ="Integrated", PrimaryKeyColumns = new String[]{ "ID","startts"} },
@@ -66,11 +67,15 @@ namespace QubaDC.Evaluation
             DateTime exec = DateTime.Now;
             Output.WriteLine("Testrun @ " + exec.ToUniversalTime());
 
-           // RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem, 2000, 10);
+            // RunInsertTest(hybridSystem, simpleSystem, separatedSystem, integratedSystem, 2000, 10);
             //RunUpdateWholeTable(SystemSetups, "1k",true);
 
             //RunDeleteByIDTable(SystemSetups, "1k", true);
-            RunDeleteBySectionTable(SystemSetups, "2k", true);
+            //RunDeleteBySectionTable(SystemSetups, "2k", true);
+
+            //  RunDeleteTable(SystemSetups, "2k", true);
+
+            RunSelectActualTable(SystemSetups, "2k", true);
 
             // ReanalyzeSystems(SystemSetups, "100k");
             //ReanaleyzeDbs(connection, new String[] {
@@ -135,6 +140,35 @@ namespace QubaDC.Evaluation
 
         }
 
+        private static void RunSelectActualTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                String baseTable = system.name + "_" + tablesuffix;
+                String dbName = "sel_" + system.name + "_" + Guid.NewGuid().ToString().Replace("-", "");
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+                cp.CopyTable(system, baseTable, dbName, system.name == "SimpleReference");
+                con.UseDatabase(dbName);
+
+                if (addendtimestampIndexes)
+                {
+                    EndtimestampIndexer endtimestampIndexer = new EndtimestampIndexer();
+                    endtimestampIndexer.AddEndTimestampIndex(system);
+                }
+
+                SelectActualValidationRunner runner = new SelectActualValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, dbName, 20,1, 50, addIndex);
+
+                Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
+        }
+
         private static void RunDeleteByIDTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
         {
             DBCopier cp = new DBCopier();
@@ -160,6 +194,25 @@ namespace QubaDC.Evaluation
                 runner.run(con, system, dbName,  addIndex);
 
                 Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
+        }
+
+        private static void RunDeleteTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+
+                DeleteEveryRowValidationRunner runner = new DeleteEveryRowValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, tablesuffix, 5, addIndex);
+
+
                 Output.WriteLine("##############################################################");
             }
         }
