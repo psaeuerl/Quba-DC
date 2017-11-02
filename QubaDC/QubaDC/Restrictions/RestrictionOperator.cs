@@ -13,6 +13,8 @@ namespace QubaDC.Restrictions
         LET,
         GT,
         GET,
-        IS
+        IS,
+        IN,
+        NotIN
     }
 }

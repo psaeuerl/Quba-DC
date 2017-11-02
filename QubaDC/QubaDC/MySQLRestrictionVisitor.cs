@@ -73,6 +73,10 @@ namespace QubaDC
                     return ">=";
                 case RestrictionOperator.IS:
                     return "IS";
+                case RestrictionOperator.IN:
+                    return "IN";
+                case RestrictionOperator.NotIN:
+                    return "NOT IN";
                 default:
                     throw new NotImplementedException(op.ToString());
             }
