@@ -167,7 +167,7 @@ namespace QubaDC.Separated
                  RewrittenSerialized = JsonSerializer.SerializeObject(newOperation);
 
                  selectHash = cRUDHandler.RenderHashSelect(newOperation);
-                 selectHashSerialized = cRUDHandler.RenderHashSelect(newOperation);
+                 selectHashSerialized = JsonSerializer.SerializeObject(newOperation);
                 return new String[] { selectHash, select };
             };
             String hash = null;
