@@ -73,6 +73,9 @@
     <Compile Include="Logging\Output.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QSValidation\QSNoDataChangePhaseResult.cs" />
+    <Compile Include="QSValidation\QSNoDataChangeIDValidationRunner.cs" />
+    <Compile Include="QSValidation\QSNoDataChangeSectionValidationRunner.cs" />
     <Compile Include="SelectOperationGenerator.cs" />
     <Compile Include="SelectValidation\SelectActualPhaseResult.cs" />
     <Compile Include="SelectValidation\SelectActualValidationRunner.cs" />

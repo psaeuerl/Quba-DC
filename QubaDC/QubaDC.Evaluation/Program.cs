@@ -1,5 +1,6 @@
 ﻿using QubaDC.Evaluation.DeleteValidation;
 using QubaDC.Evaluation.Logging;
+using QubaDC.Evaluation.QSValidation;
 using QubaDC.Evaluation.SelectValidation;
 using QubaDC.Evaluation.UpdateValidation;
 using QubaDC.Hybrid;
@@ -27,6 +28,8 @@ namespace QubaDC.Evaluation
             //https://www.percona.com/blog/2011/12/23/solving-information_schema-slowness/
             connection.ExecuteNonQuerySQL("set global innodb_stats_on_metadata=1;");
             connection.ExecuteNonQuerySQL("set global innodb_stats_persistent=0;");
+            connection.ExecuteNonQuerySQL("set global query_cache_limit = 0;");
+            connection.ExecuteNonQuerySQL("set global query_cache_size = 0;");
 
             QubaDCSystem hybridSystem = new MySQLQubaDCSystem(
                     connection,
@@ -75,8 +78,9 @@ namespace QubaDC.Evaluation
 
             //  RunDeleteTable(SystemSetups, "2k", true);
 
-            RunSelectActualTable(SystemSetups, "2k", true);
+           // RunQSNoDataChangeSectionActualTable(SystemSetups, "2k", true);
 
+            RunQSNoDataChangeIDActualTable(SystemSetups, "2k", true);
             // ReanalyzeSystems(SystemSetups, "100k");
             //ReanaleyzeDbs(connection, new String[] {
             //    "simple_1k",
@@ -138,6 +142,66 @@ namespace QubaDC.Evaluation
                 Output.WriteLine("##############################################################");
             }
 
+        }
+
+
+        private static void RunQSNoDataChangeIDActualTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                String baseTable = system.name + "_" + tablesuffix;
+                String dbName = "qs_" + system.name + "_" + Guid.NewGuid().ToString().Replace("-", "");
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+                cp.CopyTable(system, baseTable, dbName, system.name == "SimpleReference");
+                con.UseDatabase(dbName);
+
+                if (addendtimestampIndexes)
+                {
+                    EndtimestampIndexer endtimestampIndexer = new EndtimestampIndexer();
+                    endtimestampIndexer.AddEndTimestampIndex(system);
+                }
+
+                QSNoDataChangeIDValidationRunner runner = new QSNoDataChangeIDValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, dbName, 10, addIndex);
+
+                Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
+        }
+
+
+        private static void RunQSNoDataChangeSectionActualTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                String baseTable = system.name + "_" + tablesuffix;
+                String dbName = "qs_" + system.name + "_" + Guid.NewGuid().ToString().Replace("-", "");
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+                cp.CopyTable(system, baseTable, dbName, system.name == "SimpleReference");
+                con.UseDatabase(dbName);
+
+                if (addendtimestampIndexes)
+                {
+                    EndtimestampIndexer endtimestampIndexer = new EndtimestampIndexer();
+                    endtimestampIndexer.AddEndTimestampIndex(system);
+                }
+
+                QSNoDataChangeSectionValidationRunner runner = new QSNoDataChangeSectionValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, dbName, 10, addIndex);
+
+                Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
         }
 
         private static void RunSelectActualTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
