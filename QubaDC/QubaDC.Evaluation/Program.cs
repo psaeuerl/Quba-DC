@@ -78,10 +78,12 @@ namespace QubaDC.Evaluation
 
             //  RunDeleteTable(SystemSetups, "2k", true);
 
-           // RunQSNoDataChangeSectionActualTable(SystemSetups, "2k", true);
+            // RunQSNoDataChangeSectionActualTable(SystemSetups, "2k", true);
 
             //RunQSNoDataChangeSectionActualTable(SystemSetups, "2k", true);
-            RunQSDeleteAllSectionActualTable(SystemSetups, "2k", true);
+            RunQSUpdateSectionsActualTable(SystemSetups, "2k", true);
+
+
             // ReanalyzeSystems(SystemSetups, "100k");
             //ReanaleyzeDbs(connection, new String[] {
             //    "simple_1k",
@@ -169,6 +171,35 @@ namespace QubaDC.Evaluation
                 QSNoDataChangeIDValidationRunner runner = new QSNoDataChangeIDValidationRunner();
                 Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
                 runner.run(con, system, dbName, 10, addIndex);
+
+                Output.WriteLine("DBName: " + dbName);
+                Output.WriteLine("##############################################################");
+            }
+        }
+
+        private static void RunQSUpdateSectionsActualTable(SystemSetup[] setups, String tablesuffix, Boolean addendtimestampIndexes)
+        {
+            DBCopier cp = new DBCopier();
+            //Preparation
+            foreach (var system in setups)
+            {
+                Output.WriteLine("##############################################################");
+                Output.WriteLine("Starting test for system:" + system.name);
+                String baseTable = system.name + "_" + tablesuffix;
+                String dbName = "qs_" + system.name + "_" + Guid.NewGuid().ToString().Replace("-", "");
+                var con = (MySQLDataConnection)system.quba.DataConnection;
+                cp.CopyTable(system, baseTable, dbName, system.name == "SimpleReference");
+                con.UseDatabase(dbName);
+
+                if (addendtimestampIndexes)
+                {
+                    EndtimestampIndexer endtimestampIndexer = new EndtimestampIndexer();
+                    endtimestampIndexer.AddEndTimestampIndex(system);
+                }
+
+                QSUpdateSOmeSectionValidationRunner runner = new QSUpdateSOmeSectionValidationRunner();
+                Boolean addIndex = system.name == "Hybrid" || system.name == "Separated";
+                runner.run(con, system, dbName, 10,5,5, addIndex);
 
                 Output.WriteLine("DBName: " + dbName);
                 Output.WriteLine("##############################################################");
