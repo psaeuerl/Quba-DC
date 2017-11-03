@@ -191,7 +191,7 @@ namespace QubaDC.Hybrid
                 newOperation = JsonSerializer.CopyItem(s);
                 //b.) add, that we only query the current table
                 List<Restriction> TimeStampRestrictions = new List<Restriction>();
-                SchemaInfo SchemaInfo = schemaManager.GetSchemaActiveAt(queryTime);
+                SchemaInfo SchemaInfo = schema;
                 System.Diagnostics.Debug.WriteLine(String.Join(",", SchemaInfo.Schema.Tables.Select(x => x.Table.AddTimeSetGuid)));
 
                 table_to_ids = new Dictionary<String, Guid?>();
